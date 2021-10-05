@@ -53,8 +53,9 @@ public class FXMLController extends Application {
     @FXML private TextField gotoMeasureField;
     @FXML private CheckBox wrapCheckbox;
     @FXML private BorderPane borderPane;
-    @FXML private Button convertButton = new Button();
-    @FXML private Button goToline = new Button();
+    @FXML private Button convertButton;
+    @FXML private Button previewButton;
+    @FXML private Button goToline;
     @FXML TextField titleField;
     @FXML TextField artistField;
     @FXML TextField fileNameField;
@@ -148,7 +149,7 @@ public class FXMLController extends Application {
 
         saveFile = openedFile;
         isEditingSavedFile = true;
-        new TabInput(TEXT_AREA, convertButton).computeHighlightingAsync();
+        new TabInput(TEXT_AREA, convertButton, previewButton).computeHighlightingAsync();
 
     }
 
@@ -259,7 +260,11 @@ public class FXMLController extends Application {
         convertWindow = this.openNewWindow("GUI/convertWindow.fxml", "ConversionOptions");
     }
 
-
+    @FXML
+    private void previewButtonHandle() throws IOException {
+        System.out.println("Preview Button Clicked!");
+    }
+    
     @FXML
     private void saveConvertedButtonHandle() {
         Parser.createScore(TEXT_AREA.getText());
@@ -312,7 +317,7 @@ public class FXMLController extends Application {
     @FXML
     private void cancelConvertButtonHandle()  {
         convertWindow.hide();
-        new TabInput(TEXT_AREA,convertButton).enableHighlighting();
+        new TabInput(TEXT_AREA,convertButton, previewButton).enableHighlighting();
     }
 
 
@@ -344,13 +349,13 @@ public class FXMLController extends Application {
     private void handleScoreType() {
         InstrumentSetting = cmbScoreType.getValue().toString().strip();
         Score.INSTRUMENT_MODE = Parser.getInstrumentEnum(InstrumentSetting);
-        new TabInput(TEXT_AREA, convertButton).refresh();
+        new TabInput(TEXT_AREA, convertButton, previewButton).refresh();
     }
 
     @FXML
     private void handleGotoMeasure() {
         int measureNumber = Integer.parseInt( gotoMeasureField.getText() );
-        if (!new TabInput(TEXT_AREA, convertButton).goToMeasure(measureNumber)) {
+        if (!new TabInput(TEXT_AREA, convertButton, previewButton).goToMeasure(measureNumber)) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Measure "+measureNumber+" could not be found.");
             alert.setHeaderText(null);
@@ -376,7 +381,7 @@ public class FXMLController extends Application {
 
     private void initializeTextAreaErrorPopups() {
         TEXT_AREA.setParagraphGraphicFactory(LineNumberFactory.get(TEXT_AREA));
-        new TabInput(TEXT_AREA, convertButton).enableHighlighting();
+        new TabInput(TEXT_AREA, convertButton, previewButton).enableHighlighting();
 
         savedTextArea = TEXT_AREA;
 
@@ -412,7 +417,7 @@ public class FXMLController extends Application {
             default -> TabInput.ERROR_SENSITIVITY = 2;
         }
 
-        new TabInput(TEXT_AREA, convertButton).refresh();
+        new TabInput(TEXT_AREA, convertButton, previewButton).refresh();
     }
     private void initializeSettings() {
         if (errorSensitivity != null && outputFolderField != null) {

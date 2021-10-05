@@ -25,11 +25,13 @@ public class TabInput {
     protected static Score SCORE = new Score("");
     private CodeArea TEXT_AREA;
     private Button convertButton;
+    private Button previewButton;
     protected static ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public TabInput(CodeArea TEXT_AREA, Button convertButton) {
+    public TabInput(CodeArea TEXT_AREA, Button convertButton, Button previewButton) {
         this.TEXT_AREA = TEXT_AREA;
         this.convertButton = convertButton;
+        this.previewButton = previewButton;
     }
 
     public Task<StyleSpans<Collection<String>>> computeHighlightingAsync() {
@@ -56,9 +58,15 @@ public class TabInput {
     private StyleSpans<Collection<String>> computeHighlighting(String text) {
         SCORE = new Score(text);
         if (SCORE.measureCollectionList.isEmpty())
+        {
             convertButton.setDisable(true);
+            previewButton.setDisable(true);
+        }
         else
+        {
             convertButton.setDisable(false);
+            previewButton.setDisable(false);
+        }
 
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         ACTIVE_ERRORS = this.filterOverlappingRanges(this.createErrorRangeMap(TabInput.SCORE.validate()));

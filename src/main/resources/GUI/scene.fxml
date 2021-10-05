@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 <?import org.fxmisc.flowless.VirtualizedScrollPane?>
 <?import org.fxmisc.richtext.CodeArea?>
-<?import java.lang.String?>
-<BorderPane fx:id="borderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="450.0" minWidth="640.0" prefHeight="700.0" prefWidth="1000.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.FXMLController">
+
+<BorderPane fx:id="borderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="450.0" minWidth="640.0" prefHeight="700.0" prefWidth="1000.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.FXMLController">
     <top>
         <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
             <menus>
@@ -48,7 +57,7 @@
                 </AnchorPane>
                 <AnchorPane layoutX="12.0" layoutY="614.0" prefHeight="52.0" prefWidth="977.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
                     <children>
-                        <Button fx:id="convertButton" disable="true" layoutX="853.0" layoutY="13.0" mnemonicParsing="false" onMouseClicked="#convertButtonHandle" prefHeight="30.0" prefWidth="106.0" text="Convert" AnchorPane.rightAnchor="16.599999999999994">
+                        <Button fx:id="convertButton" disable="true" layoutX="853.0" layoutY="13.0" mnemonicParsing="false" onAction="#convertButtonHandle" prefHeight="30.0" prefWidth="106.0" text="Convert" AnchorPane.rightAnchor="16.599999999999994">
                             <font>
                                 <Font size="14.0" />
                             </font>
@@ -59,14 +68,19 @@
                           <FXCollections fx:factory="observableArrayList">
                               <String fx:value="Auto" />
                               <String fx:value="Guitar" />
-                              <String fx:value="Drum" fx:id="drumItem"/>
+                              <String fx:id="drumItem" fx:value="Drum" />
                               <String fx:value="Bass" />
                           </FXCollections>
                       </items>
                   </ComboBox>
                   <Label layoutX="266.0" layoutY="20.0" text="Go-to Measure" />
                   <TextField fx:id="gotoMeasureField" layoutX="355.0" layoutY="16.0" prefHeight="25.0" prefWidth="55.0" />
-                  <Button layoutX="417.0" layoutY="16.0" mnemonicParsing="false" fx:id="gotoMeasureButton" onAction="#handleGotoMeasure" text="Go" />
+                  <Button fx:id="gotoMeasureButton" layoutX="417.0" layoutY="16.0" mnemonicParsing="false" onAction="#handleGotoMeasure" text="Go" />
+                  <Button fx:id="previewButton" disable="true" layoutX="728.0" layoutY="13.0" mnemonicParsing="false" onAction="#previewButtonHandle" prefHeight="30.0" prefWidth="106.0" text="Preview">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
                     </children>
                 </AnchorPane>
             </children>
