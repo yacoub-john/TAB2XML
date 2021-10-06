@@ -1,6 +1,6 @@
 package converter;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.measure.Measure;
 import converter.measure_line.DrumMeasureLine;
 import custom_exceptions.InvalidScoreTypeException;
@@ -241,7 +241,7 @@ public class Score implements ScoreComponent {
                     4,
                     positions
             );
-            if (TabInput.ERROR_SENSITIVITY>=error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>=error.getPriority())
                 result.add(error);
         }
 

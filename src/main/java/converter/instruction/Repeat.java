@@ -1,6 +1,6 @@
 package converter.instruction;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.MeasureCollection;
 import converter.MeasureGroup;
 import converter.ScoreComponent;
@@ -72,7 +72,7 @@ public class Repeat extends Instruction {
                             this.getPosition()+this.getContent().length()
                     }))
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
         return result;
@@ -89,7 +89,7 @@ public class Repeat extends Instruction {
                             this.getPosition()+this.getContent().length()
                     }))
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
         if (this.repeatCount>MAX_REPEATS) {
@@ -101,7 +101,7 @@ public class Repeat extends Instruction {
                             this.getPosition()+this.getContent().length()
                     }))
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
         return result;

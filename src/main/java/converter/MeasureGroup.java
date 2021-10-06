@@ -1,6 +1,6 @@
 package converter;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.instruction.Instruction;
 import converter.measure.DrumMeasure;
 import converter.measure.GuitarMeasure;
@@ -154,7 +154,7 @@ public class MeasureGroup implements ScoreComponent {
                     2,
                     failPositions
             );
-            if (TabInput.ERROR_SENSITIVITY>=error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>=error.getPriority())
                 result.add(error);
         }
 
@@ -170,7 +170,7 @@ public class MeasureGroup implements ScoreComponent {
                     2,
                     this.getLinePositions()
             );
-            if (TabInput.ERROR_SENSITIVITY>=error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>=error.getPriority())
                 result.add(error);
         }
 

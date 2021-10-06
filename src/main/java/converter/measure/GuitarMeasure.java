@@ -1,6 +1,6 @@
 package converter.measure;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.Score;
 import converter.measure_line.GuitarMeasureLine;
 import converter.measure_line.MeasureLine;
@@ -98,7 +98,7 @@ public class GuitarMeasure extends Measure{
                     1,
                     this.getLinePositions()
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }else if (this.measureLineList.size()<MIN_LINE_COUNT || this.measureLineList.size()>MAX_LINE_COUNT) {
             String rangeMsg;
@@ -112,7 +112,7 @@ public class GuitarMeasure extends Measure{
                     2,
                     this.getLinePositions()
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

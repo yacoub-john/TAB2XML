@@ -43,7 +43,7 @@ public class SplashFXMLController implements Initializable {
                 public void run() {
                     Parent root = null;
                     try {
-                        root = FXMLLoader.load(getClass().getClassLoader().getResource("GUI/scene.fxml"));
+                        root = FXMLLoader.load(getClass().getClassLoader().getResource("GUI/mainView.fxml"));
                     }catch (IOException e) {
                         Logger.getLogger(SplashFXMLController.class.getName()).log(Level.SEVERE, null, e);
                     }

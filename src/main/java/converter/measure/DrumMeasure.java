@@ -1,6 +1,6 @@
 package converter.measure;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.Score;
 import converter.measure_line.DrumMeasureLine;
 import converter.measure_line.MeasureLine;
@@ -60,7 +60,7 @@ public class DrumMeasure extends Measure {
                     1,
                     this.getLinePositions()
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 
@@ -76,7 +76,7 @@ public class DrumMeasure extends Measure {
                     1,
                     this.getLinePositions()
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

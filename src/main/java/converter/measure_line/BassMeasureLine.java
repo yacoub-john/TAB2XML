@@ -1,6 +1,6 @@
 package converter.measure_line;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.Instrument;
 import converter.Score;
 import converter.note.Note;
@@ -33,7 +33,7 @@ public class BassMeasureLine extends GuitarMeasureLine{
                             this.position+this.line.length()
                     }))
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

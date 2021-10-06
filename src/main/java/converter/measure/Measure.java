@@ -1,6 +1,6 @@
 package converter.measure;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.Instrument;
 import converter.Score;
 import converter.ScoreComponent;
@@ -482,7 +482,7 @@ public abstract class Measure implements ScoreComponent {
                     1,
                     this.getLinePositions()
             );
-            if (TabInput.ERROR_SENSITIVITY>=error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>=error.getPriority())
                 result.add(error);
         }
 
@@ -492,7 +492,7 @@ public abstract class Measure implements ScoreComponent {
                     2,
                     this.getLinePositions()
             );
-            if (TabInput.ERROR_SENSITIVITY>=error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>=error.getPriority())
                 result.add(error);
         }
         return result;

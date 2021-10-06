@@ -29,7 +29,7 @@ public class MainApp extends Application {
     }
 
     public static void exit() {
-        TabInput.executor.shutdown();
+        MainView.executor.shutdown();
         NotePlayer.kill();
     }
 

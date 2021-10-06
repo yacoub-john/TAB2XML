@@ -1,6 +1,6 @@
 package converter.measure_line;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.Instrument;
 import converter.Score;
 import converter.note.Note;
@@ -50,7 +50,7 @@ public class DrumMeasureLine extends MeasureLine {
                             this.position+this.line.length()
                     }))
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }else if (this.partID==null || !DrumUtils.isSupportedName(this.name)) {
             ValidationError error = new ValidationError(
@@ -61,7 +61,7 @@ public class DrumMeasureLine extends MeasureLine {
                             this.position+this.line.length()
                     }))
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

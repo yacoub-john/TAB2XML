@@ -1,6 +1,6 @@
 package converter.instruction;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.MeasureCollection;
 import converter.MeasureGroup;
 import converter.ScoreComponent;
@@ -67,7 +67,7 @@ public class TimeSignature extends Instruction {
                             this.getPosition()+this.getContent().length()
                     }))
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
             return result;
         }
@@ -80,7 +80,7 @@ public class TimeSignature extends Instruction {
                             this.getPosition()+this.getContent().length()
                     }))
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }else if (!isValid(this.beatCount, this.beatType)) {
             ValidationError error = new ValidationError(
@@ -91,7 +91,7 @@ public class TimeSignature extends Instruction {
                             this.getPosition()+this.getContent().length()
                     }))
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
         return result;

@@ -1,6 +1,6 @@
 package converter.note;
 
-import GUI.TabInput;
+import GUI.MainView;
 import utility.ValidationError;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class InvalidNote extends Note {
                         this.position+this.origin.length()
                 }))
         );
-        if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+        if (MainView.ERROR_SENSITIVITY>= error.getPriority())
             result.add(error);
         return result;
     }

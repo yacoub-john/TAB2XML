@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TabInput {
+public class MainView {
     protected static TreeMap<Range, ValidationError> ACTIVE_ERRORS = new TreeMap<>();
     protected static int HOVER_DELAY = 30;   //in milliseconds
     public static int ERROR_SENSITIVITY = 4;
@@ -28,7 +28,7 @@ public class TabInput {
     private Button previewButton;
     protected static ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public TabInput(CodeArea TEXT_AREA, Button convertButton, Button previewButton) {
+    public MainView(CodeArea TEXT_AREA, Button convertButton, Button previewButton) {
         this.TEXT_AREA = TEXT_AREA;
         this.convertButton = convertButton;
         this.previewButton = previewButton;
@@ -69,7 +69,7 @@ public class TabInput {
         }
 
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-        ACTIVE_ERRORS = this.filterOverlappingRanges(this.createErrorRangeMap(TabInput.SCORE.validate()));
+        ACTIVE_ERRORS = this.filterOverlappingRanges(this.createErrorRangeMap(MainView.SCORE.validate()));
         if (ACTIVE_ERRORS.isEmpty()) {
             spansBuilder.add(Collections.emptyList(), text.length());
             return spansBuilder.create();

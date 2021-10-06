@@ -1,6 +1,6 @@
 package converter.note;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.Instrument;
 import converter.Score;
 import converter.ScoreComponent;
@@ -66,7 +66,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
                             this.position+this.origin.length()
                     }))
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
         return result;

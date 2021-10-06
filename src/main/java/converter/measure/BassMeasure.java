@@ -1,6 +1,6 @@
 package converter.measure;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.Score;
 import converter.measure_line.BassMeasureLine;
 import converter.measure_line.DrumMeasureLine;
@@ -68,7 +68,7 @@ public class BassMeasure extends GuitarMeasure {
                     1,
                     this.getLinePositions()
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 
@@ -78,7 +78,7 @@ public class BassMeasure extends GuitarMeasure {
                     2,
                     this.getLinePositions()
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
         //------------------the above is copy paste of Measure.validate()------------------------------------------------
@@ -90,7 +90,7 @@ public class BassMeasure extends GuitarMeasure {
                     1,
                     this.getLinePositions()
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 
@@ -106,7 +106,7 @@ public class BassMeasure extends GuitarMeasure {
                     2,
                     this.getLinePositions()
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

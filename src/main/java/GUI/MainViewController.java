@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.*;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -30,8 +31,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-public class FXMLController extends Application {
-    public static CodeArea TEXT_AREA_ALIAS ;
+public class MainViewController extends Application {
+    //public static CodeArea TEXT_AREA_ALIAS ;
 
     Preferences p = Preferences.userNodeForPackage(MainApp.class);
     private static File saveFile;
@@ -41,7 +42,10 @@ public class FXMLController extends Application {
     private static String generatedOutput;
 
 
-    private static Window convertWindow = new Stage();
+    public Window convertWindow = new Stage();
+    
+    private MainView mainView;
+    
     @FXML public CodeArea TEXT_AREA;
 
     @FXML private ComboBox<String> errorSensitivity;
@@ -60,9 +64,62 @@ public class FXMLController extends Application {
     @FXML TextField artistField;
     @FXML TextField fileNameField;
 
-    private static CodeArea savedTextArea;      //this is a variable used to fix the bug where a new window can't be opened when the "convert" button is clicked. It is kind of a hack, not fixing the actual problem
+    //private static CodeArea savedTextArea;      //this is a variable used to fix the bug where a new window can't be opened when the "convert" button is clicked. It is kind of a hack, not fixing the actual problem
 
+    @FXML 
+    public void initialize() {
+        //TEXT_AREA_ALIAS = TEXT_AREA;
+    	mainView = new MainView(TEXT_AREA, convertButton, previewButton);
+        initializeTextArea();
+        initializeSettings();
+    }
 
+    private void initializeTextArea() {
+        //if (TEXT_AREA==null && savedTextArea!=null) {
+          //  this.TEXT_AREA = savedTextArea;
+        //}
+        initializeTextAreaErrorPopups();
+        ContextMenu context = new ContextMenu();
+        MenuItem menuItem = new MenuItem("Play Notes");
+        menuItem.setOnAction(e -> {
+            new NotePlayer(TEXT_AREA);
+        });
+        context.getItems().add(menuItem);
+        TEXT_AREA.setContextMenu(context);
+
+    }
+    
+    private void initializeTextAreaErrorPopups() {
+        TEXT_AREA.setParagraphGraphicFactory(LineNumberFactory.get(TEXT_AREA));
+        //new MainView(TEXT_AREA, convertButton, previewButton).enableHighlighting();
+        mainView.enableHighlighting();
+
+        //savedTextArea = TEXT_AREA;
+
+        Popup popup = new Popup();
+        Label popupMsg = new Label();
+        popupMsg.setStyle(
+                "-fx-background-color: black;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-padding: 5;");
+        popup.getContent().add(popupMsg);
+
+        TEXT_AREA.setMouseOverTextDelay(Duration.ofMillis(MainView.HOVER_DELAY));
+        TEXT_AREA.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
+            if (MainView.ACTIVE_ERRORS.isEmpty()) return;
+            int chIdx = e.getCharacterIndex();
+            String message = MainView.getMessageOfCharAt(chIdx);
+            if (message.isEmpty()) return;
+            Point2D pos = e.getScreenPosition();
+            popupMsg.setText(message);
+            popup.show(TEXT_AREA, pos.getX(), pos.getY() + 10);
+        });
+        TEXT_AREA.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
+            popup.hide();
+        });
+    }
+    
+    
     /* Settings Window */
     @FXML private void handleErrorSensitivity() {
             p.put("errorSensitivity", errorSensitivity.getValue().toString() );
@@ -149,7 +206,8 @@ public class FXMLController extends Application {
 
         saveFile = openedFile;
         isEditingSavedFile = true;
-        new TabInput(TEXT_AREA, convertButton, previewButton).computeHighlightingAsync();
+        //new MainView(TEXT_AREA, convertButton, previewButton).computeHighlightingAsync();
+        mainView.computeHighlightingAsync();
 
     }
 
@@ -237,7 +295,19 @@ public class FXMLController extends Application {
 
     private Window openNewWindow(String fxmlPath, String windowName) {
         try {
-            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxmlPath));
+        	FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(fxmlPath));
+            Parent root = loader.load();
+            // Get the Controller from the FXMLLoader
+            ConvertWindowController controller = loader.getController();
+            // Set data in the controller
+            controller.setMainViewController(this);
+            //controller.setLastName("uchiha");
+            //Scene scene = new Scene(flowPane, 200, 200);
+            //primaryStage.setScene(scene);
+            //primaryStage.show();
+            
+            
+            //Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxmlPath));
 
             Stage stage = new Stage();
             stage.setTitle(windowName);
@@ -317,7 +387,7 @@ public class FXMLController extends Application {
     @FXML
     private void cancelConvertButtonHandle()  {
         convertWindow.hide();
-        new TabInput(TEXT_AREA,convertButton, previewButton).enableHighlighting();
+        //new MainView(TEXT_AREA,convertButton, previewButton).enableHighlighting();
     }
 
 
@@ -338,24 +408,21 @@ public class FXMLController extends Application {
     }
 
 
-    @FXML 
-    public void initialize() {
-        TEXT_AREA_ALIAS = TEXT_AREA;
-        initializeTextArea();
-        initializeSettings();
-    }
+ 
 
     @FXML
     private void handleScoreType() {
         InstrumentSetting = cmbScoreType.getValue().toString().strip();
         Score.INSTRUMENT_MODE = Parser.getInstrumentEnum(InstrumentSetting);
-        new TabInput(TEXT_AREA, convertButton, previewButton).refresh();
+        //new MainView(TEXT_AREA, convertButton, previewButton).refresh();
+        mainView.refresh();
     }
 
     @FXML
     private void handleGotoMeasure() {
         int measureNumber = Integer.parseInt( gotoMeasureField.getText() );
-        if (!new TabInput(TEXT_AREA, convertButton, previewButton).goToMeasure(measureNumber)) {
+        if (!mainView.goToMeasure(measureNumber)) {
+            //if (!new MainView(TEXT_AREA, convertButton, previewButton).goToMeasure(measureNumber)) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Measure "+measureNumber+" could not be found.");
             alert.setHeaderText(null);
@@ -364,61 +431,23 @@ public class FXMLController extends Application {
 
     }
 
-    private void initializeTextArea() {
-        if (TEXT_AREA==null && savedTextArea!=null) {
-            this.TEXT_AREA = savedTextArea;
-        }
-        initializeTextAreaErrorPopups();
-        ContextMenu context = new ContextMenu();
-        MenuItem menuItem = new MenuItem("Play Notes");
-        menuItem.setOnAction(e -> {
-            new NotePlayer(TEXT_AREA);
-        });
-        context.getItems().add(menuItem);
-        TEXT_AREA.setContextMenu(context);
 
-    }
 
-    private void initializeTextAreaErrorPopups() {
-        TEXT_AREA.setParagraphGraphicFactory(LineNumberFactory.get(TEXT_AREA));
-        new TabInput(TEXT_AREA, convertButton, previewButton).enableHighlighting();
 
-        savedTextArea = TEXT_AREA;
-
-        Popup popup = new Popup();
-        Label popupMsg = new Label();
-        popupMsg.setStyle(
-                "-fx-background-color: black;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-padding: 5;");
-        popup.getContent().add(popupMsg);
-
-        TEXT_AREA.setMouseOverTextDelay(Duration.ofMillis(TabInput.HOVER_DELAY));
-        TEXT_AREA.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
-            if (TabInput.ACTIVE_ERRORS.isEmpty()) return;
-            int chIdx = e.getCharacterIndex();
-            String message = TabInput.getMessageOfCharAt(chIdx);
-            if (message.isEmpty()) return;
-            Point2D pos = e.getScreenPosition();
-            popupMsg.setText(message);
-            popup.show(TEXT_AREA, pos.getX(), pos.getY() + 10);
-        });
-        TEXT_AREA.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
-            popup.hide();
-        });
-    }
 
 
     private void changeErrorSensitivity(String prefValue) {
         switch (prefValue) {
-            case "Level 1 - Minimal Error Checking" -> TabInput.ERROR_SENSITIVITY = 1;
-            case "Level 3 - Advanced Error Checking" -> TabInput.ERROR_SENSITIVITY = 3;
-            case "Level 4 - Detailed Error Checking" -> TabInput.ERROR_SENSITIVITY = 4;
-            default -> TabInput.ERROR_SENSITIVITY = 2;
+            case "Level 1 - Minimal Error Checking" -> MainView.ERROR_SENSITIVITY = 1;
+            case "Level 3 - Advanced Error Checking" -> MainView.ERROR_SENSITIVITY = 3;
+            case "Level 4 - Detailed Error Checking" -> MainView.ERROR_SENSITIVITY = 4;
+            default -> MainView.ERROR_SENSITIVITY = 2;
         }
 
-        new TabInput(TEXT_AREA, convertButton, previewButton).refresh();
+        //new MainView(TEXT_AREA, convertButton, previewButton).refresh();
+        mainView.refresh();
     }
+    
     private void initializeSettings() {
         if (errorSensitivity != null && outputFolderField != null) {
             Preferences p;

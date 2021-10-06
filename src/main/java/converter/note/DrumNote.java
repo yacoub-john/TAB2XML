@@ -1,6 +1,6 @@
 package converter.note;
 
-import GUI.TabInput;
+import GUI.MainView;
 import converter.Instrument;
 import models.measure.note.Chord;
 import models.measure.note.Unpitched;
@@ -95,7 +95,7 @@ public class DrumNote extends Note{
                             endIdx
                     }))
             );
-            if (TabInput.ERROR_SENSITIVITY>= error.getPriority())
+            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 
