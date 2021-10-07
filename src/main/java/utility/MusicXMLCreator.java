@@ -10,7 +10,7 @@ import custom_exceptions.TXMLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class Parser {
+public class MusicXMLCreator {
     public static Score SCORE;
 
     public static void createScore(String rootString) {
@@ -40,7 +40,7 @@ public class Parser {
                 + xmlString;
         return xmlString;
     }
-    public static String parse() {
+    public static String generateMusicXML() {
         return parse(SCORE);
     }
 
@@ -55,20 +55,14 @@ public class Parser {
             return Instrument.AUTO;
     }
 
-    public int getMeasureAt(int index) {
-        return 1;
-    }
+//    public static void setTitle(String title) {
+//        if (SCORE==null || title.isBlank()) return;
+//        SCORE.title = title;
+//    }
+//    
+//    public static void setArtist(String artist) {
+//        if (SCORE==null || artist.isBlank()) return;
+//        SCORE.artist = artist;
+//    }
 
-    public static void setTitle(String title) {
-        if (SCORE==null || title.isBlank()) return;
-        SCORE.title = title;
-    }
-    public static void setArtist(String artist) {
-        if (SCORE==null || artist.isBlank()) return;
-        SCORE.artist = artist;
-    }
-
-    public boolean setMeasureTimeSignature(int measureNum) {
-        return true;
-    }
 }

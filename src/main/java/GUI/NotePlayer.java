@@ -18,7 +18,7 @@ import org.jfugue.pattern.Pattern;
 import org.jfugue.player.ManagedPlayer;
 import org.jfugue.player.Player;
 import org.staccato.StaccatoParserListener;
-import utility.Parser;
+import utility.MusicXMLCreator;
 //import org.jfugue.integration.MusicXmlParser;
 //import org.jfugue.pattern.Pattern;
 //import org.jfugue.player.ManagedPlayer;
@@ -105,7 +105,7 @@ public class NotePlayer {
         MusicXmlParser parser = new MusicXmlParser();
         StaccatoParserListener listener = new StaccatoParserListener();
         parser.addParserListener(listener);
-        parser.parse(Parser.parse(score));
+        parser.parse(MusicXMLCreator.parse(score));
         final Pattern musicXMLPattern = listener.getPattern().setInstrument("Guitar");
         PLAYER = new ManagedPlayer();
         PLAYER.start(new Player().getSequence(musicXMLPattern));

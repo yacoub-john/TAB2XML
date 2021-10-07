@@ -19,10 +19,10 @@ import java.util.concurrent.Executors;
 
 public class MainView {
     protected static TreeMap<Range, ValidationError> ACTIVE_ERRORS = new TreeMap<>();
-    protected static int HOVER_DELAY = 30;   //in milliseconds
+    
     public static int ERROR_SENSITIVITY = 4;
-    protected static boolean AUTO_HIGHLIGHT;
-    protected static Score SCORE = new Score("");
+    //protected static boolean AUTO_HIGHLIGHT;
+    //protected static Score SCORE = new Score("");
     private CodeArea TEXT_AREA;
     private Button convertButton;
     private Button previewButton;
@@ -57,7 +57,7 @@ public class MainView {
     }
 
     private StyleSpans<Collection<String>> computeHighlighting(String text) {
-        SCORE = new Score(text);
+        Score SCORE = new Score(text);
         if (SCORE.measureCollectionList.isEmpty())
         {
             convertButton.setDisable(true);
@@ -70,7 +70,7 @@ public class MainView {
         }
 
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-        ACTIVE_ERRORS = this.filterOverlappingRanges(this.createErrorRangeMap(MainView.SCORE.validate()));
+        ACTIVE_ERRORS = this.filterOverlappingRanges(this.createErrorRangeMap(SCORE.validate()));
         if (ACTIVE_ERRORS.isEmpty()) {
             spansBuilder.add(Collections.emptyList(), text.length());
             return spansBuilder.create();

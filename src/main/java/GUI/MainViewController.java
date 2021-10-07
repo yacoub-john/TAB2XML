@@ -43,10 +43,11 @@ import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import utility.Parser;
+import utility.MusicXMLCreator;
 
 public class MainViewController extends Application {
     //public static CodeArea TEXT_AREA_ALIAS ;
+	private int HOVER_DELAY = 30; //in milliseconds
 
     Preferences p = Preferences.userNodeForPackage(MainApp.class);
     public File saveFile;
@@ -102,7 +103,7 @@ public class MainViewController extends Application {
                         "-fx-padding: 5;");
         popup.getContent().add(popupMsg);
 
-        TEXT_AREA.setMouseOverTextDelay(Duration.ofMillis(MainView.HOVER_DELAY));
+        TEXT_AREA.setMouseOverTextDelay(Duration.ofMillis(HOVER_DELAY));
         TEXT_AREA.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
             if (MainView.ACTIVE_ERRORS.isEmpty()) return;
             int chIdx = e.getCharacterIndex();
@@ -401,7 +402,7 @@ public class MainViewController extends Application {
     @FXML
     private void handleScoreType() {
         InstrumentSetting = cmbScoreType.getValue().toString().strip();
-        Score.INSTRUMENT_MODE = Parser.getInstrumentEnum(InstrumentSetting);
+        Score.INSTRUMENT_MODE = MusicXMLCreator.getInstrumentEnum(InstrumentSetting);
         mainView.refresh();
     }
 

@@ -10,7 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import utility.Parser;
+import utility.MusicXMLCreator;
 
 public class ConvertWindowController extends Application {
 
@@ -27,12 +27,12 @@ public class ConvertWindowController extends Application {
     
     @FXML
     private void saveButtonClicked() {
-        Parser.createScore(mvc.TEXT_AREA.getText());
-        if (!titleField.getText().isBlank())
-            Parser.setTitle(titleField.getText());
-        if (!artistField.getText().isBlank())
-            Parser.setArtist(artistField.getText());
-        String generatedOutput = Parser.parse();
+        MusicXMLCreator.createScore(mvc.TEXT_AREA.getText());
+//        if (!titleField.getText().isBlank())
+//            MusicXMLCreator.setTitle(titleField.getText());
+//        if (!artistField.getText().isBlank())
+//            MusicXMLCreator.setArtist(artistField.getText());
+        String generatedOutput = MusicXMLCreator.generateMusicXML();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save As");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MusicXML files", "*.xml", "*.mxl", "*.musicxml");

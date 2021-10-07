@@ -4,7 +4,7 @@ import converter.measure.Measure;
 import converter.note.Note;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import utility.Parser;
+import utility.MusicXMLCreator;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -92,7 +92,7 @@ public class ScoreTest {
             List<Note> noteList = measure.getSortedNoteList();
             assertEquals(3, noteList.size(), "three notes were expected in the following measure, but found " + noteList.size() + "."
                     + "\nMeasure:\n" + inlineRepeatMeasure);
-            Matcher matcher = Pattern.compile("<words[^>]*>[^<0-9]*" + expectedRepeatCount + "[^<0-9]*</words>").matcher(Parser.parse(score));
+            Matcher matcher = Pattern.compile("<words[^>]*>[^<0-9]*" + expectedRepeatCount + "[^<0-9]*</words>").matcher(MusicXMLCreator.parse(score));
             assertTrue(matcher.find(), "repeat count not properly detected and applied");
         }
     }
@@ -173,7 +173,7 @@ public class ScoreTest {
                 assertTrue(measure.isRepeatStart());
                 List<Note> noteList = measure.getSortedNoteList();
                 assertEquals(3, noteList.size(), "three notes were expected in the following measure, but found "+noteList.size()+".");
-                Matcher matcher = Pattern.compile("<words[^>]*>[^<0-9]*"+5+"[^<0-9]*</words>").matcher(Parser.parse(score));
+                Matcher matcher = Pattern.compile("<words[^>]*>[^<0-9]*"+5+"[^<0-9]*</words>").matcher(MusicXMLCreator.parse(score));
                 assertTrue(matcher.find(), "repeat count not properly detected and applied");
             }
         }

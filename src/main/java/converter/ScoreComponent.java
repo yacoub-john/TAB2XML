@@ -1,5 +1,8 @@
 package converter;
 
+import utility.ValidationError;
+import java.util.List;
+
 public interface ScoreComponent {
-    // List<HashMap<String, String>> validate()
+    List<ValidationError> validate();
 }
