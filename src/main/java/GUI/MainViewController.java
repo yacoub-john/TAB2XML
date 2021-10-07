@@ -1,26 +1,8 @@
 package GUI;
 
-import converter.Score;
-import javafx.application.Application;
-import javafx.application.HostServices;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Point2D;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.stage.*;
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.event.MouseOverTextEvent;
-import utility.Parser;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -31,18 +13,47 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.event.MouseOverTextEvent;
+
+import converter.Score;
+import javafx.application.Application;
+import javafx.application.HostServices;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.IndexRange;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+import utility.Parser;
+
 public class MainViewController extends Application {
     //public static CodeArea TEXT_AREA_ALIAS ;
 
     Preferences p = Preferences.userNodeForPackage(MainApp.class);
-    private static File saveFile;
+    public File saveFile;
     private static boolean isEditingSavedFile;
     private String InstrumentSetting = "auto";
 
-    private static String generatedOutput;
-
-
-    public Window convertWindow = new Stage();
+    public Window convertWindow; // = new Stage();
     
     private MainView mainView;
     
@@ -60,24 +71,15 @@ public class MainViewController extends Application {
     @FXML private Button convertButton;
     @FXML private Button previewButton;
     @FXML private Button goToline;
-    @FXML TextField titleField;
-    @FXML TextField artistField;
-    @FXML TextField fileNameField;
-
-    //private static CodeArea savedTextArea;      //this is a variable used to fix the bug where a new window can't be opened when the "convert" button is clicked. It is kind of a hack, not fixing the actual problem
 
     @FXML 
     public void initialize() {
-        //TEXT_AREA_ALIAS = TEXT_AREA;
-    	mainView = new MainView(TEXT_AREA, convertButton, previewButton);
+        mainView = new MainView(TEXT_AREA, convertButton, previewButton);
         initializeTextArea();
         initializeSettings();
     }
 
     private void initializeTextArea() {
-        //if (TEXT_AREA==null && savedTextArea!=null) {
-          //  this.TEXT_AREA = savedTextArea;
-        //}
         initializeTextAreaErrorPopups();
         ContextMenu context = new ContextMenu();
         MenuItem menuItem = new MenuItem("Play Notes");
@@ -86,15 +88,11 @@ public class MainViewController extends Application {
         });
         context.getItems().add(menuItem);
         TEXT_AREA.setContextMenu(context);
-
     }
     
     private void initializeTextAreaErrorPopups() {
         TEXT_AREA.setParagraphGraphicFactory(LineNumberFactory.get(TEXT_AREA));
-        //new MainView(TEXT_AREA, convertButton, previewButton).enableHighlighting();
         mainView.enableHighlighting();
-
-        //savedTextArea = TEXT_AREA;
 
         Popup popup = new Popup();
         Label popupMsg = new Label();
@@ -206,8 +204,7 @@ public class MainViewController extends Application {
 
         saveFile = openedFile;
         isEditingSavedFile = true;
-        //new MainView(TEXT_AREA, convertButton, previewButton).computeHighlightingAsync();
-        mainView.computeHighlightingAsync();
+         mainView.computeHighlightingAsync();
 
     }
 
@@ -295,20 +292,11 @@ public class MainViewController extends Application {
 
     private Window openNewWindow(String fxmlPath, String windowName) {
         try {
+        	//Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxmlPath));
         	FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(fxmlPath));
             Parent root = loader.load();
-            // Get the Controller from the FXMLLoader
             ConvertWindowController controller = loader.getController();
-            // Set data in the controller
             controller.setMainViewController(this);
-            //controller.setLastName("uchiha");
-            //Scene scene = new Scene(flowPane, 200, 200);
-            //primaryStage.setScene(scene);
-            //primaryStage.show();
-            
-            
-            //Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxmlPath));
-
             Stage stage = new Stage();
             stage.setTitle(windowName);
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -335,72 +323,72 @@ public class MainViewController extends Application {
         System.out.println("Preview Button Clicked!");
     }
     
-    @FXML
-    private void saveConvertedButtonHandle() {
-        Parser.createScore(TEXT_AREA.getText());
-        if (!titleField.getText().isBlank())
-            Parser.setTitle(titleField.getText());
-        if (!artistField.getText().isBlank())
-            Parser.setArtist(artistField.getText());
-        generatedOutput = Parser.parse();
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save As");
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MusicXML files", "*.xml", "*.mxl", "*.musicxml");
-        fileChooser.getExtensionFilters().add(extFilter);
+//    @FXML
+//    private void saveConvertedButtonHandle() {
+//        Parser.createScore(TEXT_AREA.getText());
+//        if (!titleField.getText().isBlank())
+//            Parser.setTitle(titleField.getText());
+//        if (!artistField.getText().isBlank())
+//            Parser.setArtist(artistField.getText());
+//        generatedOutput = Parser.parse();
+//        FileChooser fileChooser = new FileChooser();
+//        fileChooser.setTitle("Save As");
+//        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MusicXML files", "*.xml", "*.mxl", "*.musicxml");
+//        fileChooser.getExtensionFilters().add(extFilter);
+//
+//        File initialDir = null;
+//        String initialName = null;
+//        if (!fileNameField.getText().isBlank() && fileNameField.getText().length()<50)
+//            initialName = fileNameField.getText().strip();
+//
+//        if (saveFile!=null) {
+//            if (initialName==null) {
+//                String name = saveFile.getName();
+//                if(name.contains("."))
+//                    name = name.substring(0, name.lastIndexOf('.'));
+//                initialName = name;
+//            }
+//            File parentDir = new File(saveFile.getParent());
+//            if (parentDir.exists())
+//                initialDir = parentDir;
+//        }
+//        if (initialName!=null)
+//            fileChooser.setInitialFileName(initialName);
+//
+//        if (initialDir==null || !(initialDir.exists() && initialDir.canRead()))
+//            initialDir = new File(System.getProperty("user.home"));
+//        if (!(initialDir.exists() && initialDir.canRead()))
+//            initialDir = new File("c:/");
+//
+//        fileChooser.setInitialDirectory(initialDir);
+//
+//
+//        File file = fileChooser.showSaveDialog(convertWindow);
+//
+//        if (file != null) {
+//            saveToXMLFile(generatedOutput, file);
+//            saveFile = file;
+//            cancelConvertButtonHandle();
+//        }
+//    }
+//
+//    @FXML
+//    private void cancelConvertButtonHandle()  {
+//        convertWindow.hide();
+//        //new MainView(TEXT_AREA,convertButton, previewButton).enableHighlighting();
+//    }
 
-        File initialDir = null;
-        String initialName = null;
-        if (!fileNameField.getText().isBlank() && fileNameField.getText().length()<50)
-            initialName = fileNameField.getText().strip();
 
-        if (saveFile!=null) {
-            if (initialName==null) {
-                String name = saveFile.getName();
-                if(name.contains("."))
-                    name = name.substring(0, name.lastIndexOf('.'));
-                initialName = name;
-            }
-            File parentDir = new File(saveFile.getParent());
-            if (parentDir.exists())
-                initialDir = parentDir;
-        }
-        if (initialName!=null)
-            fileChooser.setInitialFileName(initialName);
-
-        if (initialDir==null || !(initialDir.exists() && initialDir.canRead()))
-            initialDir = new File(System.getProperty("user.home"));
-        if (!(initialDir.exists() && initialDir.canRead()))
-            initialDir = new File("c:/");
-
-        fileChooser.setInitialDirectory(initialDir);
-
-
-        File file = fileChooser.showSaveDialog(convertWindow);
-
-        if (file != null) {
-            saveToXMLFile(generatedOutput, file);
-            saveFile = file;
-            cancelConvertButtonHandle();
-        }
-    }
-
-    @FXML
-    private void cancelConvertButtonHandle()  {
-        convertWindow.hide();
-        //new MainView(TEXT_AREA,convertButton, previewButton).enableHighlighting();
-    }
-
-
-    private void saveToXMLFile(String content, File file) {
-        try {
-            PrintWriter writer;
-            writer = new PrintWriter(file);
-            writer.println(content);
-            writer.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
+//    private void saveToXMLFile(String content, File file) {
+//        try {
+//            PrintWriter writer;
+//            writer = new PrintWriter(file);
+//            writer.println(content);
+//            writer.close();
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+//    }
 
     @FXML
     private void setWrapProperty() {
@@ -414,7 +402,6 @@ public class MainViewController extends Application {
     private void handleScoreType() {
         InstrumentSetting = cmbScoreType.getValue().toString().strip();
         Score.INSTRUMENT_MODE = Parser.getInstrumentEnum(InstrumentSetting);
-        //new MainView(TEXT_AREA, convertButton, previewButton).refresh();
         mainView.refresh();
     }
 
@@ -422,7 +409,6 @@ public class MainViewController extends Application {
     private void handleGotoMeasure() {
         int measureNumber = Integer.parseInt( gotoMeasureField.getText() );
         if (!mainView.goToMeasure(measureNumber)) {
-            //if (!new MainView(TEXT_AREA, convertButton, previewButton).goToMeasure(measureNumber)) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Measure "+measureNumber+" could not be found.");
             alert.setHeaderText(null);
@@ -430,9 +416,6 @@ public class MainViewController extends Application {
         }
 
     }
-
-
-
 
 
 
@@ -444,7 +427,6 @@ public class MainViewController extends Application {
             default -> MainView.ERROR_SENSITIVITY = 2;
         }
 
-        //new MainView(TEXT_AREA, convertButton, previewButton).refresh();
         mainView.refresh();
     }
     

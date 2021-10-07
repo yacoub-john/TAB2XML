@@ -28,7 +28,7 @@ import javafx.fxml.FXML;
 public class GuiTest  extends ApplicationTest {
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("GUI/scene.fxml"));
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("GUI/mainView.fxml"));
         Scene scene = new Scene(root);
 
 
@@ -50,24 +50,24 @@ public class GuiTest  extends ApplicationTest {
     @Test
     public void invalidInput(FxRobot robot) {
         robot.clickOn("#TEXT_AREA");
-        robot.write("this text is not  a valid measure", 0);
+        robot.write("this text is not a valid measure", 0);
         FxAssert.verifyThat("#convertButton", NodeMatchers.isDisabled());
     }
 
-    @Test
-    public void testGoTo(FxRobot robot) {
-        robot.clickOn("#TEXT_AREA");
-        robot.write("e|-------5-----2-------0--|----------------------------|-------------------7-----|\n" +
-                "B|--1-------5-------2-----|--3----2--0--------------0--|--0-------------------7--|\n" +
-                "G|------------------------|-------------4-3-4-3-4-3----|-------------------------|\n" +
-                "D|-------------0----------|-------2-----4--------------|--------------1----------|\n" +
-                "A|--0----4----------1-----|--2-------------------------|--2--1--2--4-------------|\n" +
-                "E|------------------------|---------------------2------|-------------------7-----|", 0);
-        robot.clickOn("#gotoMeasureField");
-        robot.write("1");
-        robot.clickOn("#gotoMeasureButton");
-        //assertEquals(2, MainViewController.TEXT_AREA_ALIAS.getCaretPosition());
-    }
+//    @Test
+//    public void testGoTo(FxRobot robot) {
+//        robot.clickOn("#TEXT_AREA");
+//        robot.write("e|-------5-----2-------0--|----------------------------|-------------------7-----|\n" +
+//                "B|--1-------5-------2-----|--3----2--0--------------0--|--0-------------------7--|\n" +
+//                "G|------------------------|-------------4-3-4-3-4-3----|-------------------------|\n" +
+//                "D|-------------0----------|-------2-----4--------------|--------------1----------|\n" +
+//                "A|--0----4----------1-----|--2-------------------------|--2--1--2--4-------------|\n" +
+//                "E|------------------------|---------------------2------|-------------------7-----|", 0);
+//        robot.clickOn("#gotoMeasureField");
+//        robot.write("1");
+//        robot.clickOn("#gotoMeasureButton");
+//        //assertEquals(2, MainViewController.TEXT_AREA_ALIAS.getCaretPosition());
+//    }
 
     @Test
     public void testWrapText(FxRobot robot) {

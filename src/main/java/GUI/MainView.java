@@ -47,6 +47,7 @@ public class MainView {
         task.isDone();
         return task;
     }
+    
     public void refresh() {
         TEXT_AREA.replaceText(new IndexRange(0, TEXT_AREA.getText().length()), TEXT_AREA.getText()+" ");
     }
@@ -153,7 +154,8 @@ public class MainView {
     }
 
     public void enableHighlighting() {
-        Subscription cleanupWhenDone = TEXT_AREA.multiPlainChanges()
+        //Subscription cleanupWhenDone = 
+    	TEXT_AREA.multiPlainChanges()
                 .successionEnds(Duration.ofMillis(350))
                 .supplyTask(this::computeHighlightingAsync)
                 .awaitLatest(TEXT_AREA.multiPlainChanges())
@@ -166,11 +168,6 @@ public class MainView {
                     }
                 })
                 .subscribe(this::applyHighlighting);
-    }
-
-    public void disableHighlighting() {
-        // TODO implement method stub
-        return;
     }
 
     public boolean goToMeasure(int measureCount) {
