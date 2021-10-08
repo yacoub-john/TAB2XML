@@ -46,22 +46,20 @@ import javafx.stage.Window;
 import utility.MusicXMLCreator;
 
 public class MainViewController extends Application {
-	//public static CodeArea TEXT_AREA_ALIAS ;
-	private int HOVER_DELAY = 30; //in milliseconds
-	private Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
-
+	
+	private int HOVER_DELAY = 30;
+	//private Preferences prefs;
 	public File saveFile;
 	private static boolean isEditingSavedFile;
 	private String InstrumentSetting = "auto";
 
-	public Window convertWindow; // = new Stage();
-	public Window settingsWindow; // = new Stage();
+	public Window convertWindow;
+	public Window settingsWindow;
 
 	public MainView mainView;
 
 	@FXML public CodeArea TEXT_AREA;
 
-	@FXML public TextField outputFolderField;
 	@FXML private TextField gotoMeasureField;
 	@FXML private CheckBox wrapCheckbox;
 	@FXML private BorderPane borderPane;
@@ -71,21 +69,26 @@ public class MainViewController extends Application {
 	@FXML private ComboBox<String> cmbScoreType;
 
 
-	//    public MainViewController() {
-	//    	prefs = Preferences.userNodeForPackage(MainApp.class);
-	//    	prefs.put("errorSensitivity", "Level 2 - Standard Error Checking");
-	//    	prefs.put("tsNumerator", "4");
-	//    	prefs.put("tsDenominator", "4");
-	//    }
+	public MainViewController() {
+		// These are default settings.
+		// Should be get from persistent storage, not put, and then update Globals
+		// Not being used yet. Sample code below
+//		prefs = Preferences.userRoot();
+//		String outputFolder = prefs.get("outputFolder", new File("src").getAbsolutePath());
+//		outputFolderField.setText(outputFolder);
+//
+//		String tsNumerator = prefs.get("tsNumerator", "4");
+//		String tsDenominator = prefs.get("tsDenominator", "4");
+
+
+		//prefs.put("errorSensitivity", "Level 2 - Standard Error Checking");
+		//prefs.put("tsNumerator", "4");
+		//prefs.put("tsDenominator", "4");
+	}
 
 	@FXML 
 	public void initialize() {
 		mainView = new MainView(TEXT_AREA, convertButton, previewButton);
-		initializeTextArea();
-		initializeSettings();
-	}
-
-	private void initializeTextArea() {
 		initializeTextAreaErrorPopups();
 		ContextMenu context = new ContextMenu();
 		MenuItem menuItem = new MenuItem("Play Notes");
@@ -276,9 +279,6 @@ public class MainViewController extends Application {
 	}
 
 	private Window openNewWindow(Parent root, String windowName) {
-
-		//Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxmlPath));
-
 		Stage stage = new Stage();
 		stage.setTitle(windowName);
 		stage.initModality(Modality.APPLICATION_MODAL);
@@ -310,15 +310,10 @@ public class MainViewController extends Application {
 		System.out.println("Preview Button Clicked!");
 	}
 
-
-
 	@FXML
 	private void setWrapProperty() {
 		TEXT_AREA.setWrapText(this.wrapCheckbox.isSelected());
 	}
-
-
-
 
 	@FXML
 	private void handleScoreType() {
@@ -332,38 +327,12 @@ public class MainViewController extends Application {
 		int measureNumber = Integer.parseInt( gotoMeasureField.getText() );
 		if (!mainView.goToMeasure(measureNumber)) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setContentText("Measure "+measureNumber+" could not be found.");
+			alert.setContentText("Measure " + measureNumber + " could not be found.");
 			alert.setHeaderText(null);
 			alert.show();
 		}
 
 	}
-
-
-
-
-
-	private void initializeSettings() {
-		if (outputFolderField != null) {
-			//if (errorSensitivity != null && outputFolderField != null) {
-			//Preferences p;
-			//p = Preferences.userNodeForPackage(MainApp.class);
-			String level = prefs.get("errorSensitivity", "Level 2 - Standard Error Checking");
-			//errorSensitivity.setValue(level);
-			//changeErrorSensitivity(errorSensitivity.getValue().toString());
-			String outputFolder = prefs.get("outputFolder", new File("src").getAbsolutePath());
-			outputFolderField.setText(outputFolder);
-
-			String tsNumerator = prefs.get("tsNumerator", "4");
-			String tsDenominator = prefs.get("tsDenominator", "4");
-
-			//cmbNumerator.setValue(tsNumerator);
-			//cmbDenominator.setValue(tsDenominator);
-			Score.DEFAULT_BEAT_COUNT = Integer.parseInt(tsNumerator);
-			Score.DEFAULT_BEAT_TYPE = Integer.parseInt(tsDenominator);
-		}
-	}
-
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {

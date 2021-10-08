@@ -1,11 +1,11 @@
 package converter;
 
-import GUI.MainView;
 import converter.instruction.Instruction;
 import converter.measure.DrumMeasure;
 import converter.measure.GuitarMeasure;
 import converter.measure.Measure;
 import converter.measure_line.MeasureLine;
+import utility.Settings;
 import utility.Patterns;
 import utility.Range;
 import utility.ValidationError;
@@ -133,6 +133,7 @@ public class MeasureGroup implements ScoreComponent {
      */
     public List<ValidationError> validate() {
         List<ValidationError> result = new ArrayList<>();
+        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         //--------------Validating yourself--------------------------
         //making sure all measures in this measure group have the same number of lines
@@ -154,7 +155,7 @@ public class MeasureGroup implements ScoreComponent {
                     2,
                     failPositions
             );
-            if (MainView.ERROR_SENSITIVITY>=error.getPriority())
+            if (ERROR_SENSITIVITY>=error.getPriority())
                 result.add(error);
         }
 
@@ -170,7 +171,7 @@ public class MeasureGroup implements ScoreComponent {
                     2,
                     this.getLinePositions()
             );
-            if (MainView.ERROR_SENSITIVITY>=error.getPriority())
+            if (ERROR_SENSITIVITY>=error.getPriority())
                 result.add(error);
         }
 

@@ -1,6 +1,5 @@
 package converter;
 
-import GUI.MainView;
 import converter.measure.Measure;
 import converter.measure_line.DrumMeasureLine;
 import custom_exceptions.InvalidScoreTypeException;
@@ -14,6 +13,7 @@ import models.part_list.PartList;
 import models.part_list.ScoreInstrument;
 import models.part_list.ScorePart;
 import utility.DrumUtils;
+import utility.Settings;
 import utility.ValidationError;
 
 import java.util.ArrayList;
@@ -34,8 +34,8 @@ public class Score implements ScoreComponent {
     public Map<Integer, String> rootStringFragments;
     public static Instrument INSTRUMENT_MODE = Instrument.AUTO;
     public String instrumentType;
-    public static int DEFAULT_BEAT_TYPE = 4;
-    public static int DEFAULT_BEAT_COUNT = 4;
+    public int DEFAULT_BEAT_TYPE = Settings.getInstance().tsDen;
+    public int DEFAULT_BEAT_COUNT = Settings.getInstance().tsNum;
     public static int GLOBAL_DIVISIONS = 1;
     public static int CRITICAL_ERROR_CUTOFF = 1;
     public String title;
@@ -65,12 +65,6 @@ public class Score implements ScoreComponent {
         }else {
             this.instrumentType = INSTRUMENT_MODE.name();
         }
-    }
-
-    public Score(String rootString, String title, String artist) {
-        this(rootString);
-        this.title = title;
-        this.artist = artist;
     }
 
     public static void setInstrumentMode(Instrument InstrumentMode) {
@@ -241,7 +235,8 @@ public class Score implements ScoreComponent {
                     4,
                     positions
             );
-            if (MainView.ERROR_SENSITIVITY>=error.getPriority())
+            int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
+            if (ERROR_SENSITIVITY>=error.getPriority())
                 result.add(error);
         }
 

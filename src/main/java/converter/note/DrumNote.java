@@ -5,6 +5,7 @@ import converter.Instrument;
 import models.measure.note.Chord;
 import models.measure.note.Unpitched;
 import utility.DrumUtils;
+import utility.Settings;
 import utility.ValidationError;
 
 import java.util.ArrayList;
@@ -67,6 +68,7 @@ public class DrumNote extends Note{
 
     public List<ValidationError> validate() {
         List<ValidationError> result = new ArrayList<>(super.validate());
+        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         for (NoteFactory.NoteDecor noteDecor : this.noteDecorMap.keySet()) {
             String resp = noteDecorMap.get(noteDecor);
@@ -95,7 +97,7 @@ public class DrumNote extends Note{
                             endIdx
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

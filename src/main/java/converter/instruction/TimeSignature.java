@@ -5,6 +5,7 @@ import converter.MeasureCollection;
 import converter.MeasureGroup;
 import converter.ScoreComponent;
 import converter.measure.Measure;
+import utility.Settings;
 import utility.Range;
 import utility.ValidationError;
 
@@ -58,6 +59,7 @@ public class TimeSignature extends Instruction {
 
     private List<ValidationError> validateSelf() {
         List<ValidationError> result = new ArrayList<>();
+        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
         if (!(this.getRelativeRange() instanceof Top)) {
             ValidationError error = new ValidationError(
                     "Time signatures should only be applied to the top of measures.",
@@ -67,7 +69,7 @@ public class TimeSignature extends Instruction {
                             this.getPosition()+this.getContent().length()
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
             return result;
         }
@@ -80,7 +82,7 @@ public class TimeSignature extends Instruction {
                             this.getPosition()+this.getContent().length()
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }else if (!isValid(this.beatCount, this.beatType)) {
             ValidationError error = new ValidationError(
@@ -91,7 +93,7 @@ public class TimeSignature extends Instruction {
                             this.getPosition()+this.getContent().length()
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
         return result;

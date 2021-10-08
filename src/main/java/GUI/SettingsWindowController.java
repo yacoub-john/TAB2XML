@@ -1,41 +1,72 @@
 package GUI;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.prefs.Preferences;
 
-import converter.Score;
 import javafx.application.Application;
-import javafx.application.HostServices;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import utility.MusicXMLCreator;
+import utility.Settings;
 
 public class SettingsWindowController extends Application {
 
 	private MainViewController mvc;
-	//private static Window convertWindow = new Stage();
-	Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
+	Preferences prefs;
 
-	@FXML private ComboBox<String> errorSensitivity;
+	@FXML public TextField outputFolderField;
+	@FXML private ComboBox<String> cmbErrorSensitivity;
 	@FXML private ComboBox<String> cmbNumerator;
 	@FXML private ComboBox<String> cmbDenominator;
 
+	public SettingsWindowController() {
+		prefs = Preferences.userRoot();
+	}
+	
 	public void setMainViewController(MainViewController mvcInput) {
 		mvc = mvcInput;
 	}
 
+	public void initialize() {
+		Settings s = Settings.getInstance();
+		
+		String outputFolder = s.outputFolder;
+		if (outputFolder == null)
+			outputFolderField.setPromptText("Not set yet...");
+		else
+			outputFolderField.setText(outputFolder);
+		
+		cmbErrorSensitivity.getItems().removeAll(cmbErrorSensitivity.getItems());
+		cmbErrorSensitivity.getItems().addAll("Level 1 - Minimal Error Checking", "Level 2 - Standard Error Checking", "Level 3 - Advanced Error Checking", "Level 4 - Detailed Error Checking");
+		int err = s.errorSensitivity;
+		cmbErrorSensitivity.getSelectionModel().select(err - 1);
+		
+		cmbNumerator.getItems().removeAll(cmbNumerator.getItems());
+		for (int i =1; i<=16; i++) cmbNumerator.getItems().add(i + "");
+		int num = s.tsNum;
+		cmbNumerator.getSelectionModel().select(num + "");
+		
+		cmbDenominator.getItems().removeAll(cmbDenominator.getItems());
+		cmbDenominator.getItems().addAll("2", "4", "8", "16", "32");
+		int den = s.tsDen;
+		cmbDenominator.getSelectionModel().select(den + "");
+		
+	}
+	
 	@FXML private void handleErrorSensitivity() {
-		prefs.put("errorSensitivity", errorSensitivity.getValue().toString() );
-		changeErrorSensitivity(errorSensitivity.getValue().toString());
+		//prefs.put("errorSensitivity", errorSensitivity.getValue().toString() );
+		int err;
+		switch (cmbErrorSensitivity.getValue().toString()) {
+		case "Level 1 - Minimal Error Checking" -> err = 1;
+		case "Level 3 - Advanced Error Checking" -> err = 3;
+		case "Level 4 - Detailed Error Checking" -> err = 4;
+		default -> err = 2;
+		}
+		Settings.getInstance().errorSensitivity = err;
+		
+		mvc.mainView.refresh();
 	}
 
 	@FXML
@@ -43,33 +74,23 @@ public class SettingsWindowController extends Application {
 		DirectoryChooser dc = new DirectoryChooser();
 		dc.setInitialDirectory(new File("src"));
 		File selected = dc.showDialog(MainApp.STAGE);
-		mvc.outputFolderField.setText(selected.getAbsolutePath());
+		outputFolderField.setText(selected.getAbsolutePath());
+		Settings.getInstance().outputFolder = selected.getAbsolutePath();
 
-		prefs.put("outputFolder", selected.getAbsolutePath());
+		//prefs.put("outputFolder", selected.getAbsolutePath());
 	}
 
 	@FXML
 	private void handleTSNumerator() {
 		String value = cmbNumerator.getValue().toString();
-		prefs.put("tsNumerator", value);
-		Score.DEFAULT_BEAT_COUNT = Integer.parseInt(value);
+		//prefs.put("tsNumerator", value);
+		Settings.getInstance().tsNum = Integer.parseInt(value);
 	}
 	@FXML
 	private void handleTSDenominator() {
 		String value = cmbDenominator.getValue().toString();
-		prefs.put("tsDenominator", value);
-		Score.DEFAULT_BEAT_TYPE = Integer.parseInt(value);
-	}
-
-	private void changeErrorSensitivity(String prefValue) {
-		switch (prefValue) {
-		case "Level 1 - Minimal Error Checking" -> MainView.ERROR_SENSITIVITY = 1;
-		case "Level 3 - Advanced Error Checking" -> MainView.ERROR_SENSITIVITY = 3;
-		case "Level 4 - Detailed Error Checking" -> MainView.ERROR_SENSITIVITY = 4;
-		default -> MainView.ERROR_SENSITIVITY = 2;
-		}
-
-		mvc.mainView.refresh();
+		//prefs.put("tsDenominator", value);
+		Settings.getInstance().tsDen = Integer.parseInt(value);
 	}
 
 	@Override

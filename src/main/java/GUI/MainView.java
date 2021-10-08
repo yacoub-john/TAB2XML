@@ -9,6 +9,8 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
+
+import utility.Settings;
 import utility.Range;
 import utility.ValidationError;
 
@@ -20,9 +22,6 @@ import java.util.concurrent.Executors;
 public class MainView {
     protected static TreeMap<Range, ValidationError> ACTIVE_ERRORS = new TreeMap<>();
     
-    public static int ERROR_SENSITIVITY = 4;
-    //protected static boolean AUTO_HIGHLIGHT;
-    //protected static Score SCORE = new Score("");
     private CodeArea TEXT_AREA;
     private Button convertButton;
     private Button previewButton;
@@ -76,7 +75,7 @@ public class MainView {
             return spansBuilder.create();
         }
 
-
+        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
         ArrayList<Range> errorRanges = new ArrayList<>(ACTIVE_ERRORS.keySet());
         int lastErrorEnd = 0;
         for (Range range : errorRanges) {

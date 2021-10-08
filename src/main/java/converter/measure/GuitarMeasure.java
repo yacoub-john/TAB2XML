@@ -12,6 +12,7 @@ import models.measure.barline.Repeat;
 import models.measure.direction.Direction;
 import models.measure.direction.DirectionType;
 import models.measure.direction.Words;
+import utility.Settings;
 import utility.ValidationError;
 
 import java.util.ArrayList;
@@ -90,6 +91,7 @@ public class GuitarMeasure extends Measure{
     public List<ValidationError> validate() {
         //-----------------Validate yourself-------------------------
         List<ValidationError> result = new ArrayList<>(super.validate());
+        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         // Now, all we need to do is check if they are actually guitar measures
         if (!(this.measureLineList.get(0) instanceof GuitarMeasureLine)) {
@@ -98,7 +100,7 @@ public class GuitarMeasure extends Measure{
                     1,
                     this.getLinePositions()
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }else if (this.measureLineList.size()<MIN_LINE_COUNT || this.measureLineList.size()>MAX_LINE_COUNT) {
             String rangeMsg;
@@ -112,7 +114,7 @@ public class GuitarMeasure extends Measure{
                     2,
                     this.getLinePositions()
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

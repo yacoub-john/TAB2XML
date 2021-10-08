@@ -7,6 +7,7 @@ import converter.ScoreComponent;
 import converter.note.Note;
 import converter.note.NoteFactory;
 import utility.DrumUtils;
+import utility.Settings;
 import utility.Patterns;
 import utility.ValidationError;
 
@@ -175,6 +176,7 @@ public abstract class MeasureLine implements ScoreComponent {
      */
     public List<ValidationError> validate() {
         List<ValidationError> result = new ArrayList<>();
+        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
         if (name==null) {
             ValidationError error = new ValidationError(
                     "invalid measure line name.",
@@ -184,7 +186,7 @@ public abstract class MeasureLine implements ScoreComponent {
                             this.position+this.line.length()
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
         Matcher matcher = Pattern.compile(MeasureLine.INSIDES_PATTERN).matcher("|"+line+"|");
@@ -197,7 +199,7 @@ public abstract class MeasureLine implements ScoreComponent {
                             this.position+this.line.length()
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 
@@ -210,7 +212,7 @@ public abstract class MeasureLine implements ScoreComponent {
                             this.position+this.line.length()
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

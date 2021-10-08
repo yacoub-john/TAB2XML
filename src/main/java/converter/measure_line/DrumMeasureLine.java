@@ -5,6 +5,7 @@ import converter.Instrument;
 import converter.Score;
 import converter.note.Note;
 import utility.DrumUtils;
+import utility.Settings;
 import utility.ValidationError;
 
 import java.util.*;
@@ -37,6 +38,7 @@ public class DrumMeasureLine extends MeasureLine {
      */
     public List<ValidationError> validate() {
         List<ValidationError> result = new ArrayList<>(super.validate());
+        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         if (!isDrumName(this.name)) {
             String message = isGuitarName(this.name)
@@ -50,7 +52,7 @@ public class DrumMeasureLine extends MeasureLine {
                             this.position+this.line.length()
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }else if (this.partID==null || !DrumUtils.isSupportedName(this.name)) {
             ValidationError error = new ValidationError(
@@ -61,7 +63,7 @@ public class DrumMeasureLine extends MeasureLine {
                             this.position+this.line.length()
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

@@ -5,6 +5,7 @@ import converter.Instrument;
 import converter.Score;
 import converter.note.GuitarNote;
 import converter.note.Note;
+import utility.Settings;
 import utility.ValidationError;
 
 import java.util.ArrayList;
@@ -58,7 +59,8 @@ public class GuitarMeasureLine extends MeasureLine {
                             this.position+this.line.length()
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

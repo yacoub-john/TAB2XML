@@ -11,6 +11,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import utility.MusicXMLCreator;
+import utility.Settings;
 
 public class ConvertWindowController extends Application {
 
@@ -25,14 +26,21 @@ public class ConvertWindowController extends Application {
     	mvc = mvcInput;
     }
     
+    public void initialize() {
+		Settings s = Settings.getInstance();
+		
+		titleField.setText(s.title);
+		artistField.setText(s.artist);
+	}
+    
     @FXML
     private void saveButtonClicked() {
+    	
         MusicXMLCreator.createScore(mvc.TEXT_AREA.getText());
-        // Apply the below to the global Score object
-//        if (!titleField.getText().isBlank())
-//            MusicXMLCreator.setTitle(titleField.getText());
-//        if (!artistField.getText().isBlank())
-//            MusicXMLCreator.setArtist(artistField.getText());
+        if (!titleField.getText().isBlank())
+            Settings.getInstance().title = titleField.getText();
+        if (!artistField.getText().isBlank())
+        	Settings.getInstance().artist = artistField.getText();
         String generatedOutput = MusicXMLCreator.generateMusicXML();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save As");
@@ -64,7 +72,6 @@ public class ConvertWindowController extends Application {
             initialDir = new File("c:/");
 
         fileChooser.setInitialDirectory(initialDir);
-
 
         File file = fileChooser.showSaveDialog(convertWindow);
 

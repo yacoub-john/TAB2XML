@@ -10,6 +10,7 @@ import converter.measure_line.DrumMeasureLine;
 import converter.measure_line.GuitarMeasureLine;
 import converter.measure_line.MeasureLine;
 import converter.note.Note;
+import utility.Settings;
 import utility.Patterns;
 import utility.Range;
 import utility.ValidationError;
@@ -26,8 +27,8 @@ public abstract class Measure implements ScoreComponent {
     public static Instrument PREV_MEASURE_TYPE;
     private static double FOLLOW_PREV_MEASURE_WEIGHT = 0.3;
     protected int measureCount;
-    int beatCount = Score.DEFAULT_BEAT_COUNT;
-    int beatType = Score.DEFAULT_BEAT_TYPE;
+    int beatCount = Settings.getInstance().tsNum;
+    int beatType = Settings.getInstance().tsDen;
     List<String> lines;
     List<String[]> lineNamesAndPositions;
     public int lineCount;
@@ -462,6 +463,7 @@ public abstract class Measure implements ScoreComponent {
      */
     public List<ValidationError> validate() {
         List<ValidationError> result = new ArrayList<>();
+        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         boolean hasGuitarMeasureLines = true;
         boolean hasDrumMeasureLines = true;
@@ -482,7 +484,7 @@ public abstract class Measure implements ScoreComponent {
                     1,
                     this.getLinePositions()
             );
-            if (MainView.ERROR_SENSITIVITY>=error.getPriority())
+            if (ERROR_SENSITIVITY>=error.getPriority())
                 result.add(error);
         }
 
@@ -492,7 +494,7 @@ public abstract class Measure implements ScoreComponent {
                     2,
                     this.getLinePositions()
             );
-            if (MainView.ERROR_SENSITIVITY>=error.getPriority())
+            if (ERROR_SENSITIVITY>=error.getPriority())
                 result.add(error);
         }
         return result;

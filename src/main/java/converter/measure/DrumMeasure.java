@@ -15,6 +15,7 @@ import models.measure.barline.Repeat;
 import models.measure.direction.Direction;
 import models.measure.direction.DirectionType;
 import models.measure.direction.Words;
+import utility.Settings;
 import utility.ValidationError;
 
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class DrumMeasure extends Measure {
 
         //-----------------Validate yourself-------------------------
         List<ValidationError> result = new ArrayList<>(super.validate()); //this validates if all MeasureLine objects in this measure are of the same type
-
+        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         //if we are here, all MeasureLine objects are of the same type. Now, all we need to do is check if they are actually guitar measures
         if (!(this.measureLineList.get(0) instanceof DrumMeasureLine)) {
@@ -60,7 +61,7 @@ public class DrumMeasure extends Measure {
                     1,
                     this.getLinePositions()
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 
@@ -76,7 +77,7 @@ public class DrumMeasure extends Measure {
                     1,
                     this.getLinePositions()
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

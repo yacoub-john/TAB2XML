@@ -4,6 +4,8 @@ import converter.measure.Measure;
 import converter.note.Note;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import utility.Settings;
 import utility.MusicXMLCreator;
 
 import java.util.LinkedHashMap;
@@ -278,8 +280,8 @@ public class ScoreTest {
                 """,
         };
 
-        Score.DEFAULT_BEAT_TYPE = 4;
-        Score.DEFAULT_BEAT_COUNT = 4;
+        Settings.getInstance().tsNum = 4;
+        Settings.getInstance().tsDen = 4;
         String[][] expectedTimeSigGroups = {
                 {"3/4", "3/4", "2/4", "2/4"},
                 {"4/4", "3/4", "3/4", "2/4"},

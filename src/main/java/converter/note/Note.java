@@ -4,6 +4,7 @@ import GUI.MainView;
 import converter.Instrument;
 import converter.Score;
 import converter.ScoreComponent;
+import utility.Settings;
 import utility.Patterns;
 import utility.ValidationError;
 
@@ -66,7 +67,8 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
                             this.position+this.origin.length()
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
         return result;

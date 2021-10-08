@@ -4,6 +4,7 @@ import GUI.MainView;
 import converter.Instrument;
 import converter.Score;
 import converter.note.Note;
+import utility.Settings;
 import utility.ValidationError;
 
 import java.util.ArrayList;
@@ -33,7 +34,8 @@ public class BassMeasureLine extends GuitarMeasureLine{
                             this.position+this.line.length()
                     }))
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 

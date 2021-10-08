@@ -7,6 +7,7 @@ import converter.measure_line.DrumMeasureLine;
 import converter.measure_line.GuitarMeasureLine;
 import converter.measure_line.MeasureLine;
 import models.measure.attributes.*;
+import utility.Settings;
 import utility.ValidationError;
 
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class BassMeasure extends GuitarMeasure {
     public List<ValidationError> validate() {
         //------------------the below is copy paste of Measure.validate()------------------------------------------------
         List<ValidationError> result = new ArrayList<>();
+        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         boolean hasGuitarMeasureLines = true;
         boolean hasDrumMeasureLines = true;
@@ -68,7 +70,7 @@ public class BassMeasure extends GuitarMeasure {
                     1,
                     this.getLinePositions()
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 
@@ -78,7 +80,7 @@ public class BassMeasure extends GuitarMeasure {
                     2,
                     this.getLinePositions()
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
         //------------------the above is copy paste of Measure.validate()------------------------------------------------
@@ -90,7 +92,7 @@ public class BassMeasure extends GuitarMeasure {
                     1,
                     this.getLinePositions()
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 
@@ -106,7 +108,7 @@ public class BassMeasure extends GuitarMeasure {
                     2,
                     this.getLinePositions()
             );
-            if (MainView.ERROR_SENSITIVITY>= error.getPriority())
+            if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
 
