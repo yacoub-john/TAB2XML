@@ -8,7 +8,7 @@ public class Settings {
         return instance;
     }
     
-    public int errorSensitivity = 2;
+    public int errorSensitivity = 4;
     public String outputFolder = null;
     public int tsNum = 4;
     public int tsDen = 4;

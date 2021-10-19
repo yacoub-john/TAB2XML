@@ -259,7 +259,7 @@ public class MeasureGroup implements ScoreComponent {
     public Range getRelativeRange() {
         if (this.lines.isEmpty()) return null;
         int position = this.positions.get(0);
-        int relStartPos = position-Score.ROOT_STRING.substring(0,position).lastIndexOf("\n");
+        int relStartPos = position-Score.scoreText.substring(0,position).lastIndexOf("\n");
         int relEndPos = relStartPos + this.lines.get(0).length();
         return new Range(relStartPos, relEndPos);
     }

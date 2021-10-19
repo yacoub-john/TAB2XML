@@ -30,7 +30,7 @@ public class Score implements ScoreComponent {
     // classes in this package (e.g MeasureLine) shows the position of the measure line in this String, thus they depend
     // on this String staying the same. It cannot be final as we will want to create different Score objects to convert
     // different Strings.
-    public static String ROOT_STRING;
+    public static String scoreText;
     public Map<Integer, String> rootStringFragments;
     public static Instrument INSTRUMENT_MODE = Instrument.AUTO;
     public String instrumentType;
@@ -41,11 +41,11 @@ public class Score implements ScoreComponent {
     public String title;
     public String artist;
 
-    public Score(String rootString) {
+    public Score(String textInput) {
         Measure.GLOBAL_MEASURE_COUNT = 0;
         Measure.PREV_MEASURE_TYPE = Instrument.AUTO;
-        ROOT_STRING = rootString;
-        this.rootStringFragments = this.getStringFragments(rootString);
+        scoreText = textInput;
+        this.rootStringFragments = this.getStringFragments(textInput);
         this.measureCollectionList = this.createMeasureCollectionList(this.rootStringFragments);
 
         GLOBAL_DIVISIONS = getDivisions();
@@ -190,7 +190,7 @@ public class Score implements ScoreComponent {
 
             int paragraphStart = previousTextBreakEnd;
             int paragraphEnd = textBreakMatcher.start();
-            String fragment = ROOT_STRING.substring(previousTextBreakEnd,paragraphEnd);
+            String fragment = scoreText.substring(previousTextBreakEnd,paragraphEnd);
             if (!fragment.strip().isEmpty()) {
                 stringFragments.put(paragraphStart, fragment);
             }
@@ -216,7 +216,7 @@ public class Score implements ScoreComponent {
         int prevEndIdx = 0;
         ArrayList<Integer[]> positions = new ArrayList<>();
         for (MeasureCollection msurCollction : this.measureCollectionList) {
-            String uninterpretedFragment = ROOT_STRING.substring(prevEndIdx,msurCollction.position);
+            String uninterpretedFragment = scoreText.substring(prevEndIdx,msurCollction.position);
             if (!uninterpretedFragment.isBlank()) {
                 positions.add(new Integer[]{prevEndIdx, prevEndIdx+uninterpretedFragment.length()});
             }
@@ -224,7 +224,7 @@ public class Score implements ScoreComponent {
         }
 
 
-        String restOfDocument = ROOT_STRING.substring(prevEndIdx);
+        String restOfDocument = scoreText.substring(prevEndIdx);
         if (!restOfDocument.isBlank()) {
             positions.add(new Integer[]{prevEndIdx, prevEndIdx+restOfDocument.length()});
         }
@@ -358,6 +358,10 @@ public class Score implements ScoreComponent {
         return true;
     }
 
+    public int lastReturn(int position) {
+    	return scoreText.substring(0,position).lastIndexOf("\n");
+    }
+    
     @Override
     public String toString() {
         String outStr = "";

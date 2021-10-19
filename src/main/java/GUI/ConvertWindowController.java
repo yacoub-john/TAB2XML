@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import converter.Score;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -35,13 +36,13 @@ public class ConvertWindowController extends Application {
     
     @FXML
     private void saveButtonClicked() {
-    	
-        MusicXMLCreator.createScore(mvc.TEXT_AREA.getText());
+    	Score score = new Score(mvc.TEXT_AREA.getText());
+        MusicXMLCreator mxlc = new MusicXMLCreator(score);
         if (!titleField.getText().isBlank())
             Settings.getInstance().title = titleField.getText();
         if (!artistField.getText().isBlank())
         	Settings.getInstance().artist = artistField.getText();
-        String generatedOutput = MusicXMLCreator.generateMusicXML();
+        String generatedOutput = mxlc.generateMusicXML();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save As");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MusicXML files", "*.xml", "*.mxl", "*.musicxml");

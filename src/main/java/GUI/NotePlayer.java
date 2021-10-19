@@ -105,7 +105,7 @@ public class NotePlayer {
         MusicXmlParser parser = new MusicXmlParser();
         StaccatoParserListener listener = new StaccatoParserListener();
         parser.addParserListener(listener);
-        parser.parse(MusicXMLCreator.parse(score));
+        //parser.parse(MusicXMLCreator.generateMusicXML(score));
         final Pattern musicXMLPattern = listener.getPattern().setInstrument("Guitar");
         PLAYER = new ManagedPlayer();
         PLAYER.start(new Player().getSequence(musicXMLPattern));

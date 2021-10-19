@@ -7,18 +7,15 @@ import converter.Instrument;
 import converter.Score;
 import custom_exceptions.TXMLException;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 public class MusicXMLCreator {
-    public static Score SCORE;
+    private Score score;
 
-    public static void createScore(String rootString) {
-        SCORE = new Score(rootString);
+    public MusicXMLCreator(Score s) {
+        score = s;
     }
 
-    public static String parse(Score score) {
-        if(score.ROOT_STRING.isBlank()){
+    public String generateMusicXML() {
+        if(score.scoreText.isBlank()){
             return "";
         }
         XmlMapper mapper = new XmlMapper();
@@ -40,10 +37,6 @@ public class MusicXMLCreator {
                 + xmlString;
         return xmlString;
     }
-    public static String generateMusicXML() {
-        return parse(SCORE);
-    }
-
     public static Instrument getInstrumentEnum(String instrument) {
         if (instrument.equalsIgnoreCase("guitar"))
             return Instrument.GUITAR;
