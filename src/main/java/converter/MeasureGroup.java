@@ -81,6 +81,8 @@ public class MeasureGroup implements ScoreComponent {
             String measureGroupLine = measureGroupLines.get(i);
             int measureGroupStartIdx = positions.get(i);
             String[] lineName = MeasureLine.nameOf(measureGroupLine, measureGroupStartIdx);
+            if (lineName[0] == "") lineName[0] = defaultTuning(i);
+            
 
             int measureCount = 0;
             Matcher measureInsidesMatcher = Pattern.compile(MeasureLine.INSIDES_PATTERN).matcher(measureGroupLine);
@@ -116,7 +118,21 @@ public class MeasureGroup implements ScoreComponent {
         return measureList;
     }
 
-    /**
+    private String defaultTuning(int i) {
+    	String result = "";
+    	switch (i) {
+    	case 0: result = "E"; break;
+    	case 1: result = "B"; break;
+    	case 2: result = "G"; break;
+    	case 3: result = "D"; break;
+    	case 4: result = "A"; break;
+    	case 5: result = "E"; break;
+    	}
+    	return result;
+	}
+
+
+	/**
      * Validates if all Measure objects aggregated in this MeasureGroup have the same number of measure lines. It also
      * validates that all its aggregate Measure objects are an instance of the same type of Measure class (i.e they're all
      * GuitarMeasure objects or all DrumMeasure objects). Finally, it validates all its aggregates i.e all Measure objects
@@ -259,7 +275,7 @@ public class MeasureGroup implements ScoreComponent {
     public Range getRelativeRange() {
         if (this.lines.isEmpty()) return null;
         int position = this.positions.get(0);
-        int relStartPos = position-Score.scoreText.substring(0,position).lastIndexOf("\n");
+        int relStartPos = position-Score.tabText.substring(0,position).lastIndexOf("\n");
         int relEndPos = relStartPos + this.lines.get(0).length();
         return new Range(relStartPos, relEndPos);
     }

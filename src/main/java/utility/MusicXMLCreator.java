@@ -15,7 +15,7 @@ public class MusicXMLCreator {
     }
 
     public String generateMusicXML() {
-        if(score.scoreText.isBlank()){
+        if(score.tabText.isBlank()){
             return "";
         }
         XmlMapper mapper = new XmlMapper();

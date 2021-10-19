@@ -56,8 +56,8 @@ public class MainView {
     }
 
     private StyleSpans<Collection<String>> computeHighlighting(String text) {
-        Score SCORE = new Score(text);
-        if (SCORE.measureCollectionList.isEmpty())
+        Score score = new Score(text);
+        if (score.getMeasureCollectionList().isEmpty())
         {
             convertButton.setDisable(true);
             previewButton.setDisable(true);
@@ -69,7 +69,7 @@ public class MainView {
         }
 
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-        ACTIVE_ERRORS = this.filterOverlappingRanges(this.createErrorRangeMap(SCORE.validate()));
+        ACTIVE_ERRORS = this.filterOverlappingRanges(this.createErrorRangeMap(score.validate()));
         if (ACTIVE_ERRORS.isEmpty()) {
             spansBuilder.add(Collections.emptyList(), text.length());
             return spansBuilder.create();

@@ -1,6 +1,5 @@
 package converter.measure_line;
 
-import GUI.MainView;
 import converter.Instrument;
 import converter.Score;
 import converter.ScoreComponent;
@@ -29,7 +28,6 @@ public abstract class MeasureLine implements ScoreComponent {
         this.namePosition = Integer.parseInt(namesAndPosition[1]);
         this.position = position;
     }
-
 
     /**
      * Creates a MeasureLine object from the provided string representation of the MeasureLine. The MeasureLine object
@@ -171,7 +169,7 @@ public abstract class MeasureLine implements ScoreComponent {
      * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
      * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
      * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
-     * found in the root string from which it was derived (i.e Score.ROOT_STRING).
+     * found in the root string from which it was derived (i.e Score.tabText).
      * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
      */
     public List<ValidationError> validate() {
@@ -282,15 +280,23 @@ public abstract class MeasureLine implements ScoreComponent {
     }
 
     /**
-     * a very general, very vague "inside a measure line" pattern. We want to be as general and vague as possible so that
+     * A very general, very vague "inside a measure line" pattern. We want to be as general and vague as possible so that
      * we delay catching erroneous user input until we are able to pinpoint where the error is exactly. e.g. if this
      * pattern directly detects a wrong note here, a Note object will never be created. It will just tell the user the
      * measure line where the error is, not the precise note which caused the error.
-     * This regex pattern verifies if it is surrounded by |'s or a measure line name and captures a max of one | at each end only if it is surrounded by more than one | (i.e ||------| extracts |------ and ||------||| extracts |------|, but |------| extracts ------)
+     * This regex pattern verifies if it is surrounded by |'s or a measure line name and captures a max of one | at each end
+     * only if it is surrounded by more than one | (i.e ||------| extracts |------ and ||------||| extracts |------|, but |------| extracts ------)
      * @return the bracket-enclosed String regex pattern.
      */
     private static String createInsidesPattern() {
-        return "("+GuitarMeasureLine.INSIDES_PATTERN_SPECIAL_CASE+"|"+DrumMeasureLine.INSIDES_PATTERN_SPECIAL_CASE+"|(?<=(?:[ \\r\\n]"+createGenericMeasureNamePattern()+")(?=[ -][^"+Patterns.DIVIDER_COMPONENTS+"])|"+Patterns.DIVIDER+")"+Patterns.DIVIDER+"?(?:(?: *[-*]+)|(?: *"+getComponentPattern()+"+ *-+))(?:"+getComponentPattern()+"+-+)*(?:"+getComponentPattern()+"+ *)?(?:"+Patterns.DIVIDER+"?(?="+Patterns.DIVIDER+")))";
+    	StringBuilder pattern = new StringBuilder();
+    	pattern.append("("+GuitarMeasureLine.INSIDES_PATTERN_SPECIAL_CASE);
+    	pattern.append("|"+DrumMeasureLine.INSIDES_PATTERN_SPECIAL_CASE);
+    	pattern.append("|(?<=(?:[ \\r\\n]"+createGenericMeasureNamePattern()+")(?=[ -][^");
+    	pattern.append(Patterns.DIVIDER_COMPONENTS+"])|"+Patterns.DIVIDER+")"+Patterns.DIVIDER);
+    	pattern.append("?(?:(?: *[-*]+)|(?: *"+getComponentPattern()+"+ *-+))(?:"+getComponentPattern());
+        pattern.append("+-+)*(?:"+getComponentPattern()+"+ *)?(?:"+Patterns.DIVIDER+"?(?="+Patterns.DIVIDER+")))");
+        return pattern.toString();
     }
 
     private static String createMeasureNameExtractPattern() {
@@ -333,6 +339,8 @@ public abstract class MeasureLine implements ScoreComponent {
         HashSet<String> nameSet = new HashSet<>();
         nameSet.addAll(GuitarMeasureLine.createLineNameSet());
         nameSet.addAll(DrumUtils.DRUM_NAME_SET);
+        //BIL
+        nameSet.add("");
         return nameSet;
     }
 

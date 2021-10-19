@@ -24,14 +24,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Score implements ScoreComponent {
-    public List<MeasureCollection> measureCollectionList;
-    // Score.ROOT_STRING is only public for the JUnit tester to work. Its access modifier should be protected so that
+    private List<MeasureCollection> measureCollectionList;
+    // Score.scoreText is only public for the JUnit tester to work. Its access modifier should be protected so that
     // it will not be changed by anything outside the converter package as the "position" instance variable of other
     // classes in this package (e.g MeasureLine) shows the position of the measure line in this String, thus they depend
     // on this String staying the same. It cannot be final as we will want to create different Score objects to convert
     // different Strings.
-    public static String scoreText;
-    public Map<Integer, String> rootStringFragments;
+    public static String tabText;
+    private Map<Integer, String> scoreTextFragments;
     public static Instrument INSTRUMENT_MODE = Instrument.AUTO;
     public String instrumentType;
     public int DEFAULT_BEAT_TYPE = Settings.getInstance().tsDen;
@@ -42,11 +42,13 @@ public class Score implements ScoreComponent {
     public String artist;
 
     public Score(String textInput) {
-        Measure.GLOBAL_MEASURE_COUNT = 0;
+    	tabText = textInput;
+    	
+    	Measure.GLOBAL_MEASURE_COUNT = 0;
         Measure.PREV_MEASURE_TYPE = Instrument.AUTO;
-        scoreText = textInput;
-        this.rootStringFragments = this.getStringFragments(textInput);
-        this.measureCollectionList = this.createMeasureCollectionList(this.rootStringFragments);
+        
+        scoreTextFragments = getScoreTextFragments(tabText);
+        measureCollectionList = createMeasureCollectionList(scoreTextFragments);
 
         GLOBAL_DIVISIONS = getDivisions();
         setDurations();
@@ -65,6 +67,64 @@ public class Score implements ScoreComponent {
         }else {
             this.instrumentType = INSTRUMENT_MODE.name();
         }
+    }
+
+    /**
+     * Breaks input text (at wherever it finds blank lines) up into smaller pieces to make further analysis of each
+     * piece of text with regex more efficient
+     * @param input the string which is to be broken up into its fragments
+     * @return an ordered map mapping the position of each broken up piece of text(Integer[startIndex, endIndex]) to the
+     * actual piece of text (String)
+     */
+    public LinkedHashMap<Integer, String> getScoreTextFragments(String input) {
+        LinkedHashMap<Integer, String> inputFragments = new LinkedHashMap<>();
+
+        // Finding the point where there is a break between two pieces of text.
+        // (i.e. a newline, then a blank line(a line containing nothing or just whitespace) then another newline
+        // is considered to be where there is a break between two pieces of text)
+        Pattern textBreakPattern = Pattern.compile("((\\R|^)[ ]*(?=\\R)){2,}|^|$");
+        Matcher textBreakMatcher = textBreakPattern.matcher(input);
+
+        Integer previousTextBreakEnd = null;
+        while(textBreakMatcher.find()) {
+            if (previousTextBreakEnd==null) {
+                previousTextBreakEnd = textBreakMatcher.end();
+                continue;
+            }
+
+            int paragraphStart = previousTextBreakEnd;
+            int paragraphEnd = textBreakMatcher.start();
+            String fragment = tabText.substring(previousTextBreakEnd,paragraphEnd);
+            if (!fragment.strip().isEmpty()) {
+                inputFragments.put(paragraphStart, fragment);
+            }
+            previousTextBreakEnd = textBreakMatcher.end();
+        }
+        return inputFragments;
+    }
+    
+    /**
+     * Creates a List of MeasureCollection objects from the extracted fragments of a String.
+     * These MeasureCollection objects are not guaranteed to be valid. you can find out if all the MeasureCollection
+     * objects in this score are actually valid by calling the Score().validate() method.
+     * @param stringFragments A Map which maps an Integer to a String, where the String is the broken up fragments of a
+     *                        piece of text, and the Integer is the starting index at which the fragment starts in the
+     *                        original text from which the fragments were derived.
+     * @return a list of MeasureCollection objects.
+     */
+    private List<MeasureCollection> createMeasureCollectionList(Map<Integer, String> stringFragments) {
+        List<MeasureCollection> msurCollectionList = new ArrayList<>();
+
+        boolean isFirstCollection = true;
+        for (Map.Entry<Integer, String> fragment : stringFragments.entrySet()) {
+            List<MeasureCollection> msurCollectionSubList = MeasureCollection.getInstances(fragment.getValue(), fragment.getKey(), isFirstCollection);
+            isFirstCollection = false;
+            //it may be that the text is completely not understood in the slightest as a measure collection
+            //and the MeasureCollection.getInstance() returns null
+            for (MeasureCollection msurCollection : msurCollectionSubList)
+                msurCollectionList.add(msurCollection);
+        }
+        return msurCollectionList;
     }
 
     public static void setInstrumentMode(Instrument InstrumentMode) {
@@ -124,7 +184,7 @@ public class Score implements ScoreComponent {
         }
     }
 
-    private List<MeasureCollection> getMeasureCollectionList() {
+    public List<MeasureCollection> getMeasureCollectionList() {
         return this.measureCollectionList;
     }
 
@@ -143,88 +203,34 @@ public class Score implements ScoreComponent {
         }
     }
 
-    /**
-     * Creates a List of MeasureCollection objects from the extracted fragments of a String.
-     * These MeasureCollection objects are not guaranteed to be valid. you can find out if all the MeasureCollection
-     * objects in this score are actually valid by calling the Score().validate() method.
-     * @param stringFragments A Map which maps an Integer to a String, where the String is the broken up fragments of a
-     *                        piece of text, and the Integer is the starting index at which the fragment starts in the
-     *                        original text from which the fragments were derived.
-     * @return a list of MeasureCollection objects.
-     */
-    private List<MeasureCollection> createMeasureCollectionList(Map<Integer, String> stringFragments) {
-        List<MeasureCollection> msurCollectionList = new ArrayList<>();
 
-        boolean isFirstCollection = true;
-        for (Map.Entry<Integer, String> fragment : stringFragments.entrySet()) {
-            List<MeasureCollection> msurCollectionSubList = MeasureCollection.getInstances(fragment.getValue(), fragment.getKey(), isFirstCollection);
-            isFirstCollection = false;
-            //it may be that the text is completely not understood in the slightest as a measure collection
-            //and the MeasureCollection.getInstance() returns null
-            for (MeasureCollection msurCollection : msurCollectionSubList)
-                msurCollectionList.add(msurCollection);
-        }
-        return msurCollectionList;
-    }
 
-    /**
-     * Breaks input text (at wherever it finds blank lines) up into smaller pieces to make further analysis of each
-     * piece of text with regex more efficient
-     * @param rootStr the string which is to be broken up into its fragments
-     * @return an ordered map mapping the position of each broken up piece of text(Integer[startIndex, endIndex]) to the
-     * actual piece of text (String)
-     */
-    public LinkedHashMap<Integer, String> getStringFragments(String rootStr) {
-        LinkedHashMap<Integer, String> stringFragments = new LinkedHashMap<>();
-
-        //finding the point where there is a break between two pieces of text. (i.e a newline, then a blank line(a line containing nothing or just whitespace) then another newline is considered to be where there is a break between two pieces of text)
-        Pattern textBreakPattern = Pattern.compile("((\\R|^)[ ]*(?=\\R)){2,}|^|$");
-        Matcher textBreakMatcher = textBreakPattern.matcher(rootStr);
-
-        Integer previousTextBreakEnd = null;
-        while(textBreakMatcher.find()) {
-            if (previousTextBreakEnd==null) {
-                previousTextBreakEnd = textBreakMatcher.end();
-                continue;
-            }
-
-            int paragraphStart = previousTextBreakEnd;
-            int paragraphEnd = textBreakMatcher.start();
-            String fragment = scoreText.substring(previousTextBreakEnd,paragraphEnd);
-            if (!fragment.strip().isEmpty()) {
-                stringFragments.put(paragraphStart, fragment);
-            }
-            previousTextBreakEnd = textBreakMatcher.end();
-        }
-        return stringFragments;
-    }
 
     /** TODO modify this javadoc to reflect the new validation paradigm
      * Ensures that all the lines of the root string (the whole tablature file) is understood as multiple measure collections,
      * and if so, it validates all MeasureCollection objects it aggregates. It stops evaluation at the first aggregated object which fails validation.
      * TODO fix the logic. One rootString fragment could contain what is identified as multiple measures (maybe?) and another could be misunderstood so they cancel out and validation passes when it shouldn't
-     * TODO maybe have a low priority validation error when there are no measures detected in the Score.
      * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
      * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
      * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
      * found in the root string from which it was derived (i.e Score.ROOT_STRING).
      * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
      */
+    
     public List<ValidationError> validate() {
         List<ValidationError> result = new ArrayList<>();
 
         int prevEndIdx = 0;
         ArrayList<Integer[]> positions = new ArrayList<>();
         for (MeasureCollection msurCollction : this.measureCollectionList) {
-            String uninterpretedFragment = scoreText.substring(prevEndIdx,msurCollction.position);
-            if (!uninterpretedFragment.isBlank()) {
-                positions.add(new Integer[]{prevEndIdx, prevEndIdx+uninterpretedFragment.length()});
-            }
-            prevEndIdx = msurCollction.endIndex;
+        	String uninterpretedFragment = tabText.substring(prevEndIdx,msurCollction.position);
+        	if (!uninterpretedFragment.isBlank()) {
+        		positions.add(new Integer[]{prevEndIdx, prevEndIdx+uninterpretedFragment.length()});
+        	}
+        	prevEndIdx = msurCollction.endIndex;
         }
 
-
-        String restOfDocument = scoreText.substring(prevEndIdx);
+        String restOfDocument = tabText.substring(prevEndIdx);
         if (!restOfDocument.isBlank()) {
             positions.add(new Integer[]{prevEndIdx, prevEndIdx+restOfDocument.length()});
         }
@@ -359,7 +365,7 @@ public class Score implements ScoreComponent {
     }
 
     public int lastReturn(int position) {
-    	return scoreText.substring(0,position).lastIndexOf("\n");
+    	return tabText.substring(0,position).lastIndexOf("\n");
     }
     
     @Override

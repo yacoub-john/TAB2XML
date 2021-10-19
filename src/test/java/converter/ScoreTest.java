@@ -37,7 +37,7 @@ public class ScoreTest {
         Score test = new Score (s);
 
         LinkedHashMap<Integer, String> expectedStringFragments = new LinkedHashMap<>();
-        LinkedHashMap<Integer, String> actualStringFragments = test.getStringFragments(s);
+        LinkedHashMap<Integer, String> actualStringFragments = test.getScoreTextFragments(s);
 
         expectedStringFragments.put(0, "abcd");
 
@@ -87,7 +87,7 @@ public class ScoreTest {
 
         for (String inlineRepeatMeasure : inlineRepeatMeasures) {
             Score score = new Score(inlineRepeatMeasure);
-            assertEquals(1, score.measureCollectionList.size(), "one measure was expected but found " + score.measureCollectionList.size() + ".");
+            assertEquals(1, score.getMeasureCollectionList().size(), "one measure was expected but found " + score.getMeasureCollectionList().size() + ".");
             Measure measure = score.getMeasure(1);
             assertTrue(measure.isRepeatEnd());
             assertTrue(measure.isRepeatStart());
@@ -169,7 +169,7 @@ public class ScoreTest {
 
             for (String repeatMeasure : repeatMeasures) {
                 Score score = new Score(repeatMeasure);
-                assertEquals(1, score.measureCollectionList.size(), "one measure was expected but found "+score.measureCollectionList.size()+".");
+                assertEquals(1, score.getMeasureCollectionList().size(), "one measure was expected but found "+score.getMeasureCollectionList().size()+".");
                 Measure measure = score.getMeasure(1);
                 assertTrue(measure.isRepeatEnd());
                 assertTrue(measure.isRepeatStart());

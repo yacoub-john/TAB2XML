@@ -607,7 +607,7 @@ public abstract class Measure implements ScoreComponent {
             position = Integer.parseInt(lineNamesAndPositions.get(0)[1]);   // use the starting position of the name instead.
         else
             position = this.positions.get(0)-1;       // use the starting position of the inside of the measure minus one, so that it also captures the starting line of that measure "|"
-        int relStartPos = position-Score.scoreText.substring(0,position).lastIndexOf("\n");
+        int relStartPos = position-Score.tabText.substring(0,position).lastIndexOf("\n");
         String line = this.lines.get(0);
         int lineLength = 0;
         if (line.matches("[^|]*\\|\\s*"))   //if it ends with a |

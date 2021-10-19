@@ -26,7 +26,7 @@ public abstract class Instruction {
         this.content = content;
         this.position = position;
 
-        int relStartPos = position-Score.scoreText.substring(0,position).lastIndexOf("\n");
+        int relStartPos = position-Score.tabText.substring(0,position).lastIndexOf("\n");
         int relEndPos = relStartPos + content.length();
 
         if (topOrBottom instanceof Top)

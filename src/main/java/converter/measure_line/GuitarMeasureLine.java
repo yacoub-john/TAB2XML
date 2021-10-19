@@ -1,6 +1,5 @@
 package converter.measure_line;
 
-import GUI.MainView;
 import converter.Instrument;
 import converter.Score;
 import converter.note.GuitarNote;
@@ -17,8 +16,9 @@ public class GuitarMeasureLine extends MeasureLine {
     public static List<String> NAME_LIST = createLineNameSet();
     public static List<String> OCTAVE_LIST = createOctaveList();
     public static String COMPONENT = "[0-9hHpPsS\\/\\\\]";
-    public static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; // doesnt match anything
+    public static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; // doesn't match anything
 
+    //Not used
     private static ArrayList<String> createOctaveList() {
         String[] names = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
         ArrayList<String> nameList = new ArrayList<>();
@@ -39,6 +39,8 @@ public class GuitarMeasureLine extends MeasureLine {
         for (String name : names) {
             nameList.add(name.toLowerCase());
         }
+        // The guitar string can be nameless (standard tuning assumed)
+        nameList.add("");
         return nameList;
     }
 
@@ -46,6 +48,7 @@ public class GuitarMeasureLine extends MeasureLine {
     public List<ValidationError> validate() {
         List<ValidationError> result = new ArrayList<>(super.validate());
 
+        
         if (!isGuitarName(this.name)) {
             String message = isDrumName(this.name)
                     ? "A Guitar measure line is expected here."
