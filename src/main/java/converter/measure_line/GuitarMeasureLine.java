@@ -4,6 +4,8 @@ import converter.Instrument;
 import converter.Score;
 import converter.note.GuitarNote;
 import converter.note.Note;
+import utility.DrumUtils;
+import utility.GuitarUtils;
 import utility.Settings;
 import utility.ValidationError;
 
@@ -49,8 +51,8 @@ public class GuitarMeasureLine extends MeasureLine {
         List<ValidationError> result = new ArrayList<>(super.validate());
 
         
-        if (!isGuitarName(this.name)) {
-            String message = isDrumName(this.name)
+        if (!GuitarUtils.isValidName(this.name)) {
+            String message = DrumUtils.isValidName(this.name)
                     ? "A Guitar measure line is expected here."
                     : "Invalid measure line.";
 

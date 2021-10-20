@@ -5,6 +5,7 @@ import converter.Instrument;
 import converter.Score;
 import converter.note.Note;
 import utility.DrumUtils;
+import utility.GuitarUtils;
 import utility.Settings;
 import utility.ValidationError;
 
@@ -16,7 +17,7 @@ public class DrumMeasureLine extends MeasureLine {
     public static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; //doesnt match anything
     private String partID;
 
-    protected DrumMeasureLine(String line, String[] nameAndPosition, int position) {
+    public DrumMeasureLine(String line, String[] nameAndPosition, int position) {
         super(line, nameAndPosition, position);
         this.instrument = Instrument.DRUM;
         this.partID = DrumUtils.getPartID(this.name);
@@ -40,8 +41,8 @@ public class DrumMeasureLine extends MeasureLine {
         List<ValidationError> result = new ArrayList<>(super.validate());
         int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
-        if (!isDrumName(this.name)) {
-            String message = isGuitarName(this.name)
+        if (!DrumUtils.isValidName(this.name)) {
+            String message = GuitarUtils.isValidName(this.name)
                     ? "A Drum measure line is expected here."
                     : "Invalid measure line name.";
             ValidationError error = new ValidationError(

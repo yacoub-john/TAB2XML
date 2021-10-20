@@ -29,102 +29,8 @@ public abstract class MeasureLine implements ScoreComponent {
         this.position = position;
     }
 
-    /**
-     * Creates a MeasureLine object from the provided string representation of the MeasureLine. The MeasureLine object
-     * is either of type GuitarMeasureLine or DrumMeasureLine depending on if the features of the input Strings resembles
-     * a guitar measure line or a drum measure line (this is determined by the MeasureLine.isGuitar() and MeasureLine.isDrum())
-     * If it has features that neither belongs to GuitarMeasure nor DrumMeasure or has features shared by both, it defaults
-     * to creating a GuitarMeasureLine object, and further error checking can be done by calling GuitarMeasureLine().validate()
-     * on the object returned.
-     * @param line the contents of the MeasureLine
-     * @param nameAndPosition the name of the MeasureLine
-     * @param position  the index at which the contents of the measure line can be found in the root string from which it
-     *                 was derived (i.e Score.ROOT_STRING)
-     * @return a MeasureLine object derived from the information in the input Strings. Either of type GuitarMeasureLine
-     * or DrumMeasureLine
-     */
-    public static MeasureLine from(String line, String[] nameAndPosition, int position, Instrument bias, boolean prefBass) {
-        if (Score.INSTRUMENT_MODE!=Instrument.AUTO) {
-            return switch (Score.INSTRUMENT_MODE) {
-                case GUITAR -> new GuitarMeasureLine(line, nameAndPosition, position);
-                case BASS -> new BassMeasureLine(line, nameAndPosition, position);
-                case DRUM -> new DrumMeasureLine(line, nameAndPosition, position);
-                case AUTO -> null;
-            };
-        }else {
-            double guitarLikelihood = isGuitarLineLikelihood(nameAndPosition[0], line, bias);
-            double drumLikelihood = isDrumLineLikelihood(nameAndPosition[0], line, bias);
-            if (guitarLikelihood >= drumLikelihood) {
-                if (prefBass)
-                    return new BassMeasureLine(line, nameAndPosition, position);
-                else
-                    return new GuitarMeasureLine(line, nameAndPosition, position);
-            } else
-                return new DrumMeasureLine(line, nameAndPosition, position);
-        }
-    }
 
-    public static double isGuitarLineLikelihood(String name, String line, Instrument instrumentBias) {
-        double instrumentBiasWeight = 0.2;  // weight attached when we are told to have a bias for guitar notes
-        double lineNameWeight = 0.5;  // weight attached when the line name is a guitar line name
-        double noteGroupWeight = 0.3;   // ratio of notes that are guitar notes vs {all other notes, both valid and invalid}
 
-        if (!isGuitarName(name))
-            return 0;
-        double score = lineNameWeight + (instrumentBias==Instrument.GUITAR ? instrumentBiasWeight : 0);
-        line = line.replaceAll("\s", "");
-
-        int charGroups = 0;
-        Matcher charGroupMatcher = Pattern.compile("[^-]+").matcher(line);
-        while (charGroupMatcher.find())
-            charGroups++;
-
-        int noteGroups = 0;
-        Matcher noteGroupMatcher = Pattern.compile(NoteFactory.GUITAR_NOTE_GROUP_PATTERN).matcher(line);
-        while (noteGroupMatcher.find()) {
-            //in-case a guitar note group has -'s inside it (e.g 5---h3 is a valid guitar note group for a hammer on,
-            // but will distort the ratio of character group to note group because one note group contains 2 character groups)
-            charGroupMatcher = Pattern.compile("[^-]+").matcher(line);
-            while(charGroupMatcher.find())
-                noteGroups++;
-        }
-        if (charGroups==0)
-            score += noteGroupWeight;
-        else
-            score += ((double) noteGroups/(double) charGroups)*noteGroupWeight;
-        return score;
-    }
-
-    public static double isDrumLineLikelihood(String name, String line, Instrument instrumentBias) {
-        double instrumentBiasWeight = 0.2;  // weight attached when we are told to have a bias for drum notes
-        double lineNameWeight = 0.5;  // weight attached when the line name is a drum line name
-        double noteGroupWeight = 0.3;   // ratio of notes that are drum notes vs {all other notes, both valid and invalid}
-
-        if (!isDrumName(name))
-            return 0;
-        double score = lineNameWeight + (instrumentBias==Instrument.DRUM ? instrumentBiasWeight : 0);
-        line = line.replaceAll("\s", "");
-
-        int charGroups = 0;
-        Matcher charGroupMatcher = Pattern.compile("[^-]+").matcher(line);
-        while (charGroupMatcher.find())
-            charGroups++;
-
-        int noteGroups = 0;
-        Matcher noteGroupMatcher = Pattern.compile(NoteFactory.DRUM_NOTE_GROUP_PATTERN).matcher(line);
-        while (noteGroupMatcher.find()) {
-            //in-case a guitar note group has -'s inside it (e.g 5---h3 is a valid guitar note group for a hammer on,
-            // but will distort the ratio of character group to note group because one note group contains 2 character groups)
-            charGroupMatcher = Pattern.compile("[^-]+").matcher(line);
-            while(charGroupMatcher.find())
-                noteGroups++;
-        }
-        if (charGroups==0)
-            score += noteGroupWeight;
-        else
-            score += ((double) noteGroups/(double) charGroups)*noteGroupWeight;
-        return score;
-    }
 
     public List<Note> getNoteList() {
         List<Note> noteList = new ArrayList<>();
@@ -161,82 +67,9 @@ public abstract class MeasureLine implements ScoreComponent {
         return noteList;
     }
 
-    /**
-     * TODO Validates this MeasureLine object by ensuring if the amount of whitespace contained in this measureline is not
-     * above a certain percentage of the total length of the line, as this can lead to the program interpreting chords
-     * and timings vastly different than the user expects. This method does not validate its aggregated Note objects.
-     * That job is left up to its concrete GuitarMeasureLine and DrumMeasureLine classes.
-     * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
-     * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
-     * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
-     * found in the root string from which it was derived (i.e Score.tabText).
-     * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
-     */
-    public List<ValidationError> validate() {
-        List<ValidationError> result = new ArrayList<>();
-        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-        if (name==null) {
-            ValidationError error = new ValidationError(
-                    "invalid measure line name.",
-                    1,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.position,
-                            this.position+this.line.length()
-                    }))
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
-        }
-        Matcher matcher = Pattern.compile(MeasureLine.INSIDES_PATTERN).matcher("|"+line+"|");
-        if (!matcher.find() || !matcher.group().equals(this.line.strip())) {     // "|"+name because the MeasureLine.INSIDES_PATTERN expects a newline, space, or | to come before
-            ValidationError error = new ValidationError(
-                    "invalid measure line.",
-                    1,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.position,
-                            this.position+this.line.length()
-                    }))
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
-        }
-
-        if (this.line.length()-this.line.replaceAll("\s", "").length() != 0) {
-            ValidationError error = new ValidationError(
-                    "Adding whitespace might result in different timing than you expect.",
-                    3,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.position,
-                            this.position+this.line.length()
-                    }))
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
-        }
-
-        return result;
-    }
-
-    /**
-     * TODO Make a more comprehensive test where you check if the line components belong go a drum
-     * @param name
-     * @return
-     */
-    public static boolean isDrumName(String name) {
-        return DrumUtils.isValidName(name.strip());
-    }
-
-    /**
-     * TODO Make a more comprehensive test where you check if the line components belong go a guitar
-     * @param name
-     * @return
-     */
-    public static boolean isGuitarName(String name) {
-        return GuitarMeasureLine.NAME_LIST.contains(name.strip());
-    }
-
     public boolean isGuitar(boolean strictCheck) {
-        if (!isGuitarName(this.name)) return false;
+    	boolean x = GuitarMeasureLine.NAME_LIST.contains(this.name.strip());
+        if (!x) return false;
         if (!strictCheck) return true;
         for (Note note : this.noteList) {
             if (!note.isGuitar())
@@ -246,7 +79,8 @@ public abstract class MeasureLine implements ScoreComponent {
     }
 
     public boolean isDrum(boolean strictCheck) {
-        if (!isDrumName(this.name)) return false;
+    	boolean x = DrumUtils.isValidName(this.name.strip());
+        if (!x) return false;
         if (!strictCheck) return true;
         for (Note note : this.noteList) {
             if (!note.isDrum())
@@ -344,41 +178,103 @@ public abstract class MeasureLine implements ScoreComponent {
         return nameSet;
     }
 
-    @Override
+    public String recreateLineString(int maxMeasureLineLength) {
+	    StringBuilder outStr = new StringBuilder();
+	    if (this.noteList.isEmpty()) {
+	        for (int i=0; i<this.line.length(); i++) {
+	            String str = String.valueOf(this.line.charAt(i));
+	            if (str.matches("\s")) continue;
+	            outStr.append(str);
+	        }
+	        outStr.append("|");
+	        return outStr.toString();
+	    }
+	
+	    double maxRatio = 0;
+	    for (Note note : this.noteList) {
+	        maxRatio = Math.max(maxRatio, note.durationRatio);
+	    }
+	    int actualLineDistance = maxMeasureLineLength;
+	
+	
+	    int prevNoteEndDist = 0;
+	    for (Note note : this.noteList) {
+	        if (!note.validate().isEmpty()) continue;
+	        int dashCount = note.distance-prevNoteEndDist;
+	        outStr.append("-".repeat(Math.max(0, dashCount)));
+	        outStr.append(note.sign);
+	        prevNoteEndDist = note.distance + note.sign.length();
+	    }
+	    outStr.append("-".repeat(Math.max(0, actualLineDistance - prevNoteEndDist)));
+	    outStr.append("|");
+	    return outStr.toString();
+	}
+
+
+
+
+	/**
+	 * TODO Validates this MeasureLine object by ensuring if the amount of whitespace contained in this measureline is not
+	 * above a certain percentage of the total length of the line, as this can lead to the program interpreting chords
+	 * and timings vastly different than the user expects. This method does not validate its aggregated Note objects.
+	 * That job is left up to its concrete GuitarMeasureLine and DrumMeasureLine classes.
+	 * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
+	 * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
+	 * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
+	 * found in the root string from which it was derived (i.e Score.tabText).
+	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
+	 */
+	public List<ValidationError> validate() {
+	    List<ValidationError> result = new ArrayList<>();
+	    int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
+	    if (name==null) {
+	        ValidationError error = new ValidationError(
+	                "invalid measure line name.",
+	                1,
+	                new ArrayList<>(Collections.singleton(new Integer[]{
+	                        this.position,
+	                        this.position+this.line.length()
+	                }))
+	        );
+	        if (ERROR_SENSITIVITY>= error.getPriority())
+	            result.add(error);
+	    }
+	    Matcher matcher = Pattern.compile(MeasureLine.INSIDES_PATTERN).matcher("|"+line+"|");
+	    if (!matcher.find() || !matcher.group().equals(this.line.strip())) {     // "|"+name because the MeasureLine.INSIDES_PATTERN expects a newline, space, or | to come before
+	        ValidationError error = new ValidationError(
+	                "invalid measure line.",
+	                1,
+	                new ArrayList<>(Collections.singleton(new Integer[]{
+	                        this.position,
+	                        this.position+this.line.length()
+	                }))
+	        );
+	        if (ERROR_SENSITIVITY>= error.getPriority())
+	            result.add(error);
+	    }
+	
+	    if (this.line.length()-this.line.replaceAll("\s", "").length() != 0) {
+	        ValidationError error = new ValidationError(
+	                "Adding whitespace might result in different timing than you expect.",
+	                3,
+	                new ArrayList<>(Collections.singleton(new Integer[]{
+	                        this.position,
+	                        this.position+this.line.length()
+	                }))
+	        );
+	        if (ERROR_SENSITIVITY>= error.getPriority())
+	            result.add(error);
+	    }
+	
+	    return result;
+	}
+
+
+
+
+	@Override
     public String toString() {
         return this.name.strip()+"|"+this.recreateLineString(this.line.length())+"|";
-    }
-
-    public String recreateLineString(int maxMeasureLineLength) {
-        StringBuilder outStr = new StringBuilder();
-        if (this.noteList.isEmpty()) {
-            for (int i=0; i<this.line.length(); i++) {
-                String str = String.valueOf(this.line.charAt(i));
-                if (str.matches("\s")) continue;
-                outStr.append(str);
-            }
-            outStr.append("|");
-            return outStr.toString();
-        }
-
-        double maxRatio = 0;
-        for (Note note : this.noteList) {
-            maxRatio = Math.max(maxRatio, note.durationRatio);
-        }
-        int actualLineDistance = maxMeasureLineLength;
-
-
-        int prevNoteEndDist = 0;
-        for (Note note : this.noteList) {
-            if (!note.validate().isEmpty()) continue;
-            int dashCount = note.distance-prevNoteEndDist;
-            outStr.append("-".repeat(Math.max(0, dashCount)));
-            outStr.append(note.sign);
-            prevNoteEndDist = note.distance + note.sign.length();
-        }
-        outStr.append("-".repeat(Math.max(0, actualLineDistance - prevNoteEndDist)));
-        outStr.append("|");
-        return outStr.toString();
     }
 
 }

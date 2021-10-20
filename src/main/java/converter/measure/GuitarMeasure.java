@@ -1,6 +1,5 @@
 package converter.measure;
 
-import GUI.MainView;
 import converter.Score;
 import converter.measure_line.GuitarMeasureLine;
 import converter.measure_line.MeasureLine;
@@ -32,6 +31,8 @@ public class GuitarMeasure extends Measure{
     }
 
 
+    //If more than one E, change the one closer to B to lower case
+    //TODO Must generalize
     private List<String[]>  fixNamingOfE(List<String[]> lineNamesAndPositions) {
         int lowerEcount = 0;
         int upperEcount = 0;

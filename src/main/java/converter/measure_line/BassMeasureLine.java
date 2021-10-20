@@ -4,6 +4,8 @@ import GUI.MainView;
 import converter.Instrument;
 import converter.Score;
 import converter.note.Note;
+import utility.DrumUtils;
+import utility.GuitarUtils;
 import utility.Settings;
 import utility.ValidationError;
 
@@ -22,8 +24,8 @@ public class BassMeasureLine extends GuitarMeasureLine{
     public List<ValidationError> validate() {
         List<ValidationError> result = new ArrayList<>(super.validate());
 
-        if (!isGuitarName(this.name)) {
-            String message = isDrumName(this.name)
+        if (!GuitarUtils.isValidName(this.name)) {
+            String message = DrumUtils.isValidName(this.name)
                     ? "A Bass string name is expected here."
                     : "Invalid measure line name.";
             ValidationError error = new ValidationError(
