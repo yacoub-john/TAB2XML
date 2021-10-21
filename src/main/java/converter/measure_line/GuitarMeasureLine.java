@@ -1,24 +1,21 @@
 package converter.measure_line;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import converter.Instrument;
 import converter.Score;
-import converter.note.GuitarNote;
 import converter.note.Note;
 import utility.DrumUtils;
 import utility.GuitarUtils;
 import utility.Settings;
 import utility.ValidationError;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 public class GuitarMeasureLine extends TabString {
-    public static List<String> NAME_LIST = createLineNameSet();
     public static List<String> OCTAVE_LIST = createOctaveList();
     public static String COMPONENT = "[0-9hHpPsS\\/\\\\]";
-    public static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; // doesn't match anything
 
     //Not used
     private static ArrayList<String> createOctaveList() {
@@ -33,19 +30,6 @@ public class GuitarMeasureLine extends TabString {
         this.instrument = Instrument.GUITAR;
         this.noteList = this.createNoteList(this.line, position);
     }
-
-    protected static List<String> createLineNameSet() {
-        String[] names = GuitarNote.KEY_LIST;
-        ArrayList<String> nameList = new ArrayList<>();
-        nameList.addAll(Arrays.asList(names));
-        for (String name : names) {
-            nameList.add(name.toLowerCase());
-        }
-        // The guitar string can be nameless (standard tuning assumed)
-        nameList.add("");
-        return nameList;
-    }
-
 
     public List<ValidationError> validate() {
         List<ValidationError> result = new ArrayList<>(super.validate());

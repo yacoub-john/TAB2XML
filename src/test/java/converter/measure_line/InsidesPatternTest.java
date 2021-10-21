@@ -2,13 +2,15 @@ package converter.measure_line;
 
 import org.junit.jupiter.api.Test;
 
+import utility.Patterns;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InsidesPatternTest {
-    Pattern pattern = Pattern.compile(TabString.INSIDES_PATTERN);
+    Pattern pattern = Pattern.compile(Patterns.INSIDES_PATTERN);
 
     @Test
     void multipleDividersValidTest() {

@@ -1,18 +1,20 @@
 package converter.measure_line;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import converter.Instrument;
 import converter.Score;
 import converter.ScoreComponent;
 import converter.note.Note;
-import converter.note.NoteFactory;
 import utility.DrumUtils;
-import utility.Settings;
+import utility.GuitarUtils;
 import utility.Patterns;
+import utility.Settings;
 import utility.ValidationError;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public abstract class TabString implements ScoreComponent {
     public String line;
@@ -28,9 +30,6 @@ public abstract class TabString implements ScoreComponent {
         this.namePosition = Integer.parseInt(namesAndPosition[1]);
         this.position = position;
     }
-
-
-
 
     public List<Note> getNoteList() {
         List<Note> noteList = new ArrayList<>();
@@ -68,7 +67,7 @@ public abstract class TabString implements ScoreComponent {
     }
 
     public boolean isGuitar(boolean strictCheck) {
-    	boolean x = GuitarMeasureLine.NAME_LIST.contains(this.name.strip());
+    	boolean x = GuitarUtils.getValidGuitarNames().contains(this.name.strip());
         if (!x) return false;
         if (!strictCheck) return true;
         for (Note note : this.noteList) {
@@ -87,95 +86,6 @@ public abstract class TabString implements ScoreComponent {
                 return false;
         }
         return true;
-    }
-
-
-
-    //---------------------------------------------regex stuff----------------------------------------------------------
-
-    public static String INSIDES_PATTERN = createInsidesPattern();
-    // e------------ or |e---------------- or |e|-------------------- when it is the first measure of the measure group (start of line, SOL)
-    public static String PATTERN_SOL = "(" + createMeasureNameSOLPattern() + createInsidesPattern() + ")";
-    //|--------------------- when it is in between other measures (middle of line, MIDL)
-    public static String PATTERN_MIDL = "("+Patterns.DIVIDER+"+" + createInsidesPattern()+")";
-
-    private static String getComponentPattern() {
-        return "[^-\\n"+Patterns.DIVIDER_COMPONENTS+"]";
-    }
-
-
-    public static String[] nameOf(String measureLineStr, int lineStartIdx) {
-        Pattern measureLineNamePttrn = Pattern.compile(createMeasureNameExtractPattern());
-        Matcher measureLineNameMatcher = measureLineNamePttrn.matcher(measureLineStr);
-        if (measureLineNameMatcher.find())
-            return new String[] {measureLineNameMatcher.group(), ""+(lineStartIdx+measureLineNameMatcher.start())};
-        else
-            return null;
-    }
-
-    /**
-     * A very general, very vague "inside a measure line" pattern. We want to be as general and vague as possible so that
-     * we delay catching erroneous user input until we are able to pinpoint where the error is exactly. e.g. if this
-     * pattern directly detects a wrong note here, a Note object will never be created. It will just tell the user the
-     * measure line where the error is, not the precise note which caused the error.
-     * This regex pattern verifies if it is surrounded by |'s or a measure line name and captures a max of one | at each end
-     * only if it is surrounded by more than one | (i.e ||------| extracts |------ and ||------||| extracts |------|, but |------| extracts ------)
-     * @return the bracket-enclosed String regex pattern.
-     */
-    private static String createInsidesPattern() {
-    	StringBuilder pattern = new StringBuilder();
-    	pattern.append("("+GuitarMeasureLine.INSIDES_PATTERN_SPECIAL_CASE);
-    	pattern.append("|"+DrumMeasureLine.INSIDES_PATTERN_SPECIAL_CASE);
-    	pattern.append("|(?<=(?:[ \\r\\n]"+createGenericMeasureNamePattern()+")(?=[ -][^");
-    	pattern.append(Patterns.DIVIDER_COMPONENTS+"])|"+Patterns.DIVIDER+")"+Patterns.DIVIDER);
-    	pattern.append("?(?:(?: *[-*]+)|(?: *"+getComponentPattern()+"+ *-+))(?:"+getComponentPattern());
-        pattern.append("+-+)*(?:"+getComponentPattern()+"+ *)?(?:"+Patterns.DIVIDER+"?(?="+Patterns.DIVIDER+")))");
-        return pattern.toString();
-    }
-
-    private static String createMeasureNameExtractPattern() {
-        StringBuilder pattern = new StringBuilder();
-        pattern.append("(?<=^"+Patterns.DIVIDER+"*"+")");
-        pattern.append(Patterns.WHITESPACE+"*");
-        pattern.append(createGenericMeasureNamePattern());
-        pattern.append(Patterns.WHITESPACE+"*");
-        pattern.append("(?="+"-" + "|" +Patterns.DIVIDER+")");  // what's ahead is a dash or a divider
-
-        return pattern.toString();
-    }
-
-    private static String createMeasureNameSOLPattern() {
-        StringBuilder pattern = new StringBuilder();
-        pattern.append("(?:");
-        pattern.append(Patterns.WHITESPACE+"*"+Patterns.DIVIDER+"*");
-        pattern.append(Patterns.WHITESPACE+"*");
-        pattern.append(createGenericMeasureNamePattern());
-        pattern.append(Patterns.WHITESPACE+"*");
-        pattern.append("(?:(?=-)|(?:"+Patterns.DIVIDER+"+))");
-        pattern.append(")");
-
-        return pattern.toString();
-    }
-
-    public static String createGenericMeasureNamePattern() {
-        Iterator<String> measureLineNames = TabString.createLineNameSet().iterator();
-        StringBuilder pattern = new StringBuilder();
-        pattern.append("(?:[a-zA-Z]{1,3}|(?:"+measureLineNames.next());
-        while(measureLineNames.hasNext()) {
-            pattern.append("|"+measureLineNames.next());
-        }
-        pattern.append("))");
-        return pattern.toString();
-    }
-
-
-    private static Set<String> createLineNameSet() {
-        HashSet<String> nameSet = new HashSet<>();
-        nameSet.addAll(GuitarMeasureLine.createLineNameSet());
-        nameSet.addAll(DrumUtils.DRUM_NAME_SET);
-        //BIL
-        nameSet.add("");
-        return nameSet;
     }
 
     public String recreateLineString(int maxMeasureLineLength) {
@@ -210,9 +120,6 @@ public abstract class TabString implements ScoreComponent {
 	    return outStr.toString();
 	}
 
-
-
-
 	/**
 	 * TODO Validates this MeasureLine object by ensuring if the amount of whitespace contained in this measureline is not
 	 * above a certain percentage of the total length of the line, as this can lead to the program interpreting chords
@@ -239,7 +146,7 @@ public abstract class TabString implements ScoreComponent {
 	        if (ERROR_SENSITIVITY>= error.getPriority())
 	            result.add(error);
 	    }
-	    Matcher matcher = Pattern.compile(TabString.INSIDES_PATTERN).matcher("|"+line+"|");
+	    Matcher matcher = Pattern.compile(Patterns.INSIDES_PATTERN).matcher("|"+line+"|");
 	    if (!matcher.find() || !matcher.group().equals(this.line.strip())) {     // "|"+name because the MeasureLine.INSIDES_PATTERN expects a newline, space, or | to come before
 	        ValidationError error = new ValidationError(
 	                "invalid measure line.",
@@ -268,9 +175,6 @@ public abstract class TabString implements ScoreComponent {
 	
 	    return result;
 	}
-
-
-
 
 	@Override
     public String toString() {

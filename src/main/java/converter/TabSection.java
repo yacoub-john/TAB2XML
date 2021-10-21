@@ -1,6 +1,7 @@
 package converter;
 
 import converter.instruction.Instruction;
+import converter.measure_line.TabString;
 import utility.Patterns;
 import utility.Range;
 import utility.ValidationError;
@@ -13,12 +14,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TabSection implements ScoreComponent {
+
+	//                           a measure line at start of line(with name)          zero or more middle measure lines       (optional |'s and spaces then what's ahead is end of line)
+    private static String LINE_PATTERN = "("+Patterns.PATTERN_SOL          +          Patterns.PATTERN_MIDL+"*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.WHITESPACE+"*)"     +  ")";
+
     String origin;  //the string that was passed to the constructor upon the instantiation of this class
     int position;   //the index in Score.rootString at which the String "MeasureCollection().origin" is located
     int endIndex;
     List<TabRow> measureGroupList;
     public static String PATTERN = measureCollectionPattern();
-    public static String LINE_PATTERN = validLinePattern();
     boolean isFirstCollection;
     private List<Instruction> instructionList = new ArrayList<>();
 
@@ -81,9 +85,9 @@ public class TabSection implements ScoreComponent {
             String line = lineContentMatcher.group();
             int lineStartIdx = startIdx+lineContentMatcher.start();
 
-            if (!line.matches(TabSection.LINE_PATTERN)) continue;
+            if (!line.matches(validLinePattern())) continue;
 
-            Matcher measureGroupLineMatcher = Pattern.compile(TabRow.LINE_PATTERN).matcher(line);
+            Matcher measureGroupLineMatcher = Pattern.compile(LINE_PATTERN).matcher(line);
 
             int measureGroupCount = 0;   //the number of measure groups on this line
             while (measureGroupLineMatcher.find()) {
@@ -97,10 +101,8 @@ public class TabSection implements ScoreComponent {
                 measureGroupLines.add(measureGroupLine);
             }
         }
-        boolean isFirstGroup = true;
         for (List<String> measureGroupString : measureGroupStringList) {
-            measureGroupList.add(new TabRow(measureGroupString, isFirstGroup));
-            isFirstGroup = false;
+            measureGroupList.add(new TabRow(measureGroupString));
         }
         return measureGroupList;
     }
@@ -128,7 +130,7 @@ public class TabSection implements ScoreComponent {
         List<Range> identifiedComponents = new ArrayList<>();       //to prevent the same thing being identified as two different components (e.g being identified as both a comment and an instruction)
 
         //extract the measure group collection and create the list of MeasureGroup objects with it
-        Matcher matcher = Pattern.compile("((^|\\n)"+TabSection.LINE_PATTERN+")+").matcher(origin);
+        Matcher matcher = Pattern.compile("((^|\\n)"+validLinePattern()+")+").matcher(origin);
         if(matcher.find()) { // we don't use while loop because we are guaranteed that there is going to be just one of this pattern in this.origin. Look at the static factory method and the createMeasureCollectionPattern method
             this.measureGroupList = this.createMeasureGroupList("[" + (this.position + matcher.start()) + "]" + matcher.group());
             identifiedComponents.add(new Range(matcher.start(), matcher.end()));
@@ -168,7 +170,7 @@ public class TabSection implements ScoreComponent {
     }
 
     private static String validLinePattern() {
-        return "("+ Patterns.WHITESPACE+"*("+TabRow.LINE_PATTERN+Patterns.WHITESPACE+"*)+)";
+        return "("+ Patterns.WHITESPACE + "*(" + LINE_PATTERN + Patterns.WHITESPACE + "*)+)";
     }
 
     /**

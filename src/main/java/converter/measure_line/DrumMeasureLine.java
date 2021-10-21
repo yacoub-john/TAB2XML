@@ -1,6 +1,11 @@
 package converter.measure_line;
 
-import GUI.MainView;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import converter.Instrument;
 import converter.Score;
 import converter.note.Note;
@@ -9,12 +14,9 @@ import utility.GuitarUtils;
 import utility.Settings;
 import utility.ValidationError;
 
-import java.util.*;
-
 public class DrumMeasureLine extends TabString {
     public static Set<String> USED_DRUM_PARTS = new HashSet<>();
     public static String COMPONENT = "[xXoOdDfF]";
-    public static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; //doesnt match anything
     private String partID;
 
     public DrumMeasureLine(String line, String[] nameAndPosition, int position) {
