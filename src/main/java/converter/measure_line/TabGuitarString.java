@@ -13,22 +13,22 @@ import utility.GuitarUtils;
 import utility.Settings;
 import utility.ValidationError;
 
-public class GuitarMeasureLine extends TabString {
-    public static List<String> OCTAVE_LIST = createOctaveList();
+public class TabGuitarString extends TabString {
+    //public static List<String> OCTAVE_LIST = createOctaveList();
     public static String COMPONENT = "[0-9hHpPsS\\/\\\\]";
 
     //Not used
-    private static ArrayList<String> createOctaveList() {
-        String[] names = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
-        ArrayList<String> nameList = new ArrayList<>();
-        nameList.addAll(Arrays.asList(names));
-        return nameList;
-    }
+//    private static ArrayList<String> createOctaveList() {
+//        String[] names = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+//        ArrayList<String> nameList = new ArrayList<>();
+//        nameList.addAll(Arrays.asList(names));
+//        return nameList;
+//    }
 
-    public GuitarMeasureLine(String line, String[] nameAndPosition, int position) {
-        super(line, nameAndPosition, position);
+    public TabGuitarString(int stringNumber, String line, String[] nameAndPosition, int position) {
+        super(stringNumber, line, nameAndPosition, position);
         this.instrument = Instrument.GUITAR;
-        this.noteList = this.createNoteList(this.line, position);
+        this.noteList = this.createNoteList(stringNumber, this.line, position);
     }
 
     public List<ValidationError> validate() {

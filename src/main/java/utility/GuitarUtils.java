@@ -4,24 +4,35 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import converter.note.GuitarNote;
-
 public class GuitarUtils {
+    public static String[] KEY_LIST = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+
 
     public static boolean isValidName(String name) {
+    	 
+    	char c = name.charAt(name.length()-1);
+    	
         return getValidGuitarNames().contains(name.strip());
     }
 
 	public static Set<String> getValidGuitarNames() {
-	    String[] names = GuitarNote.KEY_LIST;
+	    String[] names = KEY_LIST;
 	    HashSet<String> nameList = new HashSet<>();
+	    HashSet<String> result = new HashSet<>();
 	    nameList.addAll(Arrays.asList(names));
 	    for (String name : names) {
 	        nameList.add(name.toLowerCase());
 	    }
+	    for (String name : nameList) {
+	    	for (int octave = 0; octave < 10 ; octave++)
+	    	{
+	    		result.add(name + octave);
+	    	}
+	    }
+	    result.addAll(nameList);
 	    // The guitar string can be nameless (standard tuning assumed)
-	    nameList.add("");
-	    return nameList;
+	    result.add("");
+	    return result;
 	}
     
 }

@@ -4,8 +4,8 @@ import converter.Instrument;
 
 public class BassNote extends GuitarNote {
 
-    public BassNote(String origin, int position, String lineName, int distanceFromMeasureStart) {
-        super(origin, position, lineName, distanceFromMeasureStart);
+    public BassNote(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart) {
+        super(stringNumber, origin, position, lineName, distanceFromMeasureStart);
         this.instrument = Instrument.BASS;
         this.fret = Integer.parseInt(origin);
         String noteDetails = this.noteDetails(this.lineName, this.fret);
@@ -16,19 +16,17 @@ public class BassNote extends GuitarNote {
     }
 
     @Override
-    protected int getDefaultOctave(String name, int offset) {
-        if (name.equals("e"))
-            return 3+offset;
-        else if (name.equalsIgnoreCase("B"))
-            return 2+offset;
-        else if (name.equalsIgnoreCase("G"))
-            return 2+offset;
-        else if (name.equalsIgnoreCase("D"))
-            return 2+offset;
-        else if (name.equalsIgnoreCase("A"))
-            return 1+offset;
-        else if (name.equalsIgnoreCase("E"))
-            return 0+offset;
-        return -1;
+    protected int getDefaultOctave(int stringNumber) {
+    	int result;
+    	switch (stringNumber) {
+	    	case 1: result = 3; break;
+	    	case 2: result = 2; break;
+	    	case 3: result = 2; break;
+	    	case 4: result = 2; break;
+	    	case 5: result = 1; break;
+	    	case 6: result = 1; break;
+	    	default: result = 0; break;
+    	}
+        return result;
     }
 }

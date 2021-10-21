@@ -131,12 +131,12 @@ public class TabRow implements ScoreComponent {
     private String defaultTuning(int i) {
     	String result = "";
     	switch (i) {
-    	case 0: result = "E"; break;
-    	case 1: result = "B"; break;
-    	case 2: result = "G"; break;
-    	case 3: result = "D"; break;
-    	case 4: result = "A"; break;
-    	case 5: result = "E"; break;
+    	case 0: result = "E4"; break;
+    	case 1: result = "B3"; break;
+    	case 2: result = "G3"; break;
+    	case 3: result = "D3"; break;
+    	case 4: result = "A2"; break;
+    	case 5: result = "E2"; break;
     	}
     	return result;
 	}

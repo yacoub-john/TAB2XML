@@ -15,4 +15,5 @@ public class Settings {
     public String title = "";
     public String artist = "";
     
+    public String[][] guitarTuning = {{"E","4"},{"B","3"},{"G","3"},{"D","3"},{"A","2"},{"E","2"}};
 }

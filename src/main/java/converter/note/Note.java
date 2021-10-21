@@ -42,17 +42,17 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         return "(" + NoteFactory.GUITAR_NOTE_GROUP_PATTERN + "|" + NoteFactory.DRUM_NOTE_GROUP_PATTERN + "|" + COMPONENT_PATTERN+"+" + ")";
     }
 
-    public Note(String origin, int position, String lineName, int distanceFromMeasureStart) {
+    public Note(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart) {
         this.origin = origin;
         this.lineName = lineName;
         this.position = position;
-        this.stringNumber = this.convertNameToNumber(this.lineName);
+        this.stringNumber = stringNumber; //this.convertNameToNumber(this.lineName);
         this.duration = 1;
         this.distance = distanceFromMeasureStart;
         this.voice = 1;
     }
-    public Note(String origin, int position, String lineName, int distanceFromMeasureStart, int voice) {
-        this(origin, position, lineName, distanceFromMeasureStart);
+    public Note(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart, int voice) {
+        this(stringNumber, origin, position, lineName, distanceFromMeasureStart);
         this.voice = voice;
     }
 
@@ -79,18 +79,6 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     }
 
 
-    /**
-     * TODO REMOVE THE TRY CATCH AND HANDLE THIS PROPERLY
-     * @param origin
-     * @param lineName
-     * @param distanceFromMeasureStart
-     * @param position
-     * @return
-     */
-    public static List<Note> from(String origin, int position, Instrument instrument, String lineName, int distanceFromMeasureStart) {
-        NoteFactory nf = new NoteFactory(origin, position, instrument, lineName, distanceFromMeasureStart);
-        return nf.getNotes();
-    }
 
     public boolean addDecor(NoteFactory.NoteDecor noteDecor, String message) {
         this.noteDecorMap.put(noteDecor, message);
@@ -130,23 +118,23 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         return "";
     }
 
-    public int convertNameToNumber(String lineName) {
-        lineName = lineName.strip();
-        if (lineName.equals("e")) {
-            return 1;
-        } else if (lineName.equalsIgnoreCase("B")) {
-            return 2;
-        } else if (lineName.equalsIgnoreCase("G")) {
-            return 3;
-        } else if (lineName.equalsIgnoreCase("D")) {
-            return 4;
-        } else if (lineName.equalsIgnoreCase("A")) {
-            return 5;
-        } else if (lineName.equalsIgnoreCase("E")) {
-            return 6;
-        }
-        return 0;
-    }
+//    public int convertNameToNumber(String lineName) {
+//        lineName = lineName.strip();
+//        if (lineName.equals("e")) {
+//            return 1;
+//        } else if (lineName.equalsIgnoreCase("B")) {
+//            return 2;
+//        } else if (lineName.equalsIgnoreCase("G")) {
+//            return 3;
+//        } else if (lineName.equalsIgnoreCase("D")) {
+//            return 4;
+//        } else if (lineName.equalsIgnoreCase("A")) {
+//            return 5;
+//        } else if (lineName.equalsIgnoreCase("E")) {
+//            return 6;
+//        }
+//        return 0;
+//    }
 
     public boolean isGuitar() {
         // remember, invalid notes are still accepted but are created as GuitarNote objects. we want to be able to still convert despite having invalid notes, as long as we warn the user that they have invalid input. We might want to create a new concrete class, InvalidNote, that extends Note to take care of this so that we have the guarantee that this is valid.

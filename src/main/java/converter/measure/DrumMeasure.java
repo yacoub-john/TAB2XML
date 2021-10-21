@@ -2,7 +2,7 @@ package converter.measure;
 
 import GUI.MainView;
 import converter.Score;
-import converter.measure_line.DrumMeasureLine;
+import converter.measure_line.TabDrumString;
 import converter.measure_line.TabString;
 import converter.note.Note;
 import models.measure.Backup;
@@ -29,7 +29,7 @@ public class DrumMeasure extends TabMeasure {
 
     public DrumMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasureInGroup) {
         super(lines, lineNamesAndPositions, linePositions, isFirstMeasureInGroup);
-        this.measureLineList = this.createMeasureLineList(this.lines, this.lineNamesAndPositions, this.positions);
+        this.measureLineList = this.createTabStringList(this.lines, this.lineNamesAndPositions, this.positions);
         this.voiceSortedNoteList = this.getVoiceSortedNoteList();
         setChords();
         calcDurationRatios();
@@ -55,7 +55,7 @@ public class DrumMeasure extends TabMeasure {
         int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         //if we are here, all MeasureLine objects are of the same type. Now, all we need to do is check if they are actually guitar measures
-        if (!(this.measureLineList.get(0) instanceof DrumMeasureLine)) {
+        if (!(this.measureLineList.get(0) instanceof TabDrumString)) {
             ValidationError error = new ValidationError(
                     "All measure lines in this measure must be Drum measure lines.",
                     1,

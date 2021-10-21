@@ -1,17 +1,16 @@
 package converter.note;
 
-import GUI.MainView;
-import utility.Settings;
-import utility.ValidationError;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import utility.Settings;
+import utility.ValidationError;
+
 public class InvalidNote extends Note {
 
-    public InvalidNote(String origin, int position, String lineName, int distanceFromMeasureStart) {
-        super(origin, position, lineName, distanceFromMeasureStart);
+    public InvalidNote(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart) {
+        super(stringNumber, origin, position, lineName, distanceFromMeasureStart);
     }
 
     @Override

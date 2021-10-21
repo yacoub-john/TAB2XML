@@ -2,9 +2,9 @@ package converter.measure;
 
 import GUI.MainView;
 import converter.Score;
-import converter.measure_line.BassMeasureLine;
-import converter.measure_line.DrumMeasureLine;
-import converter.measure_line.GuitarMeasureLine;
+import converter.measure_line.TabBassString;
+import converter.measure_line.TabDrumString;
+import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
 import models.measure.attributes.*;
 import utility.Settings;
@@ -57,8 +57,8 @@ public class BassMeasure extends GuitarMeasure {
 
         int previousLineLength = -1;
         for (TabString measureLine : this.measureLineList) {
-            hasGuitarMeasureLines &= measureLine instanceof GuitarMeasureLine;
-            hasDrumMeasureLines &= measureLine instanceof DrumMeasureLine;
+            hasGuitarMeasureLines &= measureLine instanceof TabGuitarString;
+            hasDrumMeasureLines &= measureLine instanceof TabDrumString;
 
             int currentLineLength = measureLine.line.replace("\s", "").length();
             lineSizeEqual &= (previousLineLength<0) || previousLineLength==currentLineLength;
@@ -86,7 +86,7 @@ public class BassMeasure extends GuitarMeasure {
         //------------------the above is copy paste of Measure.validate()------------------------------------------------
 
         // Now, all we need to do is check if they are actually bass measures
-        if (!(this.measureLineList.get(0) instanceof BassMeasureLine)) {
+        if (!(this.measureLineList.get(0) instanceof TabBassString)) {
             ValidationError error = new ValidationError(
                     "All measure lines in this measure must be Bass measure lines.",
                     1,

@@ -10,6 +10,7 @@ import converter.Instrument;
 import converter.Score;
 import converter.ScoreComponent;
 import converter.note.Note;
+import converter.note.NoteFactory;
 import utility.DrumUtils;
 import utility.GuitarUtils;
 import utility.Patterns;
@@ -24,9 +25,10 @@ public abstract class TabString implements ScoreComponent {
     public List<Note> noteList;
     public Instrument instrument;
 
-    protected TabString(String line, String[] namesAndPosition, int position) {
+    protected TabString(int stringNumber, String line, String[] namesAndPosition, int position) {
         this.line = line;
         this.name = namesAndPosition[0];
+        System.out.println(name);
         this.namePosition = Integer.parseInt(namesAndPosition[1]);
         this.position = position;
     }
@@ -53,7 +55,7 @@ public abstract class TabString implements ScoreComponent {
         return noteList;
     }
 
-    protected List<Note> createNoteList(String line, int position) {
+    protected List<Note> createNoteList(int stringNumber, String line, int position) {
         List<Note> noteList = new ArrayList<>();
         Matcher noteMatcher = Pattern.compile(Note.PATTERN).matcher(line);
         while(noteMatcher.find()) {
@@ -61,11 +63,16 @@ public abstract class TabString implements ScoreComponent {
             String leadingStr = line.substring(0, noteMatcher.start()).replaceAll("\s", "");
             int distanceFromMeasureStart = leadingStr.length();
             if (!match.isBlank())
-                noteList.addAll(Note.from(match, position+noteMatcher.start(), this.instrument, this.name, distanceFromMeasureStart));
+                noteList.addAll(from(stringNumber, match, position+noteMatcher.start(), this.instrument, this.name, distanceFromMeasureStart));
         }
         return noteList;
     }
 
+    public List<Note> from(int stringNumber, String origin, int position, Instrument instrument, String lineName, int distanceFromMeasureStart) {
+        NoteFactory nf = new NoteFactory(stringNumber, origin, position, instrument, lineName, distanceFromMeasureStart);
+        return nf.getNotes();
+    }
+    
     public boolean isGuitar(boolean strictCheck) {
     	boolean x = GuitarUtils.getValidGuitarNames().contains(this.name.strip());
         if (!x) return false;

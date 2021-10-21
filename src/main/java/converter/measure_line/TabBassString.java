@@ -1,6 +1,9 @@
 package converter.measure_line;
 
-import GUI.MainView;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import converter.Instrument;
 import converter.Score;
 import converter.note.Note;
@@ -9,15 +12,11 @@ import utility.GuitarUtils;
 import utility.Settings;
 import utility.ValidationError;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-public class BassMeasureLine extends GuitarMeasureLine{
-    public BassMeasureLine(String line, String[] nameAndPosition, int position) {
-        super(line, nameAndPosition, position);
+public class TabBassString extends TabGuitarString{
+    public TabBassString(int stringNumber, String line, String[] nameAndPosition, int position) {
+        super(stringNumber, line, nameAndPosition, position);
         this.instrument = Instrument.BASS;
-        this.noteList = this.createNoteList(this.line, position);
+        this.noteList = this.createNoteList(stringNumber, this.line, position);
     }
 
     @Override

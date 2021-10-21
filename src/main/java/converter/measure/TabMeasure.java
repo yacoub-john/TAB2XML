@@ -5,9 +5,9 @@ import converter.Score;
 import converter.ScoreComponent;
 import converter.instruction.RepeatType;
 import converter.instruction.TimeSignature;
-import converter.measure_line.BassMeasureLine;
-import converter.measure_line.DrumMeasureLine;
-import converter.measure_line.GuitarMeasureLine;
+import converter.measure_line.TabBassString;
+import converter.measure_line.TabDrumString;
+import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
 import converter.note.Note;
 import converter.note.NoteFactory;
@@ -76,14 +76,14 @@ public abstract class TabMeasure implements ScoreComponent {
      * @return A list of MeasureLine objects. The concrete class type of these MeasureLine objects is determined
      * from the input String lists(lines and lineNames), and they are not guaranteed to all be of the same type.
      */
-    protected List<TabString> createMeasureLineList(List<String> lines, List<String[]> namesAndPosition, List<Integer> linePositions) {
+    protected List<TabString> createTabStringList(List<String> lines, List<String[]> namesAndPosition, List<Integer> linePositions) {
         List<TabString> measureLineList = new ArrayList<>();
         for (int i=0; i<lines.size(); i++) {
             String line = lines.get(i);
             String[] nameAndPosition = namesAndPosition.get(i);
             int position = linePositions.get(i);
             Instrument instrumentBias = this instanceof BassMeasure ? Instrument.BASS : this instanceof DrumMeasure ? Instrument.DRUM : this instanceof GuitarMeasure ? Instrument.GUITAR : Instrument.AUTO;
-            measureLineList.add(newMeasureLine(line, nameAndPosition, position, instrumentBias, this instanceof BassMeasure ? true : false));
+            measureLineList.add(newTabString(i+1,line, nameAndPosition, position, instrumentBias, this instanceof BassMeasure ? true : false));
         }
         return measureLineList;
     }
@@ -102,12 +102,12 @@ public abstract class TabMeasure implements ScoreComponent {
      * @return a MeasureLine object derived from the information in the input Strings. Either of type GuitarMeasureLine
      * or DrumMeasureLine
      */
-    private TabString newMeasureLine(String line, String[] nameAndPosition, int position, Instrument bias, boolean prefBass) {
+    private TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position, Instrument bias, boolean prefBass) {
         if (Score.INSTRUMENT_MODE!=Instrument.AUTO) {
             return switch (Score.INSTRUMENT_MODE) {
-                case GUITAR -> new GuitarMeasureLine(line, nameAndPosition, position);
-                case BASS -> new BassMeasureLine(line, nameAndPosition, position);
-                case DRUM -> new DrumMeasureLine(line, nameAndPosition, position);
+                case GUITAR -> new TabGuitarString(stringNumber, line, nameAndPosition, position);
+                case BASS -> new TabBassString(stringNumber, line, nameAndPosition, position);
+                case DRUM -> new TabDrumString(stringNumber, line, nameAndPosition, position);
                 case AUTO -> null;
             };
         }else {
@@ -115,11 +115,11 @@ public abstract class TabMeasure implements ScoreComponent {
             double drumLikelihood = isDrumLineLikelihood(nameAndPosition[0], line, bias);
             if (guitarLikelihood >= drumLikelihood) {
                 if (prefBass)
-                    return new BassMeasureLine(line, nameAndPosition, position);
+                    return new TabBassString(stringNumber, line, nameAndPosition, position);
                 else
-                    return new GuitarMeasureLine(line, nameAndPosition, position);
+                    return new TabGuitarString(stringNumber, line, nameAndPosition, position);
             } else
-                return new DrumMeasureLine(line, nameAndPosition, position);
+                return new TabDrumString(stringNumber, line, nameAndPosition, position);
         }
     }
     
@@ -572,8 +572,8 @@ public abstract class TabMeasure implements ScoreComponent {
 
         int previousLineLength = -1;
         for (TabString measureLine : this.measureLineList) {
-            hasGuitarMeasureLines &= measureLine instanceof GuitarMeasureLine;
-            hasDrumMeasureLines &= measureLine instanceof DrumMeasureLine;
+            hasGuitarMeasureLines &= measureLine instanceof TabGuitarString;
+            hasDrumMeasureLines &= measureLine instanceof TabDrumString;
 
             int currentLineLength = measureLine.line.replace("\s", "").length();
             lineSizeEqual &= (previousLineLength<0) || previousLineLength==currentLineLength;

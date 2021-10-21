@@ -14,18 +14,18 @@ import utility.GuitarUtils;
 import utility.Settings;
 import utility.ValidationError;
 
-public class DrumMeasureLine extends TabString {
+public class TabDrumString extends TabString {
     public static Set<String> USED_DRUM_PARTS = new HashSet<>();
     public static String COMPONENT = "[xXoOdDfF]";
     private String partID;
 
-    public DrumMeasureLine(String line, String[] nameAndPosition, int position) {
-        super(line, nameAndPosition, position);
+    public TabDrumString(int stringNumber, String line, String[] nameAndPosition, int position) {
+        super(stringNumber, line, nameAndPosition, position);
         this.instrument = Instrument.DRUM;
         this.partID = DrumUtils.getPartID(this.name);
         if (this.partID!=null)
             USED_DRUM_PARTS.add(this.partID);
-        this.noteList = this.createNoteList(this.line, position);
+        this.noteList = this.createNoteList(stringNumber, this.line, position);
     }
 
     /**

@@ -1,6 +1,11 @@
 package converter.note;
 
-import GUI.MainView;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import converter.Instrument;
 import models.measure.note.Chord;
 import models.measure.note.Unpitched;
@@ -8,19 +13,13 @@ import utility.DrumUtils;
 import utility.Settings;
 import utility.ValidationError;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class DrumNote extends Note{
 
     String partID;
     public static String COMPONENT_PATTERN = createComponentPattern();
 
-    public DrumNote (String origin, int position, String lineName, int distanceFromMeasure){
-        super(origin, position, lineName, distanceFromMeasure);
+    public DrumNote (int stringNumber, String origin, int position, String lineName, int distanceFromMeasure){
+        super(stringNumber, origin, position, lineName, distanceFromMeasure);
         this.instrument = Instrument.DRUM;
         this.partID = DrumUtils.getPartID(lineName, origin);
         if (lineName.strip().equalsIgnoreCase("BD"))

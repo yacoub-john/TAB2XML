@@ -1,7 +1,7 @@
 package converter.measure;
 
 import converter.Score;
-import converter.measure_line.GuitarMeasureLine;
+import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
 import converter.note.Note;
 import models.measure.Backup;
@@ -23,8 +23,8 @@ public class GuitarMeasure extends TabMeasure{
 
     public GuitarMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasure) {
         super(lines, lineNamesAndPositions, linePositions, isFirstMeasure);
-        this.lineNamesAndPositions = this.fixNamingOfE(lineNamesAndPositions);
-        this.measureLineList = this.createMeasureLineList(this.lines, this.lineNamesAndPositions, this.positions);
+        //this.lineNamesAndPositions = this.fixNamingOfE(lineNamesAndPositions);
+        this.measureLineList = this.createTabStringList(this.lines, this.lineNamesAndPositions, this.positions);
         this.voiceSortedNoteList = this.getVoiceSortedNoteList();
         setChords();
         calcDurationRatios();
@@ -39,7 +39,6 @@ public class GuitarMeasure extends TabMeasure{
         StringBuilder order = new StringBuilder();
         for (String[] nameAndPosition : lineNamesAndPositions) {
             String strippedName = nameAndPosition[0].strip();
-            System.out.println(strippedName);
             order.append(strippedName.toLowerCase());
             if (strippedName.equals("E"))
                 upperEcount++;
@@ -96,7 +95,7 @@ public class GuitarMeasure extends TabMeasure{
         int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         // Now, all we need to do is check if they are actually guitar measures
-        if (!(this.measureLineList.get(0) instanceof GuitarMeasureLine)) {
+        if (!(this.measureLineList.get(0) instanceof TabGuitarString)) {
             ValidationError error = new ValidationError(
                     "All measure lines in this measure must be Guitar measure lines.",
                     1,

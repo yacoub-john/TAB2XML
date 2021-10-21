@@ -6,6 +6,7 @@ import models.measure.note.Chord;
 import models.measure.note.Pitch;
 import models.measure.note.notations.Notations;
 import models.measure.note.notations.technical.Technical;
+import utility.GuitarUtils;
 import utility.Settings;
 import utility.ValidationError;
 
@@ -29,15 +30,14 @@ public class GuitarNote extends Note {
     protected int alter;
     protected int octave;
     private String noteDetails;
-    public static String[] KEY_LIST = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
     private static String getGracePattern() {
         return "(g"+ FRET_PATTERN +"[hp]"+ FRET_PATTERN +")";
     }
 
     protected int fret;
-    public GuitarNote(String origin, int position, String lineName, int distanceFromMeasureStart) {
-        super(origin, position, lineName, distanceFromMeasureStart);
+    public GuitarNote(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart) {
+        super(stringNumber, origin, position, lineName, distanceFromMeasureStart);
         this.instrument = Instrument.GUITAR;
         this.fret = Integer.parseInt(origin);
         this.noteDetails = noteDetails(this.lineName, this.fret);
@@ -46,6 +46,7 @@ public class GuitarNote extends Note {
         this.alter = this.alter(noteDetails);
         this.octave = this.octave(noteDetails);
         this.sign = this.fret+"";
+        this.stringNumber = stringNumber;
     }
 
     public List<ValidationError> validate() {
@@ -140,7 +141,7 @@ public class GuitarNote extends Note {
     protected String noteDetails(String lineName, int fret) {
         String noteDetails = "";
         String name = lineName.strip();
-        String[] nameList = GuitarNote.KEY_LIST;
+        String[] nameList = GuitarUtils.KEY_LIST;
 
         int currentOctave;
         Matcher lineOctaveMatcher = Pattern.compile("(?<=[^0-9])[0-9]+$").matcher(name);
@@ -148,7 +149,7 @@ public class GuitarNote extends Note {
             name = name.substring(0, lineOctaveMatcher.start());
             currentOctave = Integer.parseInt(lineOctaveMatcher.group());
         }else
-            currentOctave = this.getDefaultOctave(name, 0);
+            currentOctave = this.getDefaultOctave(stringNumber);
 
         boolean nameFound = false;
         int counter = 0;
@@ -174,20 +175,18 @@ public class GuitarNote extends Note {
         return noteDetails+currentOctave;
     }
 
-    protected int getDefaultOctave(String name, int offset) {
-        if (name.equals("e"))
-            return 4+offset;
-        else if (name.equalsIgnoreCase("B"))
-            return 3+offset;
-        else if (name.equalsIgnoreCase("G"))
-            return 3+offset;
-        else if (name.equalsIgnoreCase("D"))
-            return 3+offset;
-        else if (name.equalsIgnoreCase("A"))
-            return 2+offset;
-        else if (name.equalsIgnoreCase("E"))
-            return 2+offset;
-        return -1;
+    protected int getDefaultOctave(int stringNumber) {
+    	int result;
+    	switch (stringNumber) {
+	    	case 1: result = 4; break;
+	    	case 2: result = 3; break;
+	    	case 3: result = 3; break;
+	    	case 4: result = 3; break;
+	    	case 5: result = 2; break;
+	    	case 6: result = 2; break;
+	    	default: result = 0; break;
+    	}
+        return result;
     }
 
     protected String step(String noteDetails) {

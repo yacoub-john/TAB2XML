@@ -15,17 +15,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class NoteFactory {
+	private int stringNumber;
     private String origin, lineName;
     private int distanceFromMeasureStart, position;
     HashMap<String, String> patternPackage;
     Instrument instrument;
-    public NoteFactory(String origin, int position, Instrument instrument, String lineName, int distanceFromMeasureStart) {
+    public NoteFactory(int stringNumber, String origin, int position, Instrument instrument, String lineName, int distanceFromMeasureStart) {
         this.origin = origin;
         this.lineName = lineName;
         this.instrument = instrument;
         this.distanceFromMeasureStart = distanceFromMeasureStart;
         this.position = position;
         this.patternPackage = getPatternPackage(origin);
+        this.stringNumber = stringNumber;
     }
 
     public static String FRET = getFret();
@@ -64,21 +66,21 @@ public class NoteFactory {
     public List<Note> getNotes() {
         List<Note> noteList = new ArrayList<>();
         if (patternPackage==null) {
-            noteList.add(new InvalidNote(origin, position, lineName, distanceFromMeasureStart));
+            noteList.add(new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
             return noteList;
         }
 
         Matcher noteGroupMatcher = Pattern.compile(patternPackage.get("note-group-pattern")).matcher(origin);
         if (!noteGroupMatcher.find()) {
-            noteList.add(new InvalidNote(origin, position, lineName, distanceFromMeasureStart));
+            noteList.add(new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
             return noteList;
         }
         int[] groupIdx = {noteGroupMatcher.start(), noteGroupMatcher.end()};
         if (groupIdx[0]>0) {
-            noteList.add(new InvalidNote(origin.substring(0, groupIdx[0]), position, lineName, distanceFromMeasureStart));
+            noteList.add(new InvalidNote(stringNumber, origin.substring(0, groupIdx[0]), position, lineName, distanceFromMeasureStart));
         }
         if (groupIdx[1]<origin.length()) {
-            noteList.add(new InvalidNote(origin.substring(groupIdx[1]), position, lineName, distanceFromMeasureStart+groupIdx[1]));
+            noteList.add(new InvalidNote(stringNumber, origin.substring(groupIdx[1]), position, lineName, distanceFromMeasureStart+groupIdx[1]));
         }
         noteList.addAll(getNotes(origin, groupIdx[0], groupIdx[1]));
         return noteList;
@@ -92,7 +94,7 @@ public class NoteFactory {
         Matcher noteMatcher = Pattern.compile(patternPackage.get("note-pattern")).matcher(origin.substring(idx, endIdx));
         Note note1;
         if (!noteMatcher.find()) {
-            noteList.add(new InvalidNote(origin.substring(idx, endIdx), position+idx, lineName, distanceFromMeasureStart+idx));
+            noteList.add(new InvalidNote(stringNumber, origin.substring(idx, endIdx), position+idx, lineName, distanceFromMeasureStart+idx));
             return noteList;
         }else {
             List<Note> notes = createNote(noteMatcher.group(), position+idx+noteMatcher.start(), distanceFromMeasureStart+idx+noteMatcher.start());
@@ -108,7 +110,7 @@ public class NoteFactory {
             connectorMatcherEnd = 0;
              if (patternPackage.get("instrument").equalsIgnoreCase("guitar")) { //only guitar-like instrument notes have to be separated by connectors. drum notes can stay right next to each other, so no need to return if we don't see a connector.
                  if (idx + noteMatcher.end() < endIdx)
-                     noteList.add(new InvalidNote(origin.substring(noteMatcher.end() + idx, endIdx), position + idx + noteMatcher.end(), lineName, distanceFromMeasureStart + idx));
+                     noteList.add(new InvalidNote(stringNumber, origin.substring(noteMatcher.end() + idx, endIdx), position + idx + noteMatcher.end(), lineName, distanceFromMeasureStart + idx));
                  return noteList;
              }
         }else {
@@ -164,7 +166,7 @@ public class NoteFactory {
             else if (origin.strip().equalsIgnoreCase("d"))
                 noteList.addAll(createDrag(origin, position, distanceFromMeasureStart));
             else
-                noteList.add(new InvalidNote(origin, position, lineName, distanceFromMeasureStart));
+                noteList.add(new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
             return noteList;
         }
         noteList.addAll(createGrace(origin, position, distanceFromMeasureStart));
@@ -208,11 +210,11 @@ public class NoteFactory {
     }
 
     private Note createDrumNote(String origin, int position, int distanceFromMeasureStart) {
-        return new DrumNote(origin, position, this.lineName, distanceFromMeasureStart);
+        return new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart);
     }
 
     private Note createInvalidNote(String origin, int position, int distanceFromMeasureStart) {
-        return new InvalidNote(origin, position, lineName, distanceFromMeasureStart);
+        return new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
     }
 
     private Note createHarmonic(String origin, int position, int distanceFromMeasureStart) {
@@ -393,9 +395,9 @@ public class NoteFactory {
     private GuitarNote createFret(String origin, int position, int distanceFromMeasureStart) {
         if (!origin.matches(FRET)) return null;
         if (this.instrument == Instrument.GUITAR)
-            return new GuitarNote(origin, position, lineName, distanceFromMeasureStart);
+            return new GuitarNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
         else if (this.instrument == Instrument.BASS)
-            return new BassNote(origin, position, lineName, distanceFromMeasureStart);
+            return new BassNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
         else
             return null;
     }
