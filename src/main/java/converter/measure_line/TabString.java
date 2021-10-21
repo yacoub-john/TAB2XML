@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class MeasureLine implements ScoreComponent {
+public abstract class TabString implements ScoreComponent {
     public String line;
     public String name;
     int namePosition;
@@ -22,7 +22,7 @@ public abstract class MeasureLine implements ScoreComponent {
     public List<Note> noteList;
     public Instrument instrument;
 
-    protected MeasureLine(String line, String[] namesAndPosition, int position) {
+    protected TabString(String line, String[] namesAndPosition, int position) {
         this.line = line;
         this.name = namesAndPosition[0];
         this.namePosition = Integer.parseInt(namesAndPosition[1]);
@@ -158,7 +158,7 @@ public abstract class MeasureLine implements ScoreComponent {
     }
 
     public static String createGenericMeasureNamePattern() {
-        Iterator<String> measureLineNames = MeasureLine.createLineNameSet().iterator();
+        Iterator<String> measureLineNames = TabString.createLineNameSet().iterator();
         StringBuilder pattern = new StringBuilder();
         pattern.append("(?:[a-zA-Z]{1,3}|(?:"+measureLineNames.next());
         while(measureLineNames.hasNext()) {
@@ -239,7 +239,7 @@ public abstract class MeasureLine implements ScoreComponent {
 	        if (ERROR_SENSITIVITY>= error.getPriority())
 	            result.add(error);
 	    }
-	    Matcher matcher = Pattern.compile(MeasureLine.INSIDES_PATTERN).matcher("|"+line+"|");
+	    Matcher matcher = Pattern.compile(TabString.INSIDES_PATTERN).matcher("|"+line+"|");
 	    if (!matcher.find() || !matcher.group().equals(this.line.strip())) {     // "|"+name because the MeasureLine.INSIDES_PATTERN expects a newline, space, or | to come before
 	        ValidationError error = new ValidationError(
 	                "invalid measure line.",

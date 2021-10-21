@@ -2,7 +2,7 @@ package converter.measure;
 
 import converter.Score;
 import converter.measure_line.GuitarMeasureLine;
-import converter.measure_line.MeasureLine;
+import converter.measure_line.TabString;
 import converter.note.Note;
 import models.measure.Backup;
 import models.measure.attributes.*;
@@ -17,7 +17,7 @@ import utility.ValidationError;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuitarMeasure extends Measure{
+public class GuitarMeasure extends TabMeasure{
     private static final int MIN_LINE_COUNT = 6;
     private static final int MAX_LINE_COUNT = 6;
 
@@ -39,6 +39,7 @@ public class GuitarMeasure extends Measure{
         StringBuilder order = new StringBuilder();
         for (String[] nameAndPosition : lineNamesAndPositions) {
             String strippedName = nameAndPosition[0].strip();
+            System.out.println(strippedName);
             order.append(strippedName.toLowerCase());
             if (strippedName.equals("E"))
                 upperEcount++;
@@ -128,7 +129,7 @@ public class GuitarMeasure extends Measure{
             }
         }
 
-        for (MeasureLine measureLine : this.measureLineList) {
+        for (TabString measureLine : this.measureLineList) {
             result.addAll(measureLine.validate());
         }
 

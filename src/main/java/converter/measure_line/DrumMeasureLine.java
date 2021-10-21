@@ -11,7 +11,7 @@ import utility.ValidationError;
 
 import java.util.*;
 
-public class DrumMeasureLine extends MeasureLine {
+public class DrumMeasureLine extends TabString {
     public static Set<String> USED_DRUM_PARTS = new HashSet<>();
     public static String COMPONENT = "[xXoOdDfF]";
     public static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; //doesnt match anything

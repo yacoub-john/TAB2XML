@@ -3,8 +3,8 @@ package converter;
 import converter.instruction.Instruction;
 import converter.measure.DrumMeasure;
 import converter.measure.GuitarMeasure;
-import converter.measure.Measure;
-import converter.measure_line.MeasureLine;
+import converter.measure.TabMeasure;
+import converter.measure_line.TabString;
 import utility.Settings;
 import utility.Patterns;
 import utility.Range;
@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MeasureGroup implements ScoreComponent {
+public class TabRow implements ScoreComponent {
 
     //                           a measure line at start of line(with name)          zero or more middle measure lines       (optional |'s and spaces then what's ahead is end of line)
-    public static String LINE_PATTERN = "("+MeasureLine.PATTERN_SOL          +          MeasureLine.PATTERN_MIDL+"*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.WHITESPACE+"*)"     +  ")";
+    public static String LINE_PATTERN = "("+TabString.PATTERN_SOL          +          TabString.PATTERN_MIDL+"*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.WHITESPACE+"*)"     +  ")";
     public List<Integer> positions = new ArrayList<>();
     private List<String> lines = new ArrayList<>();
-    public List<Measure> measureList;
+    public List<TabMeasure> measureList;
     public List<Instruction> instructionList;
     boolean isFirstGroup;
 
@@ -36,7 +36,7 @@ public class MeasureGroup implements ScoreComponent {
      *               guaranteed to be a valid representation of a measure group(i.e it looks like a measure group), the
      *               measure group which it is representing is not guaranteed to be valid itself.
      */
-    public MeasureGroup(List<String> origin, boolean isFirstGroup) {
+    public TabRow(List<String> origin, boolean isFirstGroup) {
         this.isFirstGroup = isFirstGroup;
         for (String lineWithTag : origin) {
             Matcher tagMatcher = Pattern.compile("^\\[[0-9]+\\]").matcher(lineWithTag);
@@ -47,8 +47,8 @@ public class MeasureGroup implements ScoreComponent {
             this.positions.add(startIdx);
             this.lines.add(line);
         }
-        this.measureList = this.createMeasureList(this.lines, this.positions);
-        this.instructionList = new ArrayList<>();
+        measureList = createMeasureList(lines, positions);
+        instructionList = new ArrayList<>();
     }
 
 
@@ -63,8 +63,8 @@ public class MeasureGroup implements ScoreComponent {
      *                  it was derived (i.e Score.ROOT_STRING)
      * @return A List of Measures derived from their String representation, "measureGroupLines".
      */
-    private List<Measure> createMeasureList(List<String> measureGroupLines, List<Integer> positions){
-        List<Measure> measureList = new ArrayList<>();
+    private List<TabMeasure> createMeasureList(List<String> measureGroupLines, List<Integer> positions){
+        List<TabMeasure> measureList = new ArrayList<>();
 
         //setting up two parallel arrays with the information of each measure separated
 
@@ -77,15 +77,18 @@ public class MeasureGroup implements ScoreComponent {
         //A list of measures where each measure is represented by list of the names of its lines
         List<List<String[]>> measureNamesList = new ArrayList<>();
 
+        //Iterate over all the lines of the tabRow, e.g. all six for guitar
         for (int i=0; i<measureGroupLines.size(); i++) {
             String measureGroupLine = measureGroupLines.get(i);
             int measureGroupStartIdx = positions.get(i);
-            String[] lineName = MeasureLine.nameOf(measureGroupLine, measureGroupStartIdx);
+            //Find the name at the beginning of a text line
+            //Returns an array of two strings, first is the line name, next is the index of it (as a string)
+            String[] lineName = TabString.nameOf(measureGroupLine, measureGroupStartIdx);
             if (lineName[0] == "") lineName[0] = defaultTuning(i);
             
 
             int measureCount = 0;
-            Matcher measureInsidesMatcher = Pattern.compile(MeasureLine.INSIDES_PATTERN).matcher(measureGroupLine);
+            Matcher measureInsidesMatcher = Pattern.compile(TabString.INSIDES_PATTERN).matcher(measureGroupLine);
             while (measureInsidesMatcher.find()) {
                 measureCount++;
                 String measureLineString = measureInsidesMatcher.group();
@@ -112,7 +115,7 @@ public class MeasureGroup implements ScoreComponent {
             List<Integer> measureLinePositionList = measurePositionsList.get(i);
             List<String[]> measureLineNameList = measureNamesList.get(i);
 
-            measureList.add(Measure.from(measureLineList, measureLineNameList, measureLinePositionList, isFirstMeasureInGroup));
+            measureList.add(TabMeasure.from(measureLineList, measureLineNameList, measureLinePositionList, isFirstMeasureInGroup));
             isFirstMeasureInGroup = false;
         }
         return measureList;
@@ -156,7 +159,7 @@ public class MeasureGroup implements ScoreComponent {
         boolean hasEqualMeasureLineCount = true;
         List<Integer[]> failPositions = new ArrayList<>();
         int measureLineCount = 0;
-        for (Measure measure : this.measureList) {
+        for (TabMeasure measure : this.measureList) {
             if (measureLineCount==0)
                 measureLineCount = measure.lineCount;
             else if(measure.lineCount!=measureLineCount) {
@@ -177,7 +180,7 @@ public class MeasureGroup implements ScoreComponent {
 
         boolean hasGuitarMeasures = true;
         boolean hasDrumMeasures = true;
-        for (Measure measure : this.measureList) {
+        for (TabMeasure measure : this.measureList) {
             hasGuitarMeasures &= measure instanceof GuitarMeasure;
             hasDrumMeasures &= measure instanceof DrumMeasure;
         }
@@ -194,7 +197,7 @@ public class MeasureGroup implements ScoreComponent {
         //--------------Validate your aggregates (only if you're valid)-------------------
         if (!result.isEmpty()) return result;
 
-        for (Measure measure : this.measureList) {
+        for (TabMeasure measure : this.measureList) {
             result.addAll(measure.validate());
         }
         for (Instruction instruction : this.instructionList) {
@@ -223,14 +226,14 @@ public class MeasureGroup implements ScoreComponent {
 
     public List<models.measure.Measure> getMeasureModels() {
         List<models.measure.Measure> measureModels = new ArrayList<>();
-        for (Measure measure : this.measureList) {
+        for (TabMeasure measure : this.measureList) {
             measureModels.add(measure.getModel());
         }
         return measureModels;
     }
 
     public boolean isGuitar(boolean strictCheck) {
-        for (Measure measure : this.measureList) {
+        for (TabMeasure measure : this.measureList) {
             if (!measure.isGuitar(strictCheck))
                 return false;
         }
@@ -238,7 +241,7 @@ public class MeasureGroup implements ScoreComponent {
     }
 
     public boolean isDrum(boolean strictCheck) {
-        for (Measure measure : this.measureList) {
+        for (TabMeasure measure : this.measureList) {
             if (!measure.isDrum(strictCheck))
                 return false;
         }
@@ -246,7 +249,7 @@ public class MeasureGroup implements ScoreComponent {
     }
 
     public boolean isBass(boolean strictCheck) {
-        for (Measure measure : this.measureList) {
+        for (TabMeasure measure : this.measureList) {
             if (!measure.isBass(strictCheck))
                 return false;
         }
@@ -255,7 +258,7 @@ public class MeasureGroup implements ScoreComponent {
 
     public int getDivisions() {
         int divisions = 0;
-        for (Measure measure : this.measureList) {
+        for (TabMeasure measure : this.measureList) {
             divisions = Math.max(divisions,  measure.getDivisions());
         }
 
@@ -263,12 +266,12 @@ public class MeasureGroup implements ScoreComponent {
     }
 
     public void setDurations() {
-        for (Measure measure : this.measureList) {
+        for (TabMeasure measure : this.measureList) {
             measure.setDurations();
         }
     }
 
-    public List<Measure> getMeasureList() {
+    public List<TabMeasure> getMeasureList() {
         return this.measureList;
     }
 

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MeasureTest {
 
-    private Measure measureInstance;
+    private TabMeasure measureInstance;
 
     @BeforeEach
     void init() {
@@ -28,7 +28,7 @@ public class MeasureTest {
         //doesn't really matter what values the position has.
         List<Integer> positions = Arrays.asList(1, 5, 7, 9, 20, 43);
 
-        this.measureInstance = Measure.from(lines, lineNames, positions, false);
+        this.measureInstance = TabMeasure.from(lines, lineNames, positions, false);
     }
 
     /** TODO fix test. It is broken

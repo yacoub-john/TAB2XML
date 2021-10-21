@@ -1,10 +1,10 @@
 package converter.instruction;
 
 import GUI.MainView;
-import converter.MeasureCollection;
-import converter.MeasureGroup;
+import converter.TabSection;
+import converter.TabRow;
 import converter.ScoreComponent;
-import converter.measure.Measure;
+import converter.measure.TabMeasure;
 import utility.Settings;
 import utility.Range;
 import utility.ValidationError;
@@ -36,13 +36,13 @@ public class TimeSignature extends Instruction {
             return;
         }
 
-        if (scoreComponent instanceof MeasureCollection) {
-            MeasureCollection measureCollection = (MeasureCollection) scoreComponent;
-            for (MeasureGroup measureGroup : measureCollection.getMeasureGroupList()) {
+        if (scoreComponent instanceof TabSection) {
+            TabSection measureCollection = (TabSection) scoreComponent;
+            for (TabRow measureGroup : measureCollection.getMeasureGroupList()) {
                 Range measureGroupRange = measureGroup.getRelativeRange();
                 if (measureGroupRange==null) continue;
                 if (!measureGroupRange.contains(this.getRelativeRange())) continue;
-                for (Measure measure : measureGroup.getMeasureList()) {
+                for (TabMeasure measure : measureGroup.getMeasureList()) {
                     Range measureRange = measure.getRelativeRange();
                     if (measureRange==null || !measureRange.contains(this.getRelativeRange())) continue;
                     this.setHasBeenApplied(measure.setTimeSignature(this.beatCount, this.beatType));

@@ -12,11 +12,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MeasureCollection implements ScoreComponent {
+public class TabSection implements ScoreComponent {
     String origin;  //the string that was passed to the constructor upon the instantiation of this class
     int position;   //the index in Score.rootString at which the String "MeasureCollection().origin" is located
     int endIndex;
-    List<MeasureGroup> measureGroupList;
+    List<TabRow> measureGroupList;
     public static String PATTERN = measureCollectionPattern();
     public static String LINE_PATTERN = validLinePattern();
     boolean isFirstCollection;
@@ -31,17 +31,17 @@ public class MeasureCollection implements ScoreComponent {
      * @return a MeasureCollection object if the input String "origin" is properly recognised to be a representation of
      * a measure group(regardless of if the measure group it is representing is valid or not). empty list otherwise
      */
-    public static List<MeasureCollection> getInstances(String origin, int position, boolean isFirstCollection) {
-        List<MeasureCollection> msurCollectionList = new ArrayList<>();
+    public static List<TabSection> getInstances(String origin, int position, boolean isFirstCollection) {
+        List<TabSection> msurCollectionList = new ArrayList<>();
 
-        Matcher matcher = Pattern.compile(MeasureCollection.PATTERN).matcher(origin);
+        Matcher matcher = Pattern.compile(TabSection.PATTERN).matcher(origin);
         while (matcher.find())
-            msurCollectionList.add(new MeasureCollection(matcher.group(), position+matcher.start(), isFirstCollection));
+            msurCollectionList.add(new TabSection(matcher.group(), position+matcher.start(), isFirstCollection));
 
         return msurCollectionList;
     }
 
-    private MeasureCollection(String origin, int position, boolean isFirstCollection) {
+    private TabSection(String origin, int position, boolean isFirstCollection) {
         this.origin = origin;
         this.position = position;
         this.endIndex = position+this.origin.length();
@@ -60,8 +60,8 @@ public class MeasureCollection implements ScoreComponent {
      *                             (i.e "[startIdx]stringContent")
      * @return A List of MeasureGroup objects.
      */
-    private List<MeasureGroup> createMeasureGroupList(String measureGroupCollectionString) {
-        List<MeasureGroup> measureGroupList = new ArrayList<>();
+    private List<TabRow> createMeasureGroupList(String measureGroupCollectionString) {
+        List<TabRow> measureGroupList = new ArrayList<>();
 
         // separating the start index from the input String
         Matcher tagMatcher = Pattern.compile("^\\[[0-9]+\\]").matcher(measureGroupCollectionString);
@@ -81,9 +81,9 @@ public class MeasureCollection implements ScoreComponent {
             String line = lineContentMatcher.group();
             int lineStartIdx = startIdx+lineContentMatcher.start();
 
-            if (!line.matches(MeasureCollection.LINE_PATTERN)) continue;
+            if (!line.matches(TabSection.LINE_PATTERN)) continue;
 
-            Matcher measureGroupLineMatcher = Pattern.compile(MeasureGroup.LINE_PATTERN).matcher(line);
+            Matcher measureGroupLineMatcher = Pattern.compile(TabRow.LINE_PATTERN).matcher(line);
 
             int measureGroupCount = 0;   //the number of measure groups on this line
             while (measureGroupLineMatcher.find()) {
@@ -99,7 +99,7 @@ public class MeasureCollection implements ScoreComponent {
         }
         boolean isFirstGroup = true;
         for (List<String> measureGroupString : measureGroupStringList) {
-            measureGroupList.add(new MeasureGroup(measureGroupString, isFirstGroup));
+            measureGroupList.add(new TabRow(measureGroupString, isFirstGroup));
             isFirstGroup = false;
         }
         return measureGroupList;
@@ -128,7 +128,7 @@ public class MeasureCollection implements ScoreComponent {
         List<Range> identifiedComponents = new ArrayList<>();       //to prevent the same thing being identified as two different components (e.g being identified as both a comment and an instruction)
 
         //extract the measure group collection and create the list of MeasureGroup objects with it
-        Matcher matcher = Pattern.compile("((^|\\n)"+MeasureCollection.LINE_PATTERN+")+").matcher(origin);
+        Matcher matcher = Pattern.compile("((^|\\n)"+TabSection.LINE_PATTERN+")+").matcher(origin);
         if(matcher.find()) { // we don't use while loop because we are guaranteed that there is going to be just one of this pattern in this.origin. Look at the static factory method and the createMeasureCollectionPattern method
             this.measureGroupList = this.createMeasureGroupList("[" + (this.position + matcher.start()) + "]" + matcher.group());
             identifiedComponents.add(new Range(matcher.start(), matcher.end()));
@@ -167,36 +167,8 @@ public class MeasureCollection implements ScoreComponent {
         return componentsMap;
     }
 
-    /**
-     * Validates the aggregated MeasureGroup objects of this class. It stops evaluation at the first aggregated object
-     * which fails validation.
-     * TODO it might be better to not have it stop when one aggregated object fails validation, but instead have it
-     *      validate all of them and return a List of all aggregated objects that failed validation, so the user knows
-     *      all what is wrong with their tablature file, instead of having to fix one problem before being able to see
-     *      what the other problems with their text file is.
-     * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
-     * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
-     * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
-     * found in the root string from which it was derived (i.e Score.ROOT_STRING).
-     * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
-     */
-    public List<ValidationError> validate() {
-        List<ValidationError> result = new ArrayList<>();
-
-        //--------------Validate your aggregates (only if you are valid)-------------------
-
-        for (MeasureGroup mGroup : this.measureGroupList) {
-            result.addAll(mGroup.validate());
-        }
-        for (Instruction instruction : this.instructionList) {
-            result.addAll(instruction.validate());
-        }
-
-        return result;
-    }
-
     private static String validLinePattern() {
-        return "("+ Patterns.WHITESPACE+"*("+MeasureGroup.LINE_PATTERN+Patterns.WHITESPACE+"*)+)";
+        return "("+ Patterns.WHITESPACE+"*("+TabRow.LINE_PATTERN+Patterns.WHITESPACE+"*)+)";
     }
 
     /**
@@ -208,21 +180,21 @@ public class MeasureCollection implements ScoreComponent {
         return "((^|\\n)"+ Instruction.LINE_PATTERN+")*"          // 0 or more lines separated by newlines, each containing a group of instructions or comments
                 + "("                                                                   // then the measure collection line, which is made of...
                 +       "(^|\\n)"                                                           // a start of line or a new line
-                +       MeasureCollection.validLinePattern()                               // a measure group line followed by whitespace, all repeated one or more times
+                +       TabSection.validLinePattern()                               // a measure group line followed by whitespace, all repeated one or more times
                 + ")+"                                                                  // the measure collection line I just described is repeated one or more times.
                 + "(\\n"+ Instruction.LINE_PATTERN+")*";
     }
 
     public List<models.measure.Measure> getMeasureModels() {
         List<models.measure.Measure> measureModels = new ArrayList<>();
-        for (MeasureGroup measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.measureGroupList) {
             measureModels.addAll(measureGroup.getMeasureModels());
         }
         return measureModels;
     }
 
     public boolean isGuitar(boolean strictCheck) {
-        for (MeasureGroup measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.measureGroupList) {
             if (!measureGroup.isGuitar(strictCheck))
                 return false;
         }
@@ -230,7 +202,7 @@ public class MeasureCollection implements ScoreComponent {
     }
 
     public boolean isDrum(boolean strictCheck) {
-        for (MeasureGroup measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.measureGroupList) {
             if (!measureGroup.isDrum(strictCheck))
                 return false;
         }
@@ -238,7 +210,7 @@ public class MeasureCollection implements ScoreComponent {
     }
 
     public boolean isBass(boolean strictCheck) {
-        for (MeasureGroup measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.measureGroupList) {
             if (!measureGroup.isBass(strictCheck))
                 return false;
         }
@@ -247,7 +219,7 @@ public class MeasureCollection implements ScoreComponent {
 
     public int getDivisions() {
         int divisions = 0;
-        for (MeasureGroup measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.measureGroupList) {
             divisions = Math.max(divisions,  measureGroup.getDivisions());
         }
 
@@ -255,16 +227,44 @@ public class MeasureCollection implements ScoreComponent {
     }
 
     public void setDurations() {
-        for (MeasureGroup measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.measureGroupList) {
             measureGroup.setDurations();
         }
     }
 
-    public List<MeasureGroup> getMeasureGroupList() {
+    public List<TabRow> getMeasureGroupList() {
         return this.measureGroupList;
     }
 
-    @Override
+    /**
+	 * Validates the aggregated TabRow objects of this class. It stops evaluation at the first aggregated object
+	 * which fails validation.
+	 * TODO it might be better to not have it stop when one aggregated object fails validation, but instead have it
+	 *      validate all of them and return a List of all aggregated objects that failed validation, so the user knows
+	 *      all what is wrong with their tablature file, instead of having to fix one problem before being able to see
+	 *      what the other problems with their text file is.
+	 * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
+	 * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
+	 * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
+	 * found in the root string from which it was derived (i.e Score.tabText).
+	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
+	 */
+	public List<ValidationError> validate() {
+	    List<ValidationError> result = new ArrayList<>();
+	
+	    //--------------Validate your aggregates (only if you are valid)-------------------
+	
+	    for (TabRow mGroup : this.measureGroupList) {
+	        result.addAll(mGroup.validate());
+	    }
+	    for (Instruction instruction : this.instructionList) {
+	        result.addAll(instruction.validate());
+	    }
+	
+	    return result;
+	}
+
+	@Override
     public String toString() {
         StringBuilder outStr = new StringBuilder();
         for (int i=0; i<this.measureGroupList.size()-1; i++) {

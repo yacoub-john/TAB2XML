@@ -1,6 +1,6 @@
 package converter;
 
-import converter.measure.Measure;
+import converter.measure.TabMeasure;
 import converter.measure_line.DrumMeasureLine;
 import custom_exceptions.InvalidScoreTypeException;
 import custom_exceptions.MixedScoreTypeException;
@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Score implements ScoreComponent {
-    private List<MeasureCollection> measureCollectionList;
+    private List<TabSection> measureCollectionList;
     // Score.scoreText is only public for the JUnit tester to work. Its access modifier should be protected so that
     // it will not be changed by anything outside the converter package as the "position" instance variable of other
     // classes in this package (e.g MeasureLine) shows the position of the measure line in this String, thus they depend
@@ -44,8 +44,8 @@ public class Score implements ScoreComponent {
     public Score(String textInput) {
     	tabText = textInput;
     	
-    	Measure.GLOBAL_MEASURE_COUNT = 0;
-        Measure.PREV_MEASURE_TYPE = Instrument.AUTO;
+    	TabMeasure.GLOBAL_MEASURE_COUNT = 0;
+        TabMeasure.PREV_MEASURE_TYPE = Instrument.AUTO;
         
         scoreTextFragments = getScoreTextFragments(tabText);
         measureCollectionList = createMeasureCollectionList(scoreTextFragments);
@@ -112,16 +112,16 @@ public class Score implements ScoreComponent {
      *                        original text from which the fragments were derived.
      * @return a list of MeasureCollection objects.
      */
-    private List<MeasureCollection> createMeasureCollectionList(Map<Integer, String> stringFragments) {
-        List<MeasureCollection> msurCollectionList = new ArrayList<>();
+    private List<TabSection> createMeasureCollectionList(Map<Integer, String> stringFragments) {
+        List<TabSection> msurCollectionList = new ArrayList<>();
 
         boolean isFirstCollection = true;
         for (Map.Entry<Integer, String> fragment : stringFragments.entrySet()) {
-            List<MeasureCollection> msurCollectionSubList = MeasureCollection.getInstances(fragment.getValue(), fragment.getKey(), isFirstCollection);
+            List<TabSection> msurCollectionSubList = TabSection.getInstances(fragment.getValue(), fragment.getKey(), isFirstCollection);
             isFirstCollection = false;
             //it may be that the text is completely not understood in the slightest as a measure collection
             //and the MeasureCollection.getInstance() returns null
-            for (MeasureCollection msurCollection : msurCollectionSubList)
+            for (TabSection msurCollection : msurCollectionSubList)
                 msurCollectionList.add(msurCollection);
         }
         return msurCollectionList;
@@ -131,10 +131,10 @@ public class Score implements ScoreComponent {
         INSTRUMENT_MODE = InstrumentMode;
     }
 
-    public Measure getMeasure(int measureCount) {
-        for (MeasureCollection mCol : this.getMeasureCollectionList()) {
-            for (MeasureGroup mGroup : mCol.getMeasureGroupList()) {
-                for (Measure measure : mGroup.getMeasureList()) {
+    public TabMeasure getMeasure(int measureCount) {
+        for (TabSection mCol : this.getMeasureCollectionList()) {
+            for (TabRow mGroup : mCol.getMeasureGroupList()) {
+                for (TabMeasure measure : mGroup.getMeasureList()) {
                     int count = measure.getCount();
                     if (count==measureCount)
                         return measure;
@@ -146,10 +146,10 @@ public class Score implements ScoreComponent {
         return null;
     }
 
-    public List<Measure> getMeasureList() {
-        List<Measure> measureList = new ArrayList<>();
-        for (MeasureCollection mCol : this.measureCollectionList) {
-            for (MeasureGroup mGroup : mCol.getMeasureGroupList()) {
+    public List<TabMeasure> getMeasureList() {
+        List<TabMeasure> measureList = new ArrayList<>();
+        for (TabSection mCol : this.measureCollectionList) {
+            for (TabRow mGroup : mCol.getMeasureGroupList()) {
                 measureList.addAll(mGroup.getMeasureList());
             }
         }
@@ -170,9 +170,9 @@ public class Score implements ScoreComponent {
     private void fixTrailingTimeSignatures() {
         int currBeatCount = DEFAULT_BEAT_COUNT;
         int currBeatType = DEFAULT_BEAT_TYPE;
-        for (MeasureCollection measureCollection : this.getMeasureCollectionList()) {
-            for (MeasureGroup mGroup : measureCollection.getMeasureGroupList()) {
-                for (Measure measure : mGroup.getMeasureList()) {
+        for (TabSection measureCollection : this.getMeasureCollectionList()) {
+            for (TabRow mGroup : measureCollection.getMeasureGroupList()) {
+                for (TabMeasure measure : mGroup.getMeasureList()) {
                     if (measure.isTimeSigOverridden()) {
                         currBeatCount = measure.getBeatCount();
                         currBeatType = measure.getBeatType();
@@ -184,13 +184,13 @@ public class Score implements ScoreComponent {
         }
     }
 
-    public List<MeasureCollection> getMeasureCollectionList() {
+    public List<TabSection> getMeasureCollectionList() {
         return this.measureCollectionList;
     }
 
     public int getDivisions() {
         int divisions = 0;
-        for (MeasureCollection msurCollection : this.measureCollectionList) {
+        for (TabSection msurCollection : this.measureCollectionList) {
             divisions = Math.max(divisions,  msurCollection.getDivisions());
         }
 
@@ -198,7 +198,7 @@ public class Score implements ScoreComponent {
     }
 
     public void setDurations() {
-        for (MeasureCollection msurCollection : this.measureCollectionList) {
+        for (TabSection msurCollection : this.measureCollectionList) {
             msurCollection.setDurations();
         }
     }
@@ -222,7 +222,7 @@ public class Score implements ScoreComponent {
 
         int prevEndIdx = 0;
         ArrayList<Integer[]> positions = new ArrayList<>();
-        for (MeasureCollection msurCollction : this.measureCollectionList) {
+        for (TabSection msurCollction : this.measureCollectionList) {
         	String uninterpretedFragment = tabText.substring(prevEndIdx,msurCollction.position);
         	if (!uninterpretedFragment.isBlank()) {
         		positions.add(new Integer[]{prevEndIdx, prevEndIdx+uninterpretedFragment.length()});
@@ -247,7 +247,7 @@ public class Score implements ScoreComponent {
         }
 
         //--------------Validate your aggregates (regardless of if you're valid, as there is no significant validation performed upon yourself that preclude your aggregates from being valid)-------------------
-        for (MeasureCollection colctn : this.measureCollectionList) {
+        for (TabSection colctn : this.measureCollectionList) {
             result.addAll(colctn.validate());
         }
 
@@ -283,7 +283,7 @@ public class Score implements ScoreComponent {
         }
 
         List<models.measure.Measure> measures = new ArrayList<>();
-        for (MeasureCollection measureCollection : this.measureCollectionList) {
+        for (TabSection measureCollection : this.measureCollectionList) {
             measures.addAll(measureCollection.getMeasureModels());
         }
         Part part = new Part("P1", measures);
@@ -335,7 +335,7 @@ public class Score implements ScoreComponent {
         if (!strictCheck && Score.INSTRUMENT_MODE != Instrument.AUTO) {
             return Score.INSTRUMENT_MODE == Instrument.GUITAR;
         }
-        for (MeasureCollection msurCollection : this.measureCollectionList) {
+        for (TabSection msurCollection : this.measureCollectionList) {
             if (!msurCollection.isGuitar(strictCheck))
                 return false;
         }
@@ -346,7 +346,7 @@ public class Score implements ScoreComponent {
         if (!strictCheck && Score.INSTRUMENT_MODE != Instrument.AUTO) {
             return Score.INSTRUMENT_MODE == Instrument.DRUM;
         }
-        for (MeasureCollection msurCollection : this.measureCollectionList) {
+        for (TabSection msurCollection : this.measureCollectionList) {
             if (!msurCollection.isDrum(strictCheck))
                 return false;
         }
@@ -357,7 +357,7 @@ public class Score implements ScoreComponent {
         if (!strictCheck && Score.INSTRUMENT_MODE != Instrument.AUTO) {
             return Score.INSTRUMENT_MODE == Instrument.BASS;
         }
-        for (MeasureCollection msurCollection : this.measureCollectionList) {
+        for (TabSection msurCollection : this.measureCollectionList) {
             if (!msurCollection.isBass(strictCheck))
                 return false;
         }
@@ -371,7 +371,7 @@ public class Score implements ScoreComponent {
     @Override
     public String toString() {
         String outStr = "";
-        for (MeasureCollection measureCollection : this.measureCollectionList) {
+        for (TabSection measureCollection : this.measureCollectionList) {
             outStr += measureCollection.toString();
             outStr += "\n\n";
         }

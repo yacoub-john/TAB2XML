@@ -1,6 +1,6 @@
 package converter;
 
-import converter.measure.Measure;
+import converter.measure.TabMeasure;
 import converter.note.Note;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,7 +88,7 @@ public class ScoreTest {
         for (String inlineRepeatMeasure : inlineRepeatMeasures) {
             Score score = new Score(inlineRepeatMeasure);
             assertEquals(1, score.getMeasureCollectionList().size(), "one measure was expected but found " + score.getMeasureCollectionList().size() + ".");
-            Measure measure = score.getMeasure(1);
+            TabMeasure measure = score.getMeasure(1);
             assertTrue(measure.isRepeatEnd());
             assertTrue(measure.isRepeatStart());
             List<Note> noteList = measure.getSortedNoteList();
@@ -170,7 +170,7 @@ public class ScoreTest {
             for (String repeatMeasure : repeatMeasures) {
                 Score score = new Score(repeatMeasure);
                 assertEquals(1, score.getMeasureCollectionList().size(), "one measure was expected but found "+score.getMeasureCollectionList().size()+".");
-                Measure measure = score.getMeasure(1);
+                TabMeasure measure = score.getMeasure(1);
                 assertTrue(measure.isRepeatEnd());
                 assertTrue(measure.isRepeatStart());
                 List<Note> noteList = measure.getSortedNoteList();
@@ -290,10 +290,10 @@ public class ScoreTest {
 
         for (int i=0; i<measureStrings.length; i++) {
             Score score = new Score(measureStrings[i]);
-            List<Measure> measureList = score.getMeasureList();
+            List<TabMeasure> measureList = score.getMeasureList();
             String[] expectedTimeSigs = expectedTimeSigGroups[i%3];
             for (int j=0; j<measureList.size(); j++) {
-                Measure measure = measureList.get(j);
+                TabMeasure measure = measureList.get(j);
                 assertTrue(j<expectedTimeSigs.length, "More measures were detected in the following group than was expected.\nMeasure Group:\n"+measureStrings[i]);
                 String expectedTimeSig = expectedTimeSigs[j];
                 String actualTimeSig = measure.getBeatCount()+"/"+measure.getBeatType();

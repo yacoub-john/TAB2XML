@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class GuitarMeasureLine extends MeasureLine {
+public class GuitarMeasureLine extends TabString {
     public static List<String> NAME_LIST = createLineNameSet();
     public static List<String> OCTAVE_LIST = createOctaveList();
     public static String COMPONENT = "[0-9hHpPsS\\/\\\\]";

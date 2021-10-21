@@ -1,10 +1,10 @@
 package converter.instruction;
 
 import GUI.MainView;
-import converter.MeasureCollection;
-import converter.MeasureGroup;
+import converter.TabSection;
+import converter.TabRow;
 import converter.ScoreComponent;
-import converter.measure.Measure;
+import converter.measure.TabMeasure;
 import utility.Settings;
 import utility.Patterns;
 import utility.Range;
@@ -36,15 +36,15 @@ public class Repeat extends Instruction {
             return;
         }
 
-        if (scoreComponent instanceof MeasureCollection) {
-            MeasureCollection measureCollection = (MeasureCollection) scoreComponent;
-            Measure firstMeasure = null;
-            Measure lastMeasure = null;
-            for (MeasureGroup measureGroup : measureCollection.getMeasureGroupList()) {
+        if (scoreComponent instanceof TabSection) {
+            TabSection measureCollection = (TabSection) scoreComponent;
+            TabMeasure firstMeasure = null;
+            TabMeasure lastMeasure = null;
+            for (TabRow measureGroup : measureCollection.getMeasureGroupList()) {
                 Range measureGroupRange = measureGroup.getRelativeRange();
                 if (measureGroupRange==null) continue;
                 if (!this.getRelativeRange().overlaps(measureGroupRange)) continue;
-                for (Measure measure : measureGroup.getMeasureList()) {
+                for (TabMeasure measure : measureGroup.getMeasureList()) {
                     Range measureRange = measure.getRelativeRange();
                     if (measureRange==null || !this.getRelativeRange().overlaps(measureRange)) continue;
                     if (firstMeasure==null && !this.startApplied)

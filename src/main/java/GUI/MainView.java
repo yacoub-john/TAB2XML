@@ -1,7 +1,7 @@
 package GUI;
 
 import converter.Score;
-import converter.measure.Measure;
+import converter.measure.TabMeasure;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;
 import javafx.scene.control.IndexRange;
@@ -170,7 +170,7 @@ public class MainView {
     }
 
     public boolean goToMeasure(int measureCount) {
-        Measure measure = new Score(TEXT_AREA.getText()).getMeasure(measureCount);
+        TabMeasure measure = new Score(TEXT_AREA.getText()).getMeasure(measureCount);
         if (measure==null) return false;
         List<Integer[]> linePositions = measure.getLinePositions();
         TEXT_AREA.moveTo(linePositions.get(0)[0]);

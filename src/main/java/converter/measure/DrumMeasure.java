@@ -3,7 +3,7 @@ package converter.measure;
 import GUI.MainView;
 import converter.Score;
 import converter.measure_line.DrumMeasureLine;
-import converter.measure_line.MeasureLine;
+import converter.measure_line.TabString;
 import converter.note.Note;
 import models.measure.Backup;
 import models.measure.attributes.Attributes;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DrumMeasure extends Measure {
+public class DrumMeasure extends TabMeasure {
 
     private static final int MIN_LINE_COUNT = 1;
     private static final int MAX_LINE_COUNT = 6;
@@ -89,7 +89,7 @@ public class DrumMeasure extends Measure {
             }
         }
 
-        for (MeasureLine measureLine : this.measureLineList) {
+        for (TabString measureLine : this.measureLineList) {
             result.addAll(measureLine.validate());
         }
 

@@ -5,7 +5,7 @@ import converter.Score;
 import converter.measure_line.BassMeasureLine;
 import converter.measure_line.DrumMeasureLine;
 import converter.measure_line.GuitarMeasureLine;
-import converter.measure_line.MeasureLine;
+import converter.measure_line.TabString;
 import models.measure.attributes.*;
 import utility.Settings;
 import utility.ValidationError;
@@ -56,7 +56,7 @@ public class BassMeasure extends GuitarMeasure {
         boolean lineSizeEqual = true;
 
         int previousLineLength = -1;
-        for (MeasureLine measureLine : this.measureLineList) {
+        for (TabString measureLine : this.measureLineList) {
             hasGuitarMeasureLines &= measureLine instanceof GuitarMeasureLine;
             hasDrumMeasureLines &= measureLine instanceof DrumMeasureLine;
 
@@ -121,7 +121,7 @@ public class BassMeasure extends GuitarMeasure {
             }
         }
 
-        for (MeasureLine measureLine : this.measureLineList) {
+        for (TabString measureLine : this.measureLineList) {
             result.addAll(measureLine.validate());
         }
 

@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InsidesPatternTest {
-    Pattern pattern = Pattern.compile(MeasureLine.INSIDES_PATTERN);
+    Pattern pattern = Pattern.compile(TabString.INSIDES_PATTERN);
 
     @Test
     void multipleDividersValidTest() {

@@ -8,7 +8,7 @@ import converter.instruction.TimeSignature;
 import converter.measure_line.BassMeasureLine;
 import converter.measure_line.DrumMeasureLine;
 import converter.measure_line.GuitarMeasureLine;
-import converter.measure_line.MeasureLine;
+import converter.measure_line.TabString;
 import converter.note.Note;
 import converter.note.NoteFactory;
 import utility.Settings;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class Measure implements ScoreComponent {
+public abstract class TabMeasure implements ScoreComponent {
     public static int GLOBAL_MEASURE_COUNT;
     public static Instrument PREV_MEASURE_TYPE;
     private static double FOLLOW_PREV_MEASURE_WEIGHT = 0.3;
@@ -36,7 +36,7 @@ public abstract class Measure implements ScoreComponent {
     List<String[]> lineNamesAndPositions;
     public int lineCount;
     List<Integer> positions;
-    public List<MeasureLine> measureLineList;
+    public List<TabString> measureLineList;
     boolean isFirstMeasureInGroup;
     List<List<Note>> voiceSortedNoteList;   // a list of voices where each voice is a sorted list of notes
 
@@ -55,7 +55,7 @@ public abstract class Measure implements ScoreComponent {
         return this.beatType;
     }
 
-    public Measure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasureInGroup) {
+    public TabMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasureInGroup) {
         this.measureCount = ++GLOBAL_MEASURE_COUNT;
         this.lines = lines;
         this.lineCount = this.lines.size();
@@ -76,8 +76,8 @@ public abstract class Measure implements ScoreComponent {
      * @return A list of MeasureLine objects. The concrete class type of these MeasureLine objects is determined
      * from the input String lists(lines and lineNames), and they are not guaranteed to all be of the same type.
      */
-    protected List<MeasureLine> createMeasureLineList(List<String> lines, List<String[]> namesAndPosition, List<Integer> linePositions) {
-        List<MeasureLine> measureLineList = new ArrayList<>();
+    protected List<TabString> createMeasureLineList(List<String> lines, List<String[]> namesAndPosition, List<Integer> linePositions) {
+        List<TabString> measureLineList = new ArrayList<>();
         for (int i=0; i<lines.size(); i++) {
             String line = lines.get(i);
             String[] nameAndPosition = namesAndPosition.get(i);
@@ -102,7 +102,7 @@ public abstract class Measure implements ScoreComponent {
      * @return a MeasureLine object derived from the information in the input Strings. Either of type GuitarMeasureLine
      * or DrumMeasureLine
      */
-    private MeasureLine newMeasureLine(String line, String[] nameAndPosition, int position, Instrument bias, boolean prefBass) {
+    private TabString newMeasureLine(String line, String[] nameAndPosition, int position, Instrument bias, boolean prefBass) {
         if (Score.INSTRUMENT_MODE!=Instrument.AUTO) {
             return switch (Score.INSTRUMENT_MODE) {
                 case GUITAR -> new GuitarMeasureLine(line, nameAndPosition, position);
@@ -202,7 +202,7 @@ public abstract class Measure implements ScoreComponent {
      * @return A Measure object which is either of type GuitarMeasure if the measure was understood to be a guitar
      * measure, or of type DrumMeasure if the measure was understood to be of type DrumMeasure
      */
-    public static Measure from(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {
+    public static TabMeasure from(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {
         boolean repeatStart = checkRepeatStart(lineList);
         boolean repeatEnd = checkRepeatEnd(lineList);
         String repeatCountStr = extractRepeatCount(lineList);
@@ -215,7 +215,7 @@ public abstract class Measure implements ScoreComponent {
             repeatCount = Integer.parseInt(repeatCountStr);
         }
 
-        Measure measure;
+        TabMeasure measure;
         if (Score.INSTRUMENT_MODE!=Instrument.AUTO) {
             measure = switch (Score.INSTRUMENT_MODE) {
                 case GUITAR -> new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
@@ -467,7 +467,7 @@ public abstract class Measure implements ScoreComponent {
     public void setDurations() {
                         //total duration in unit of quarter notes
         double totalMeasureDuration = (double)beatCount/(double)beatType;
-        for (MeasureLine measureLine : this.measureLineList) {
+        for (TabString measureLine : this.measureLineList) {
             for (Note note : measureLine.noteList) {
 
                 //the number of times you have to divide a whole note to get the note note.durationRatio*total... (i.e a quarter note is 4, an eighth note is 8, 1/16th note is 16, etc)
@@ -544,7 +544,7 @@ public abstract class Measure implements ScoreComponent {
 
     public int getMaxMeasureLineLength() {
         int maxLen = 0;
-        for (MeasureLine mLine : this.measureLineList) {
+        for (TabString mLine : this.measureLineList) {
             maxLen = Math.max(maxLen, mLine.line.replace("\s", "").length());
         }
         return maxLen;
@@ -571,7 +571,7 @@ public abstract class Measure implements ScoreComponent {
         boolean lineSizeEqual = true;
 
         int previousLineLength = -1;
-        for (MeasureLine measureLine : this.measureLineList) {
+        for (TabString measureLine : this.measureLineList) {
             hasGuitarMeasureLines &= measureLine instanceof GuitarMeasureLine;
             hasDrumMeasureLines &= measureLine instanceof DrumMeasureLine;
 
@@ -648,7 +648,7 @@ public abstract class Measure implements ScoreComponent {
 
     public List<Note> getSortedNoteList() {
         List<Note> sortedNoteList = new ArrayList<>();
-        for (MeasureLine measureLine : this.measureLineList) {
+        for (TabString measureLine : this.measureLineList) {
             sortedNoteList.addAll(measureLine.getNoteList());
         }
         Collections.sort(sortedNoteList);
@@ -656,7 +656,7 @@ public abstract class Measure implements ScoreComponent {
     }
 
     public boolean isGuitar(boolean strictCheck) {
-        for (MeasureLine measureLine : this.measureLineList) {
+        for (TabString measureLine : this.measureLineList) {
             if (!measureLine.isGuitar(strictCheck))
                 return false;
         }
@@ -664,14 +664,14 @@ public abstract class Measure implements ScoreComponent {
     }
 
     public boolean isDrum(boolean strictCheck) {
-        for (MeasureLine measureLine : this.measureLineList) {
+        for (TabString measureLine : this.measureLineList) {
             if (!measureLine.isDrum(strictCheck))
                 return false;
         }
         return true;
     }
     public boolean isBass(boolean strictCheck) {
-        for (MeasureLine measureLine : this.measureLineList) {
+        for (TabString measureLine : this.measureLineList) {
             if (!measureLine.isGuitar(strictCheck))
                 return false;
         }
@@ -684,14 +684,14 @@ public abstract class Measure implements ScoreComponent {
         if (TimeSignature.isValid(this.beatCount, this.beatType))
             stringOut.append(this.beatCount+"/"+this.beatType+"\n");
         for (int i=0; i<this.measureLineList.size()-1; i++) {
-            MeasureLine measureLine = this.measureLineList.get(i);
+            TabString measureLine = this.measureLineList.get(i);
             stringOut.append(measureLine.name);
             stringOut.append("|");
             stringOut.append(measureLine.recreateLineString(getMaxMeasureLineLength()));
             stringOut.append("\n");
         }
         if (!this.measureLineList.isEmpty()) {
-            MeasureLine measureLine = this.measureLineList.get(this.measureLineList.size()-1);
+            TabString measureLine = this.measureLineList.get(this.measureLineList.size()-1);
             stringOut.append(measureLine.name);
             stringOut.append("|");
             stringOut.append(measureLine.recreateLineString(getMaxMeasureLineLength()));
