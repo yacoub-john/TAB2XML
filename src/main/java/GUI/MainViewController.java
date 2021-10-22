@@ -44,11 +44,12 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import utility.MusicXMLCreator;
+import utility.Settings;
 
 public class MainViewController extends Application {
 	
 	private int HOVER_DELAY = 30;
-	//private Preferences prefs;
+	private Preferences prefs;
 	public File saveFile;
 	private static boolean isEditingSavedFile;
 	private String InstrumentSetting = "auto";
@@ -70,20 +71,12 @@ public class MainViewController extends Application {
 
 
 	public MainViewController() {
-		// These are default settings.
-		// Should be get from persistent storage, not put, and then update Globals
-		// Not being used yet. Sample code below
-//		prefs = Preferences.userRoot();
-//		String outputFolder = prefs.get("outputFolder", new File("src").getAbsolutePath());
-//		outputFolderField.setText(outputFolder);
-//
-//		String tsNumerator = prefs.get("tsNumerator", "4");
-//		String tsDenominator = prefs.get("tsDenominator", "4");
-
-
-		//prefs.put("errorSensitivity", "Level 2 - Standard Error Checking");
-		//prefs.put("tsNumerator", "4");
-		//prefs.put("tsDenominator", "4");
+		Settings s = Settings.getInstance();
+		prefs = Preferences.userRoot();
+		s.outputFolder = prefs.get("outputFolder", System.getProperty("user.home"));
+		s.tsNum = Integer.parseInt(prefs.get("tsNum", "4"));
+		s.tsDen = Integer.parseInt(prefs.get("tsDen", "4"));
+		s.errorSensitivity = Integer.parseInt(prefs.get("errorSensitivity", "4"));
 	}
 
 	@FXML 
@@ -137,14 +130,29 @@ public class MainViewController extends Application {
 	}
 
 	@FXML
-	private void handleSettings() {
+	private void handleCurrentSongSettings() {
 		Parent root;
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/settingsWindow.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/currentSongSettingsWindow.fxml"));
 			root = loader.load();
-			SettingsWindowController controller = loader.getController();
+			CurrentSongSettingsWindowController controller = loader.getController();
 			controller.setMainViewController(this);
-			settingsWindow = this.openNewWindow(root, "Program Settings");
+			settingsWindow = this.openNewWindow(root, "Current Song Settings");
+		} catch (IOException e) {
+			Logger logger = Logger.getLogger(getClass().getName());
+			logger.log(Level.SEVERE, "Failed to create new Window.", e);
+		}
+	}
+	
+	@FXML
+	private void handleSystemDefaultSettings() {
+		Parent root;
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/systemDefaultSettingsWindow.fxml"));
+			root = loader.load();
+			SystemDefaultSettingsWindowController controller = loader.getController();
+			controller.setMainViewController(this);
+			settingsWindow = this.openNewWindow(root, "System Default Settings");
 		} catch (IOException e) {
 			Logger logger = Logger.getLogger(getClass().getName());
 			logger.log(Level.SEVERE, "Failed to create new Window.", e);
@@ -200,6 +208,7 @@ public class MainViewController extends Application {
 	private boolean handleSaveAs() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Save As");
+		fileChooser.setInitialDirectory(new File(Settings.getInstance().outputFolder));
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 		if (saveFile!=null) {
 			fileChooser.setInitialFileName(saveFile.getName());

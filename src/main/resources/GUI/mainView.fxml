@@ -28,12 +28,17 @@
                         <MenuItem mnemonicParsing="false" onAction="#handleSaveAs" text="Save as" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Help">
+                <Menu mnemonicParsing="false" text="Settings">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleSettings" text="Settings" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleUserManual" text="User Manual" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleCurrentSongSettings" text="Current Song Settings" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleSystemDefaultSettings" text="System Default Settings" />
                     </items>
                 </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#handleUserManual" text="User Manual" />
+               </items>
+            </Menu>
             </menus>
         </MenuBar>
     </top>

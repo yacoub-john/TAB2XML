@@ -45,10 +45,10 @@ public class ConvertWindowController extends Application {
         String generatedOutput = mxlc.generateMusicXML();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save As");
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MusicXML files", "*.xml", "*.mxl", "*.musicxml");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MusicXML files", "*.musicxml", "*.xml", "*.mxl");
         fileChooser.getExtensionFilters().add(extFilter);
 
-        File initialDir = null;
+        File initialDir = new File(Settings.getInstance().outputFolder);
         String initialName = null;
         if (!fileNameField.getText().isBlank() && fileNameField.getText().length()<50)
             initialName = fileNameField.getText().strip();
@@ -67,10 +67,8 @@ public class ConvertWindowController extends Application {
         if (initialName != null)
             fileChooser.setInitialFileName(initialName);
 
-        if (initialDir == null || !(initialDir.exists() && initialDir.canRead()))
-            initialDir = new File(System.getProperty("user.home"));
         if (!(initialDir.exists() && initialDir.canRead()))
-            initialDir = new File("c:/");
+            initialDir = new File(System.getProperty("user.home"));
 
         fileChooser.setInitialDirectory(initialDir);
 

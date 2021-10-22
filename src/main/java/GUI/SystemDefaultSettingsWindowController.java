@@ -11,7 +11,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import utility.Settings;
 
-public class SettingsWindowController extends Application {
+public class SystemDefaultSettingsWindowController extends Application {
 
 	private MainViewController mvc;
 	Preferences prefs;
@@ -21,7 +21,7 @@ public class SettingsWindowController extends Application {
 	@FXML private ComboBox<String> cmbNumerator;
 	@FXML private ComboBox<String> cmbDenominator;
 
-	public SettingsWindowController() {
+	public SystemDefaultSettingsWindowController() {
 		prefs = Preferences.userRoot();
 	}
 	
@@ -56,16 +56,15 @@ public class SettingsWindowController extends Application {
 	}
 	
 	@FXML private void handleErrorSensitivity() {
-		//prefs.put("errorSensitivity", errorSensitivity.getValue().toString() );
 		int err;
 		switch (cmbErrorSensitivity.getValue().toString()) {
 		case "Level 1 - Minimal Error Checking" -> err = 1;
+		case "Level 2 - Standard Error Checking" -> err = 2;
 		case "Level 3 - Advanced Error Checking" -> err = 3;
 		case "Level 4 - Detailed Error Checking" -> err = 4;
-		default -> err = 2;
+		default -> err = 4;
 		}
-		Settings.getInstance().errorSensitivity = err;
-		
+		prefs.put("errorSensitivity", err+"");
 		mvc.mainView.refresh();
 	}
 
@@ -75,23 +74,25 @@ public class SettingsWindowController extends Application {
 		dc.setInitialDirectory(new File("src"));
 		File selected = dc.showDialog(MainApp.STAGE);
 		outputFolderField.setText(selected.getAbsolutePath());
-		Settings.getInstance().outputFolder = selected.getAbsolutePath();
+		//Settings.getInstance().outputFolder = selected.getAbsolutePath();
 
-		//prefs.put("outputFolder", selected.getAbsolutePath());
+		prefs.put("outputFolder", selected.getAbsolutePath());
 	}
 
 	@FXML
 	private void handleTSNumerator() {
 		String value = cmbNumerator.getValue().toString();
-		//prefs.put("tsNumerator", value);
-		Settings.getInstance().tsNum = Integer.parseInt(value);
+		prefs.put("tsNum", value);
+		//Settings.getInstance().tsNum = Integer.parseInt(value);
 	}
+	
 	@FXML
 	private void handleTSDenominator() {
 		String value = cmbDenominator.getValue().toString();
-		//prefs.put("tsDenominator", value);
-		Settings.getInstance().tsDen = Integer.parseInt(value);
+		prefs.put("tsDen", value);
+		//Settings.getInstance().tsDen = Integer.parseInt(value);
 	}
+
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {

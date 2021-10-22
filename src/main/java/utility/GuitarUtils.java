@@ -35,4 +35,16 @@ public class GuitarUtils {
 	    return result;
 	}
     
+	public static String toOneString(String[][] tuning)
+	{
+		String result = "";
+		Settings s = Settings.getInstance();
+		for (int i=0; i< 6; i++)
+		{
+			for (int j=0; j< 2; j++)
+				result += s.guitarTuning[i][j];
+			if (i < 5)result += ",";
+		}
+		return result;
+	}
 }

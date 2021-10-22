@@ -1,28 +1,33 @@
 package GUI;
 
 import java.io.File;
-import java.util.prefs.Preferences;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import utility.GuitarUtils;
 import utility.Settings;
 
 public class CurrentSongSettingsWindowController extends Application {
 
 	private MainViewController mvc;
-	Preferences prefs;
+	//Preferences prefs;
+	private Node[][] gridPaneArray = null;
 
 	@FXML public TextField outputFolderField;
 	@FXML private ComboBox<String> cmbErrorSensitivity;
 	@FXML private ComboBox<String> cmbNumerator;
 	@FXML private ComboBox<String> cmbDenominator;
-
+	@FXML private GridPane gridGuitarTuning;
+	
 	public CurrentSongSettingsWindowController() {
-		prefs = Preferences.userRoot();
+		//prefs = Preferences.userRoot();
 	}
 	
 	public void setMainViewController(MainViewController mvcInput) {
@@ -53,30 +58,32 @@ public class CurrentSongSettingsWindowController extends Application {
 		int den = s.tsDen;
 		cmbDenominator.getSelectionModel().select(den + "");
 		
+		initializeGuitarTuning();
+
 	}
-	
+
 	@FXML private void handleErrorSensitivity() {
-		//prefs.put("errorSensitivity", errorSensitivity.getValue().toString() );
 		int err;
 		switch (cmbErrorSensitivity.getValue().toString()) {
 		case "Level 1 - Minimal Error Checking" -> err = 1;
+		case "Level 2 - Standard Error Checking" -> err = 2;
 		case "Level 3 - Advanced Error Checking" -> err = 3;
 		case "Level 4 - Detailed Error Checking" -> err = 4;
-		default -> err = 2;
+		default -> err = 4;
 		}
 		Settings.getInstance().errorSensitivity = err;
-		
 		mvc.mainView.refresh();
 	}
 
 	@FXML
-	private void handleChangeFolder() {
+	private void handleBrowse() {
 		DirectoryChooser dc = new DirectoryChooser();
-		dc.setInitialDirectory(new File("src"));
+		dc.setInitialDirectory(new File(Settings.getInstance().outputFolder));
 		File selected = dc.showDialog(MainApp.STAGE);
 		outputFolderField.setText(selected.getAbsolutePath());
 		Settings.getInstance().outputFolder = selected.getAbsolutePath();
-
+		//System.out.println(Settings.getInstance().outputFolder);
+		
 		//prefs.put("outputFolder", selected.getAbsolutePath());
 	}
 
@@ -91,6 +98,57 @@ public class CurrentSongSettingsWindowController extends Application {
 		String value = cmbDenominator.getValue().toString();
 		//prefs.put("tsDenominator", value);
 		Settings.getInstance().tsDen = Integer.parseInt(value);
+	}
+	
+
+	private void initializeGridPaneArray()
+    {
+       this.gridPaneArray = new Node[6][2];
+       for(Node node : gridGuitarTuning.getChildren())
+       {
+    	  if (node instanceof ComboBox<?>)
+          this.gridPaneArray[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = node;
+       }
+    }
+	
+	@FXML private void handleTuning(ActionEvent e) {
+		
+		Node n = (Node) e.getSource();
+		if(n instanceof ComboBox<?>)
+	    {
+			@SuppressWarnings("unchecked")
+			ComboBox<String> cb = ( ComboBox<String> ) n;
+			String newValue = cb.getValue().toString();
+			Settings.getInstance().guitarTuning[GridPane.getRowIndex(n)][GridPane.getColumnIndex(n)] = newValue;
+	    }
+		//System.out.println(GuitarUtils.toOneString(Settings.getInstance().guitarTuning));
+	}
+
+	private void initializeGuitarTuning() {
+		initializeGridPaneArray();	
+		for ( int string=0; string < 6; string++ )
+		{
+			Node n = this.gridPaneArray[string][0];
+		    if(n instanceof ComboBox<?>)
+		    {
+		    	@SuppressWarnings("unchecked")
+				ComboBox<String> cb = ( ComboBox<String> ) n;
+		    	cb.getItems().addAll(GuitarUtils.KEY_LIST);
+		    	cb.getSelectionModel().select(Settings.getInstance().guitarTuning[string][0]);
+		    }
+		}
+		for ( int string=0; string < 6; string++ )
+		{
+			Node n = this.gridPaneArray[string][1];
+		    if(n instanceof ComboBox<?>)
+		    {
+		    	@SuppressWarnings("unchecked")
+				ComboBox<String> cb = ( ComboBox<String> ) n;
+		    	for (int i= 0; i < 10; i++)
+		    		cb.getItems().add(i+"");
+		    	cb.getSelectionModel().select(Settings.getInstance().guitarTuning[string][1]);
+		    }
+		}
 	}
 
 	@Override
