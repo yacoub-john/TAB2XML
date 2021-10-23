@@ -26,7 +26,7 @@ public class BassMeasure extends GuitarMeasure {
     public Attributes getAttributesModel() {
         Attributes attributes = new Attributes();
         attributes.setKey(new Key(0));
-        if (this.changesTimeSignature())
+        if (this.changesTimeSignature)
             attributes.setTime(new Time(this.beatCount, this.beatType));
 
         if (this.measureCount == 1) {
@@ -56,7 +56,7 @@ public class BassMeasure extends GuitarMeasure {
         boolean lineSizeEqual = true;
 
         int previousLineLength = -1;
-        for (TabString measureLine : this.measureLineList) {
+        for (TabString measureLine : this.tabStringList) {
             hasGuitarMeasureLines &= measureLine instanceof TabGuitarString;
             hasDrumMeasureLines &= measureLine instanceof TabDrumString;
 
@@ -86,7 +86,7 @@ public class BassMeasure extends GuitarMeasure {
         //------------------the above is copy paste of Measure.validate()------------------------------------------------
 
         // Now, all we need to do is check if they are actually bass measures
-        if (!(this.measureLineList.get(0) instanceof TabBassString)) {
+        if (!(this.tabStringList.get(0) instanceof TabBassString)) {
             ValidationError error = new ValidationError(
                     "All measure lines in this measure must be Bass measure lines.",
                     1,
@@ -96,7 +96,7 @@ public class BassMeasure extends GuitarMeasure {
                 result.add(error);
         }
 
-        if (this.measureLineList.size()<MIN_LINE_COUNT || this.measureLineList.size()>MAX_LINE_COUNT) {
+        if (this.tabStringList.size()<MIN_LINE_COUNT || this.tabStringList.size()>MAX_LINE_COUNT) {
             HashMap<String, String> response = new HashMap<>();
             String rangeMsg;
             if (MIN_LINE_COUNT==MAX_LINE_COUNT)
@@ -121,7 +121,7 @@ public class BassMeasure extends GuitarMeasure {
             }
         }
 
-        for (TabString measureLine : this.measureLineList) {
+        for (TabString measureLine : this.tabStringList) {
             result.addAll(measureLine.validate());
         }
 

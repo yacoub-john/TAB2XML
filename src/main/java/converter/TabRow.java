@@ -81,8 +81,8 @@ public class TabRow implements ScoreComponent {
             //Find the name at the beginning of a text line
             //Returns an array of two strings, first is the line name, next is the position of it (as a string)
             String[] lineName = nameOf(currentLine, currentLineStartPos);
-            if (lineName[0] == "") lineName[0] = defaultTuning(i);
-            
+            if (lineName[0] == "") lineName[0] = Settings.getInstance().guitarTuning[i][0];    // Keep using what ever tuning was previously set
+            Settings.getInstance().guitarTuning[i][0] = lineName[0];  // Update tuning. Only likely to make a difference for the first measure
 
             int measureCount = 0;
             Matcher measureInsidesMatcher = Pattern.compile(Patterns.INSIDES_PATTERN).matcher(currentLine);
@@ -120,27 +120,13 @@ public class TabRow implements ScoreComponent {
     }
 
     private String[] nameOf(String measureLineStr, int lineStartIdx) {
-        Pattern measureLineNamePttrn = Pattern.compile(Patterns.createMeasureNameExtractPattern());
+        Pattern measureLineNamePttrn = Pattern.compile(Patterns.measureNameExtractPattern());
         Matcher measureLineNameMatcher = measureLineNamePttrn.matcher(measureLineStr);
         if (measureLineNameMatcher.find())
             return new String[] {measureLineNameMatcher.group(), ""+(lineStartIdx+measureLineNameMatcher.start())};
         else
             return null;
     }
-
-    private String defaultTuning(int i) {
-    	String result = "";
-    	switch (i) {
-    	case 0: result = "E4"; break;
-    	case 1: result = "B3"; break;
-    	case 2: result = "G3"; break;
-    	case 3: result = "D3"; break;
-    	case 4: result = "A2"; break;
-    	case 5: result = "E2"; break;
-    	}
-    	return result;
-	}
-
 
 	/**
      * Creates a string representation of the index position range of each line making up this MeasureGroup instance,

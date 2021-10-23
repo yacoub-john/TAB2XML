@@ -28,7 +28,6 @@ public abstract class TabString implements ScoreComponent {
     protected TabString(int stringNumber, String line, String[] namesAndPosition, int position) {
         this.line = line;
         this.name = namesAndPosition[0];
-        System.out.println(name);
         this.namePosition = Integer.parseInt(namesAndPosition[1]);
         this.position = position;
     }

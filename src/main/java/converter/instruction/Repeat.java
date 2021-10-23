@@ -40,7 +40,7 @@ public class Repeat extends Instruction {
             TabSection measureCollection = (TabSection) scoreComponent;
             TabMeasure firstMeasure = null;
             TabMeasure lastMeasure = null;
-            for (TabRow measureGroup : measureCollection.getMeasureGroupList()) {
+            for (TabRow measureGroup : measureCollection.getTabRowList()) {
                 Range measureGroupRange = measureGroup.getRelativeRange();
                 if (measureGroupRange==null) continue;
                 if (!this.getRelativeRange().overlaps(measureGroupRange)) continue;

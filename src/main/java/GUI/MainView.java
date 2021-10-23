@@ -57,7 +57,7 @@ public class MainView {
 
     private StyleSpans<Collection<String>> computeHighlighting(String text) {
         Score score = new Score(text);
-        if (score.getMeasureCollectionList().isEmpty())
+        if (score.getTabSectionList().isEmpty())
         {
             convertButton.setDisable(true);
             previewButton.setDisable(true);

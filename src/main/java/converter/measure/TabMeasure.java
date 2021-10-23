@@ -36,17 +36,17 @@ public abstract class TabMeasure implements ScoreComponent {
     List<String[]> lineNamesAndPositions;
     public int lineCount;
     List<Integer> positions;
-    public List<TabString> measureLineList;
+    public List<TabString> tabStringList;
     boolean isFirstMeasureInGroup;
     List<List<Note>> voiceSortedNoteList;   // a list of voices where each voice is a sorted list of notes
 
     boolean repeatStart = false;
     boolean repeatEnd = false;
     int repeatCount = 0;
-    private boolean timeSignatureChanges;
-    public boolean changesTimeSignature() {
-        return this.timeSignatureChanges;
-    }
+    public boolean changesTimeSignature = false;
+//    public boolean changesTimeSignature() {
+//        return this.changesTimeSignature;
+//    }
 
     public int getBeatCount() {
         return this.beatCount;
@@ -390,11 +390,12 @@ public abstract class TabMeasure implements ScoreComponent {
             calcDurationRatios(chordList);
         }
     }
+    
     private void calcDurationRatios(List<List<Note>> chordList) {
         int maxMeasureLineLen = getMaxMeasureLineLength();
 
-        // handle all but last chord
-        for (int i=0; i<chordList.size()-1; i++) {
+        // Handle all but last chord
+		for (int i = 0; i < chordList.size() - 1; i++) {
             List<Note> chord = chordList.get(i);
             int currentChordDistance = chord.get(0).distance;
             int nextChordDistance = chordList.get(i+1).get(0).distance;
@@ -403,9 +404,8 @@ public abstract class TabMeasure implements ScoreComponent {
             for (Note note : chord) {
                 note.setDurationRatio(durationRatio);
             }
-            //0.11..., 0.5882
         }
-        //handle last chord, as it is a special case (it has no next chord)
+        // Handle last chord, as it is a special case (it has no next chord)
         if (!chordList.isEmpty()) {
             List<Note> chord = chordList.get(chordList.size()-1);
             int currentChordDistance = chord.get(0).distance;
@@ -414,9 +414,9 @@ public abstract class TabMeasure implements ScoreComponent {
             for (Note note : chord) {
                 note.setDurationRatio(durationRatio);
             }
-            //0.176,
         }
     }
+    
     public List<List<List<Note>>> getVoiceSortedChordList() {
         List<List<List<Note>>> voiceSortedChordList = new ArrayList<>();
         for (List<Note> voice : this.voiceSortedNoteList) {
@@ -467,8 +467,8 @@ public abstract class TabMeasure implements ScoreComponent {
     public void setDurations() {
                         //total duration in unit of quarter notes
         double totalMeasureDuration = (double)beatCount/(double)beatType;
-        for (TabString measureLine : this.measureLineList) {
-            for (Note note : measureLine.noteList) {
+        for (TabString tabString : this.tabStringList) {
+            for (Note note : tabString.noteList) {
 
                 //the number of times you have to divide a whole note to get the note note.durationRatio*total... (i.e a quarter note is 4, an eighth note is 8, 1/16th note is 16, etc)
                 // 16 durations give you one whole note, x durations give you x/16 whole notes
@@ -538,68 +538,19 @@ public abstract class TabMeasure implements ScoreComponent {
             return false;
         this.beatCount = beatCount;
         this.beatType = beatType;
-        this.timeSignatureChanges = true;
+        //this.changesTimeSignature = true;
         return true;
     }
 
     public int getMaxMeasureLineLength() {
         int maxLen = 0;
-        for (TabString mLine : this.measureLineList) {
+        for (TabString mLine : this.tabStringList) {
             maxLen = Math.max(maxLen, mLine.line.replace("\s", "").length());
         }
         return maxLen;
     }
 
 
-
-    /**
-     * Validates if all MeasureLine objects which this Measure object aggregates are instances of the same concrete
-     * MeasureLine Class (i.e they're all GuitarMeasureLine instances or all DrumMeasureLine objects). It does not
-     * validate its aggregated objects. That job is left up to its concrete classes (this is an abstract class)
-     * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
-     * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
-     * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
-     * found in the root string from which it was derived (i.e Score.ROOT_STRING).
-     * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
-     */
-    public List<ValidationError> validate() {
-        List<ValidationError> result = new ArrayList<>();
-        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-
-        boolean hasGuitarMeasureLines = true;
-        boolean hasDrumMeasureLines = true;
-        boolean lineSizeEqual = true;
-
-        int previousLineLength = -1;
-        for (TabString measureLine : this.measureLineList) {
-            hasGuitarMeasureLines &= measureLine instanceof TabGuitarString;
-            hasDrumMeasureLines &= measureLine instanceof TabDrumString;
-
-            int currentLineLength = measureLine.line.replace("\s", "").length();
-            lineSizeEqual &= (previousLineLength<0) || previousLineLength==currentLineLength;
-            previousLineLength = currentLineLength;
-        }
-        if (!(hasGuitarMeasureLines || hasDrumMeasureLines)) {
-            ValidationError error = new ValidationError(
-                    "All measure lines in a measure must be of the same type (i.e. all guitar measure lines or all drum measure lines)",
-                    1,
-                    this.getLinePositions()
-            );
-            if (ERROR_SENSITIVITY>=error.getPriority())
-                result.add(error);
-        }
-
-        if (!lineSizeEqual) {
-            ValidationError error = new ValidationError(
-                    "Unequal measure line lengths may lead to incorrect note durations.",
-                    2,
-                    this.getLinePositions()
-            );
-            if (ERROR_SENSITIVITY>=error.getPriority())
-                result.add(error);
-        }
-        return result;
-    }
 
     /**
      * Creates a string representation of the index position range of each line making up this Measure instance,
@@ -648,7 +599,7 @@ public abstract class TabMeasure implements ScoreComponent {
 
     public List<Note> getSortedNoteList() {
         List<Note> sortedNoteList = new ArrayList<>();
-        for (TabString measureLine : this.measureLineList) {
+        for (TabString measureLine : this.tabStringList) {
             sortedNoteList.addAll(measureLine.getNoteList());
         }
         Collections.sort(sortedNoteList);
@@ -656,7 +607,7 @@ public abstract class TabMeasure implements ScoreComponent {
     }
 
     public boolean isGuitar(boolean strictCheck) {
-        for (TabString measureLine : this.measureLineList) {
+        for (TabString measureLine : this.tabStringList) {
             if (!measureLine.isGuitar(strictCheck))
                 return false;
         }
@@ -664,41 +615,18 @@ public abstract class TabMeasure implements ScoreComponent {
     }
 
     public boolean isDrum(boolean strictCheck) {
-        for (TabString measureLine : this.measureLineList) {
+        for (TabString measureLine : this.tabStringList) {
             if (!measureLine.isDrum(strictCheck))
                 return false;
         }
         return true;
     }
     public boolean isBass(boolean strictCheck) {
-        for (TabString measureLine : this.measureLineList) {
+        for (TabString measureLine : this.tabStringList) {
             if (!measureLine.isGuitar(strictCheck))
                 return false;
         }
-        return this.measureLineList.size() >= BassMeasure.MIN_LINE_COUNT && this.measureLineList.size() <= BassMeasure.MAX_LINE_COUNT;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder stringOut = new StringBuilder();
-        if (TimeSignature.isValid(this.beatCount, this.beatType))
-            stringOut.append(this.beatCount+"/"+this.beatType+"\n");
-        for (int i=0; i<this.measureLineList.size()-1; i++) {
-            TabString measureLine = this.measureLineList.get(i);
-            stringOut.append(measureLine.name);
-            stringOut.append("|");
-            stringOut.append(measureLine.recreateLineString(getMaxMeasureLineLength()));
-            stringOut.append("\n");
-        }
-        if (!this.measureLineList.isEmpty()) {
-            TabString measureLine = this.measureLineList.get(this.measureLineList.size()-1);
-            stringOut.append(measureLine.name);
-            stringOut.append("|");
-            stringOut.append(measureLine.recreateLineString(getMaxMeasureLineLength()));
-            stringOut.append("\n");
-        }
-
-        return stringOut.toString();
+        return this.tabStringList.size() >= BassMeasure.MIN_LINE_COUNT && this.tabStringList.size() <= BassMeasure.MAX_LINE_COUNT;
     }
 
     public Range getRelativeRange() {
@@ -719,9 +647,81 @@ public abstract class TabMeasure implements ScoreComponent {
         return new Range(relStartPos, relEndPos);
     }
 
-    public abstract models.measure.Measure getModel();
-
     public int getCount() {
         return this.measureCount;
     }
+
+	public abstract models.measure.Measure getModel();
+
+	/**
+	 * Validates if all MeasureLine objects which this Measure object aggregates are instances of the same concrete
+	 * MeasureLine Class (i.e they're all GuitarMeasureLine instances or all DrumMeasureLine objects). It does not
+	 * validate its aggregated objects. That job is left up to its concrete classes (this is an abstract class)
+	 * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
+	 * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
+	 * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
+	 * found in the root string from which it was derived (i.e Score.ROOT_STRING).
+	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
+	 */
+	public List<ValidationError> validate() {
+	    List<ValidationError> result = new ArrayList<>();
+	    int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
+	
+	    boolean hasGuitarMeasureLines = true;
+	    boolean hasDrumMeasureLines = true;
+	    boolean lineSizeEqual = true;
+	
+	    int previousLineLength = -1;
+	    for (TabString measureLine : this.tabStringList) {
+	        hasGuitarMeasureLines &= measureLine instanceof TabGuitarString;
+	        hasDrumMeasureLines &= measureLine instanceof TabDrumString;
+	
+	        int currentLineLength = measureLine.line.replace("\s", "").length();
+	        lineSizeEqual &= (previousLineLength<0) || previousLineLength==currentLineLength;
+	        previousLineLength = currentLineLength;
+	    }
+	    if (!(hasGuitarMeasureLines || hasDrumMeasureLines)) {
+	        ValidationError error = new ValidationError(
+	                "All measure lines in a measure must be of the same type (i.e. all guitar measure lines or all drum measure lines)",
+	                1,
+	                this.getLinePositions()
+	        );
+	        if (ERROR_SENSITIVITY>=error.getPriority())
+	            result.add(error);
+	    }
+	
+	    if (!lineSizeEqual) {
+	        ValidationError error = new ValidationError(
+	                "Unequal measure line lengths may lead to incorrect note durations.",
+	                2,
+	                this.getLinePositions()
+	        );
+	        if (ERROR_SENSITIVITY>=error.getPriority())
+	            result.add(error);
+	    }
+	    return result;
+	}
+
+	@Override
+	public String toString() {
+	    StringBuilder stringOut = new StringBuilder();
+	    if (TimeSignature.isValid(this.beatCount, this.beatType))
+	        stringOut.append(this.beatCount+"/"+this.beatType+"\n");
+	    for (int i=0; i<this.tabStringList.size()-1; i++) {
+	        TabString measureLine = this.tabStringList.get(i);
+	        stringOut.append(measureLine.name);
+	        stringOut.append("|");
+	        stringOut.append(measureLine.recreateLineString(getMaxMeasureLineLength()));
+	        stringOut.append("\n");
+	    }
+	    if (!this.tabStringList.isEmpty()) {
+	        TabString measureLine = this.tabStringList.get(this.tabStringList.size()-1);
+	        stringOut.append(measureLine.name);
+	        stringOut.append("|");
+	        stringOut.append(measureLine.recreateLineString(getMaxMeasureLineLength()));
+	        stringOut.append("\n");
+	    }
+	
+	    return stringOut.toString();
+	}
 }

@@ -16,12 +16,12 @@ import java.util.regex.Pattern;
 public class TabSection implements ScoreComponent {
 
 	//                           a measure line at start of line(with name)          zero or more middle measure lines       (optional |'s and spaces then what's ahead is end of line)
-    private static String LINE_PATTERN = "("+Patterns.PATTERN_SOL          +          Patterns.PATTERN_MIDL+"*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.WHITESPACE+"*)"     +  ")";
+    private static String LINE_PATTERN = "("+Patterns.START_OF_LINE          +          Patterns.MIDDLE_OF_LINE+"*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.WHITESPACE+"*)"     +  ")";
 
     String origin;  //the string that was passed to the constructor upon the instantiation of this class
     int position;   //the index in Score.rootString at which the String "MeasureCollection().origin" is located
     int endIndex;
-    List<TabRow> measureGroupList;
+    List<TabRow> tabRowList;
     public static String PATTERN = tabSectionPattern();
     boolean isFirstCollection;
     private List<Instruction> instructionList = new ArrayList<>();
@@ -90,35 +90,24 @@ public class TabSection implements ScoreComponent {
     }
 
     /**
-     * Separates the provided String representation of a MeasureCollection into Instructions, a measure group collection,
-     * and Comments.
+     * Separates the provided String representation of a TabSection into Instructions, and a TabRow collection (of one?)
      * @param origin the String representation of a MeasureCollection from which the instructions, comments, and the
-     *              measure group collection are extracted
-     * @return a Map with the following mappings: measure-group-colleciton -> a list<String> containing a single
-     * measure group collection; "instructions" -> a List<String> containing the instructions, and "comments" ->
-     * containing a List<String> of the comments in the origin String. Each String stored in this Map begins with a tag
-     * (i.e "[startIdx]stringContent" ) specifying the start index of the String in Score.rootString
+     *              TabRow collection are extracted
+     * Each String stored in instructionList and tabRowList begins with a tag
+     * (i.e "[startIdx]stringContent" ) specifying the start index of the String in Score.tabText
      */
-    private Map<String, List<String>> createMeasureGroupAndInstructionList(String origin) {
-        Map<String, List<String>> componentsMap = new HashMap<>();
-        List<String> measureGroupCollctn = new ArrayList<>();
-        List<String> instructionList = new ArrayList<>();
-        List<String> commentList = new ArrayList<>();
-        componentsMap.put("measure-group-collection", measureGroupCollctn);
-        componentsMap.put("instructions", instructionList);
-        componentsMap.put("comments", commentList);
+    private void createMeasureGroupAndInstructionList(String origin) {
 
-        //HashSet<Integer> identifiedComponents = new HashSet<>();
         List<Range> identifiedComponents = new ArrayList<>();       //to prevent the same thing being identified as two different components (e.g being identified as both a comment and an instruction)
 
-        //extract the measure group collection and create the list of MeasureGroup objects with it
+        // Extract the measure group collection and create the list of MeasureGroup objects with it
         Matcher matcher = Pattern.compile("((^|\\n)"+validLinePattern()+")+").matcher(origin);
-        if(matcher.find()) { // we don't use while loop because we are guaranteed that there is going to be just one of this pattern in this.origin. Look at the static factory method and the createMeasureCollectionPattern method
-            this.measureGroupList = this.createMeasureGroupList("[" + (this.position + matcher.start()) + "]" + matcher.group());
+        if (matcher.find()) { // we don't use while loop because we are guaranteed that there is going to be just one of this pattern
+            this.tabRowList = createMeasureGroupList("[" + (this.position + matcher.start()) + "]" + matcher.group());
             identifiedComponents.add(new Range(matcher.start(), matcher.end()));
         }
 
-        //extract the instruction
+        // Extract instructions
         matcher = Pattern.compile("((^|\\n)"+ Instruction.LINE_PATTERN+")+").matcher(origin);
         while(matcher.find()) {
             //first make sure that what was identified as one thing is not being identified as a different thing.
@@ -140,15 +129,6 @@ public class TabSection implements ScoreComponent {
                 this.instructionList.addAll(Instruction.from(matcher.group(), this.position+matcher.start(), Instruction.BOTTOM));
             identifiedComponents.add(new Range(matcher.start(), matcher.end()));
         }
-
-//        //extract the comments
-//        matcher = Pattern.compile("((^|\\n)"+Patterns.COMMENT+")+").matcher(origin);
-//        while(matcher.find()) {
-//            if (identifiedComponents.contains(matcher.start())) continue;
-//            commentList.add("["+(this.position+matcher.start())+"]"+matcher.group());
-//            identifiedComponents.add(new Range(matcher.start(), matcher.end()));
-//        }
-        return componentsMap;
     }
 
     private static String validLinePattern() {
@@ -171,14 +151,14 @@ public class TabSection implements ScoreComponent {
 
     public List<models.measure.Measure> getMeasureModels() {
         List<models.measure.Measure> measureModels = new ArrayList<>();
-        for (TabRow measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.tabRowList) {
             measureModels.addAll(measureGroup.getMeasureModels());
         }
         return measureModels;
     }
 
     public boolean isGuitar(boolean strictCheck) {
-        for (TabRow measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.tabRowList) {
             if (!measureGroup.isGuitar(strictCheck))
                 return false;
         }
@@ -186,7 +166,7 @@ public class TabSection implements ScoreComponent {
     }
 
     public boolean isDrum(boolean strictCheck) {
-        for (TabRow measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.tabRowList) {
             if (!measureGroup.isDrum(strictCheck))
                 return false;
         }
@@ -194,7 +174,7 @@ public class TabSection implements ScoreComponent {
     }
 
     public boolean isBass(boolean strictCheck) {
-        for (TabRow measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.tabRowList) {
             if (!measureGroup.isBass(strictCheck))
                 return false;
         }
@@ -203,7 +183,7 @@ public class TabSection implements ScoreComponent {
 
     public int getDivisions() {
         int divisions = 0;
-        for (TabRow measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.tabRowList) {
             divisions = Math.max(divisions,  measureGroup.getDivisions());
         }
 
@@ -211,13 +191,13 @@ public class TabSection implements ScoreComponent {
     }
 
     public void setDurations() {
-        for (TabRow measureGroup : this.measureGroupList) {
+        for (TabRow measureGroup : this.tabRowList) {
             measureGroup.setDurations();
         }
     }
 
-    public List<TabRow> getMeasureGroupList() {
-        return this.measureGroupList;
+    public List<TabRow> getTabRowList() {
+        return this.tabRowList;
     }
 
     /**
@@ -238,7 +218,7 @@ public class TabSection implements ScoreComponent {
 	
 	    //--------------Validate your aggregates (only if you are valid)-------------------
 	
-	    for (TabRow mGroup : this.measureGroupList) {
+	    for (TabRow mGroup : this.tabRowList) {
 	        result.addAll(mGroup.validate());
 	    }
 	    for (Instruction instruction : this.instructionList) {
@@ -251,15 +231,14 @@ public class TabSection implements ScoreComponent {
 	@Override
     public String toString() {
         StringBuilder outStr = new StringBuilder();
-        for (int i=0; i<this.measureGroupList.size()-1; i++) {
-            outStr.append(this.measureGroupList.get(i).toString());
+        for (int i=0; i<this.tabRowList.size()-1; i++) {
+            outStr.append(this.tabRowList.get(i).toString());
             outStr.append("\n\n");
         }
 
-        if (!this.measureGroupList.isEmpty())
-            outStr.append(this.measureGroupList.get(this.measureGroupList.size()-1).toString());
+        if (!this.tabRowList.isEmpty())
+            outStr.append(this.tabRowList.get(this.tabRowList.size()-1).toString());
         return outStr.toString();
     }
 
 }
-// TODO limit the number of consecutive whitespaces there are inside a measure

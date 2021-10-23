@@ -1,14 +1,17 @@
 package converter.note;
 
-import GUI.MainView;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import converter.Instrument;
 import converter.Score;
 import converter.ScoreComponent;
-import utility.Settings;
 import utility.Patterns;
+import utility.Settings;
 import utility.ValidationError;
-
-import java.util.*;
 
 public abstract class Note implements Comparable<Note>, ScoreComponent {
     public boolean startsWithPreviousNote;

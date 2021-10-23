@@ -63,7 +63,7 @@ public class NotePlayer {
         Score scoreTmp = new Score(text);
         if (text.isBlank())
             DISPLAY_TEXT = "Select a measure to play it.";
-        else if (scoreTmp.getMeasureCollectionList().isEmpty())
+        else if (scoreTmp.getTabSectionList().isEmpty())
             DISPLAY_TEXT = "No measure detected in selection.";
         else if (scoreTmp.isDrum(false) && !(scoreTmp.isGuitar(false)||scoreTmp.isBass(false)))
             DISPLAY_TEXT = "Only guitar and bass measures can be played.";

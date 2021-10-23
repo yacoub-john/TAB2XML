@@ -9,21 +9,21 @@ public class Patterns {
     public static final String COMMENT = "^[^\\S\\n\\r]*#.+(?=\\n)";
     public static final String DIVIDER = getDivider();
     public static final String DIVIDER_COMPONENTS = "|{}";
-
-
     private static String getDivider() {
         return "["+DIVIDER_COMPONENTS+"]";
     }
-    
-    public static String INSIDES_PATTERN = createInsidesPattern();
+
     // e------------ or |e---------------- or |e|-------------------- when it is the first measure of the measure group (start of line, SOL)
-    public static String PATTERN_SOL = "(" + createMeasureNameSOLPattern() + createInsidesPattern() + ")";
-    //|--------------------- when it is in between other measures (middle of line, MIDL)
-    public static String PATTERN_MIDL = "("+Patterns.DIVIDER+"+" + createInsidesPattern()+")";
+    public static String START_OF_LINE = "(" + measureNameSOLPattern() + insidesPattern() + ")";
+
+    //|--------------------- when it is in between other measures
+    public static String MIDDLE_OF_LINE = "("+Patterns.DIVIDER+"+" + insidesPattern()+")";
+
+    public static String INSIDES_PATTERN = insidesPattern();
 
     public static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; // doesn't match anything
     
-    private static String getComponentPattern() {
+    private static String componentPattern() {
         return "[^-\\n"+Patterns.DIVIDER_COMPONENTS+"]";
     }
 
@@ -36,23 +36,23 @@ public class Patterns {
      * only if it is surrounded by more than one | (i.e ||------| extracts |------ and ||------||| extracts |------|, but |------| extracts ------)
      * @return the bracket-enclosed String regex pattern.
      */
-    private static String createInsidesPattern() {
+    private static String insidesPattern() {
     	StringBuilder pattern = new StringBuilder();
     	pattern.append("("+INSIDES_PATTERN_SPECIAL_CASE);
     	pattern.append("|"+INSIDES_PATTERN_SPECIAL_CASE);
-    	pattern.append("|(?<=(?:[ \\r\\n]"+createGenericMeasureNamePattern()+")(?=[ -][^");
+    	pattern.append("|(?<=(?:[ \\r\\n]"+genericMeasureNamePattern()+")(?=[ -][^");
     	pattern.append(Patterns.DIVIDER_COMPONENTS+"])|"+Patterns.DIVIDER+")"+Patterns.DIVIDER);
-    	pattern.append("?(?:(?: *[-*]+)|(?: *"+getComponentPattern()+"+ *-+))(?:"+getComponentPattern());
-        pattern.append("+-+)*(?:"+getComponentPattern()+"+ *)?(?:"+Patterns.DIVIDER+"?(?="+Patterns.DIVIDER+")))");
+    	pattern.append("?(?:(?: *[-*]+)|(?: *"+componentPattern()+"+ *-+))(?:"+componentPattern());
+        pattern.append("+-+)*(?:"+componentPattern()+"+ *)?(?:"+Patterns.DIVIDER+"?(?="+Patterns.DIVIDER+")))");
         return pattern.toString();
     }
 
-    private static String createMeasureNameSOLPattern() {
+    private static String measureNameSOLPattern() {
         StringBuilder pattern = new StringBuilder();
         pattern.append("(?:");
         pattern.append(Patterns.WHITESPACE+"*"+Patterns.DIVIDER+"*");
         pattern.append(Patterns.WHITESPACE+"*");
-        pattern.append(createGenericMeasureNamePattern());
+        pattern.append(genericMeasureNamePattern());
         pattern.append(Patterns.WHITESPACE+"*");
         pattern.append("(?:(?=-)|(?:"+Patterns.DIVIDER+"+))");
         pattern.append(")");
@@ -61,18 +61,18 @@ public class Patterns {
     }
 
 
-    public static String createMeasureNameExtractPattern() {
+    public static String measureNameExtractPattern() {
         StringBuilder pattern = new StringBuilder();
         pattern.append("(?<=^"+Patterns.DIVIDER+"*"+")");
         pattern.append(Patterns.WHITESPACE+"*");
-        pattern.append(createGenericMeasureNamePattern());
+        pattern.append(genericMeasureNamePattern());
         pattern.append(Patterns.WHITESPACE+"*");
         pattern.append("(?="+"-" + "|" +Patterns.DIVIDER+")");  // what's ahead is a dash or a divider
 
         return pattern.toString();
     }
     
-    public static String createGenericMeasureNamePattern() {
+    private static String genericMeasureNamePattern() {
         Iterator<String> measureLineNames = getValidNames().iterator();
         StringBuilder pattern = new StringBuilder();
         pattern.append("(?:[a-zA-Z]{1,3}|(?:"+measureLineNames.next());

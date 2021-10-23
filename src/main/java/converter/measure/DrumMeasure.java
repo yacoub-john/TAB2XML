@@ -29,7 +29,7 @@ public class DrumMeasure extends TabMeasure {
 
     public DrumMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasureInGroup) {
         super(lines, lineNamesAndPositions, linePositions, isFirstMeasureInGroup);
-        this.measureLineList = this.createTabStringList(this.lines, this.lineNamesAndPositions, this.positions);
+        this.tabStringList = this.createTabStringList(this.lines, this.lineNamesAndPositions, this.positions);
         this.voiceSortedNoteList = this.getVoiceSortedNoteList();
         setChords();
         calcDurationRatios();
@@ -55,7 +55,7 @@ public class DrumMeasure extends TabMeasure {
         int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         //if we are here, all MeasureLine objects are of the same type. Now, all we need to do is check if they are actually guitar measures
-        if (!(this.measureLineList.get(0) instanceof TabDrumString)) {
+        if (!(this.tabStringList.get(0) instanceof TabDrumString)) {
             ValidationError error = new ValidationError(
                     "All measure lines in this measure must be Drum measure lines.",
                     1,
@@ -65,7 +65,7 @@ public class DrumMeasure extends TabMeasure {
                 result.add(error);
         }
 
-        if (this.measureLineList.size()<MIN_LINE_COUNT || this.measureLineList.size()>MAX_LINE_COUNT) {
+        if (this.tabStringList.size()<MIN_LINE_COUNT || this.tabStringList.size()>MAX_LINE_COUNT) {
             HashMap<String, String> response = new HashMap<>();
             String rangeMsg;
             if (MIN_LINE_COUNT==MAX_LINE_COUNT)
@@ -89,7 +89,7 @@ public class DrumMeasure extends TabMeasure {
             }
         }
 
-        for (TabString measureLine : this.measureLineList) {
+        for (TabString measureLine : this.tabStringList) {
             result.addAll(measureLine.validate());
         }
 
@@ -174,7 +174,7 @@ public class DrumMeasure extends TabMeasure {
     private Attributes getAttributesModel() {
         Attributes attributes = new Attributes();
         attributes.setKey(new Key(0));
-        if (this.changesTimeSignature())
+        if (this.changesTimeSignature)
             attributes.setTime(new Time(this.beatCount, this.beatType));
 
         if (this.measureCount == 1) {

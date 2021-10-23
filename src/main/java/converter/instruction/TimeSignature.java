@@ -1,19 +1,18 @@
 package converter.instruction;
 
-import GUI.MainView;
-import converter.TabSection;
-import converter.TabRow;
-import converter.ScoreComponent;
-import converter.measure.TabMeasure;
-import utility.Settings;
-import utility.Range;
-import utility.ValidationError;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import converter.ScoreComponent;
+import converter.TabRow;
+import converter.TabSection;
+import converter.measure.TabMeasure;
+import utility.Range;
+import utility.Settings;
+import utility.ValidationError;
 
 public class TimeSignature extends Instruction {
     public static String PATTERN = "(?<=\\s|\n|\r|^)[0-9][0-9]?\\/[0-9][0-9]?(?=\\s|\n|\r|$)";
@@ -38,14 +37,16 @@ public class TimeSignature extends Instruction {
 
         if (scoreComponent instanceof TabSection) {
             TabSection measureCollection = (TabSection) scoreComponent;
-            for (TabRow measureGroup : measureCollection.getMeasureGroupList()) {
+            for (TabRow measureGroup : measureCollection.getTabRowList()) {
                 Range measureGroupRange = measureGroup.getRelativeRange();
                 if (measureGroupRange==null) continue;
                 if (!measureGroupRange.contains(this.getRelativeRange())) continue;
                 for (TabMeasure measure : measureGroup.getMeasureList()) {
                     Range measureRange = measure.getRelativeRange();
                     if (measureRange==null || !measureRange.contains(this.getRelativeRange())) continue;
-                    this.setHasBeenApplied(measure.setTimeSignature(this.beatCount, this.beatType));
+                    boolean itWorked = measure.setTimeSignature(this.beatCount, this.beatType);
+                    this.setHasBeenApplied(itWorked);
+                    if (itWorked) measure.changesTimeSignature = true;
                 }
             }
         }

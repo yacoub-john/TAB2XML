@@ -87,7 +87,7 @@ public class ScoreTest {
 
         for (String inlineRepeatMeasure : inlineRepeatMeasures) {
             Score score = new Score(inlineRepeatMeasure);
-            assertEquals(1, score.getMeasureCollectionList().size(), "one measure was expected but found " + score.getMeasureCollectionList().size() + ".");
+            assertEquals(1, score.getTabSectionList().size(), "one measure was expected but found " + score.getTabSectionList().size() + ".");
             TabMeasure measure = score.getMeasure(1);
             assertTrue(measure.isRepeatEnd());
             assertTrue(measure.isRepeatStart());
@@ -169,7 +169,7 @@ public class ScoreTest {
 
             for (String repeatMeasure : repeatMeasures) {
                 Score score = new Score(repeatMeasure);
-                assertEquals(1, score.getMeasureCollectionList().size(), "one measure was expected but found "+score.getMeasureCollectionList().size()+".");
+                assertEquals(1, score.getTabSectionList().size(), "one measure was expected but found "+score.getTabSectionList().size()+".");
                 TabMeasure measure = score.getMeasure(1);
                 assertTrue(measure.isRepeatEnd());
                 assertTrue(measure.isRepeatStart());
