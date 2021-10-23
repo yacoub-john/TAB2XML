@@ -32,49 +32,48 @@ public class GuitarMeasure extends TabMeasure{
 
 
     //If more than one E, change the one closer to B to lower case
-    //TODO Must generalize
-    private List<String[]>  fixNamingOfE(List<String[]> lineNamesAndPositions) {
-        int lowerEcount = 0;
-        int upperEcount = 0;
-        StringBuilder order = new StringBuilder();
-        for (String[] nameAndPosition : lineNamesAndPositions) {
-            String strippedName = nameAndPosition[0].strip();
-            order.append(strippedName.toLowerCase());
-            if (strippedName.equals("E"))
-                upperEcount++;
-            else if (strippedName.equals("e"))
-                lowerEcount++;
-        }
-
-        //if it's not in order, we have no certainty as to what E tuning they are referring to. leave it as it is
-        if (!order.toString().equals("ebgdae") && !order.toString().equals("eadgbe")) return lineNamesAndPositions;
-
-        //if there are not multiple Es (multiple lower case e or multiple upper case E) then there's nothing to decipher
-        if (!(lowerEcount>1 || upperEcount>1)) return lineNamesAndPositions;
-
-        String prevName = null;
-        for (int i=0; i<lineNamesAndPositions.size(); i++) {
-            String name = lineNamesAndPositions.get(i)[0];
-            if (!name.strip().equalsIgnoreCase("e")) {
-                prevName = name;
-                continue;
-            }
-            ArrayList<String> surroundingNames = new ArrayList<>();
-            if (prevName!=null)
-                surroundingNames.add(prevName.strip().toLowerCase());
-            if (i+1<lineNamesAndPositions.size()) {
-                surroundingNames.add(lineNamesAndPositions.get(i+1)[0].strip().toLowerCase());
-            }
-
-            if (surroundingNames.contains("b"))
-                lineNamesAndPositions.get(i)[0] = lineNamesAndPositions.get(i)[0].toLowerCase();  //lower case e
-            else lineNamesAndPositions.get(i)[0] = lineNamesAndPositions.get(i)[0].toUpperCase();  //upper case E
-
-            prevName = name;
-        }
-
-        return lineNamesAndPositions;
-    }
+//    private List<String[]>  fixNamingOfE(List<String[]> lineNamesAndPositions) {
+//        int lowerEcount = 0;
+//        int upperEcount = 0;
+//        StringBuilder order = new StringBuilder();
+//        for (String[] nameAndPosition : lineNamesAndPositions) {
+//            String strippedName = nameAndPosition[0].strip();
+//            order.append(strippedName.toLowerCase());
+//            if (strippedName.equals("E"))
+//                upperEcount++;
+//            else if (strippedName.equals("e"))
+//                lowerEcount++;
+//        }
+//
+//        //if it's not in order, we have no certainty as to what E tuning they are referring to. leave it as it is
+//        if (!order.toString().equals("ebgdae") && !order.toString().equals("eadgbe")) return lineNamesAndPositions;
+//
+//        //if there are not multiple Es (multiple lower case e or multiple upper case E) then there's nothing to decipher
+//        if (!(lowerEcount>1 || upperEcount>1)) return lineNamesAndPositions;
+//
+//        String prevName = null;
+//        for (int i=0; i<lineNamesAndPositions.size(); i++) {
+//            String name = lineNamesAndPositions.get(i)[0];
+//            if (!name.strip().equalsIgnoreCase("e")) {
+//                prevName = name;
+//                continue;
+//            }
+//            ArrayList<String> surroundingNames = new ArrayList<>();
+//            if (prevName!=null)
+//                surroundingNames.add(prevName.strip().toLowerCase());
+//            if (i+1<lineNamesAndPositions.size()) {
+//                surroundingNames.add(lineNamesAndPositions.get(i+1)[0].strip().toLowerCase());
+//            }
+//
+//            if (surroundingNames.contains("b"))
+//                lineNamesAndPositions.get(i)[0] = lineNamesAndPositions.get(i)[0].toLowerCase();  //lower case e
+//            else lineNamesAndPositions.get(i)[0] = lineNamesAndPositions.get(i)[0].toUpperCase();  //upper case E
+//
+//            prevName = name;
+//        }
+//
+//        return lineNamesAndPositions;
+//    }
 
     /**
      * Validates that all MeasureLine objects in this GuitarMeasure are GuitarMeasureLine objects, and validates its
@@ -138,23 +137,24 @@ public class GuitarMeasure extends TabMeasure{
     public Attributes getAttributesModel() {
         Attributes attributes = new Attributes();
         attributes.setKey(new Key(0));
-        if (this.isTimeSigOverridden())
+        if (this.changesTimeSignature())
             attributes.setTime(new Time(this.beatCount, this.beatType));
 
+        String[][] tuning = Settings.getInstance().guitarTuning;
         if (this.measureCount == 1) {
             attributes.setClef(new Clef("TAB", 5));
             attributes.setDivisions(Score.GLOBAL_DIVISIONS);
             List<StaffTuning> staffTunings = new ArrayList<>();
-            staffTunings.add(new StaffTuning(1, "E", 2));
-            staffTunings.add(new StaffTuning(2, "A", 2));
-            staffTunings.add(new StaffTuning(3, "D", 3));
-            staffTunings.add(new StaffTuning(4, "G", 3));
-            staffTunings.add(new StaffTuning(5, "B", 3));
-            staffTunings.add(new StaffTuning(6, "E", 4));
+            for (int string = 0; string < 6; string++)
+            	staffTunings.add(new StaffTuning(string + 1, tuning[5-string][0], Integer.parseInt(tuning[5-string][1])));
+//            staffTunings.add(new StaffTuning(2, "A", 2));
+//            staffTunings.add(new StaffTuning(3, "D", 3));
+//            staffTunings.add(new StaffTuning(4, "G", 3));
+//            staffTunings.add(new StaffTuning(5, "B", 3));
+//            staffTunings.add(new StaffTuning(6, "E", 4));
 
             attributes.setStaffDetails(new StaffDetails(6, staffTunings));
         }
-
 
         return attributes;
     }

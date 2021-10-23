@@ -174,7 +174,7 @@ public class DrumMeasure extends TabMeasure {
     private Attributes getAttributesModel() {
         Attributes attributes = new Attributes();
         attributes.setKey(new Key(0));
-        if (this.isTimeSigOverridden())
+        if (this.changesTimeSignature())
             attributes.setTime(new Time(this.beatCount, this.beatType));
 
         if (this.measureCount == 1) {

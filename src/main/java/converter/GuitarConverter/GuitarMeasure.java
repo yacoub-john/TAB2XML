@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import utility.Settings;
+
 public class GuitarMeasure extends GuitarConvert{
     private int measureNum;
     private ArrayList<String> measureInfo;
@@ -89,9 +91,8 @@ public class GuitarMeasure extends GuitarConvert{
         }
     }
 
-    //basic attributes of guitar tuning
-    //only for the first measure
-    private String makeAttributes(){
+    private String firstMeasureAttributes(){
+    	String [][] tuning = Settings.getInstance().guitarTuning;
         String attributes = "<attributes>\n" +
                 "<divisions>" + DEFAULT_DIVISION + "</divisions>\n" +
                 "<key>\n" +
@@ -106,42 +107,22 @@ public class GuitarMeasure extends GuitarConvert{
                 "<line>5</line>\n" +
                 "</clef>\n" +
                 "<staff-details>\n" +
-                "<staff-lines>6</staff-lines>\n" +
-                "<staff-tuning line=\"1\">\n" +
-                "<tuning-step>E</tuning-step>\n" +
-                "<tuning-octave>2</tuning-octave>\n" +
-                "</staff-tuning>\n" +
-                "<staff-tuning line=\"2\">\n" +
-                "<tuning-step>A</tuning-step>\n" +
-                "<tuning-octave>2</tuning-octave>\n" +
-                "</staff-tuning>\n" +
-                "<staff-tuning line=\"3\">\n" +
-                "<tuning-step>D</tuning-step>\n" +
-                "<tuning-octave>3</tuning-octave>\n" +
-                "</staff-tuning>\n" +
-                "<staff-tuning line=\"4\">\n" +
-                "<tuning-step>G</tuning-step>\n" +
-                "<tuning-octave>3</tuning-octave>\n" +
-                "</staff-tuning>\n" +
-                "<staff-tuning line=\"5\">\n" +
-                "<tuning-step>B</tuning-step>\n" +
-                "<tuning-octave>3</tuning-octave>\n" +
-                "</staff-tuning>\n" +
-                "<staff-tuning line=\"6\">\n" +
-                "<tuning-step>E</tuning-step>\n" +
-                "<tuning-octave>4</tuning-octave>\n" +
-                "</staff-tuning>\n" +
-                "</staff-details>\n" +
+                "<staff-lines>6</staff-lines>\n";
+        for (int string = 0; string < 6; string++)
+        	attributes += "<staff-tuning line=\"1\">\n" +
+                "<tuning-step>" + tuning[string][0] + "</tuning-step>\n" +
+                "<tuning-octave>" + tuning[string][1] + "</tuning-octave>\n" +
+                "</staff-tuning>\n";
+        attributes += "</staff-details>\n" +
                 "</attributes>\n";
         return attributes;
-    } // If capo information is extracted from parser,
-    // It should be changed.
+    }
 
     public String makeScript(){
         String script = "<measure number=\"" + measureNum + "\">\n";
         if(measureNum == 1){
-            script += makeAttributes();
-        }//If the measure is the first measure, add attributes
+            script += firstMeasureAttributes();
+        }
 
         for(int i = 0; i < totalDurationPerMeasure; i++){
             HashMap<Integer, String> notations = new HashMap<>();

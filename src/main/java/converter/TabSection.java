@@ -22,30 +22,12 @@ public class TabSection implements ScoreComponent {
     int position;   //the index in Score.rootString at which the String "MeasureCollection().origin" is located
     int endIndex;
     List<TabRow> measureGroupList;
-    public static String PATTERN = measureCollectionPattern();
+    public static String PATTERN = tabSectionPattern();
     boolean isFirstCollection;
     private List<Instruction> instructionList = new ArrayList<>();
 
-    /**
-     * Static factory method which verifies that the input String "origin" can be recognised as a measure collection
-     * before instantiation.
-     * @param origin The String representation of a measure collection (a collection of measure groups that happen to be
-     *              on the same line. e.g P|----|---|  Hh|----|----| are drum measures which are on the same line) along with instructions pertaining to them
-     * @param position the start position of the input String "origin" in Score.tabText, from where it was extracted
-     * @return a MeasureCollection object if the input String "origin" is properly recognised to be a representation of
-     * a measure group(regardless of if the measure group it is representing is valid or not). empty list otherwise
-     */
-    public static List<TabSection> getInstances(String origin, int position, boolean isFirstCollection) {
-        List<TabSection> msurCollectionList = new ArrayList<>();
 
-        Matcher matcher = Pattern.compile(TabSection.PATTERN).matcher(origin);
-        while (matcher.find())
-            msurCollectionList.add(new TabSection(matcher.group(), position+matcher.start(), isFirstCollection));
-
-        return msurCollectionList;
-    }
-
-    private TabSection(String origin, int position, boolean isFirstCollection) {
+    public TabSection(String origin, int position, boolean isFirstCollection) {
         this.origin = origin;
         this.position = position;
         this.endIndex = position+this.origin.length();
@@ -174,10 +156,10 @@ public class TabSection implements ScoreComponent {
     }
 
     /**
-     * Creates the regex pattern for detecting a measure collection (i.e a collection of measure groups and their corresponding instructions  and comments)
+     * Creates the regex pattern for detecting a tab section (i.e a collection of tab rows and their corresponding instructions  and comments)
      * @return a String regex pattern enclosed in brackets that identifies a measure collection pattern (the pattern also captures the newline right before the measure group collection)
      */
-    private static String measureCollectionPattern() {
+    private static String tabSectionPattern() {
         // zero or more instructions, followed by one or more measure group lines, followed by zero or more instructions
         return "((^|\\n)"+ Instruction.LINE_PATTERN+")*"          // 0 or more lines separated by newlines, each containing a group of instructions or comments
                 + "("                                                                   // then the measure collection line, which is made of...

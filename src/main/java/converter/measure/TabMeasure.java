@@ -30,8 +30,8 @@ public abstract class TabMeasure implements ScoreComponent {
     public static Instrument PREV_MEASURE_TYPE;
     private static double FOLLOW_PREV_MEASURE_WEIGHT = 0.3;
     protected int measureCount;
-    int beatCount = Settings.getInstance().tsNum;
-    int beatType = Settings.getInstance().tsDen;
+    protected int beatCount = Settings.getInstance().tsNum;
+    protected int beatType = Settings.getInstance().tsDen;
     List<String> lines;
     List<String[]> lineNamesAndPositions;
     public int lineCount;
@@ -43,9 +43,9 @@ public abstract class TabMeasure implements ScoreComponent {
     boolean repeatStart = false;
     boolean repeatEnd = false;
     int repeatCount = 0;
-    private boolean timeSigOverridden;
-    public boolean isTimeSigOverridden() {
-        return this.timeSigOverridden;
+    private boolean timeSignatureChanges;
+    public boolean changesTimeSignature() {
+        return this.timeSignatureChanges;
     }
 
     public int getBeatCount() {
@@ -538,7 +538,7 @@ public abstract class TabMeasure implements ScoreComponent {
             return false;
         this.beatCount = beatCount;
         this.beatType = beatType;
-        this.timeSigOverridden = true;
+        this.timeSignatureChanges = true;
         return true;
     }
 
