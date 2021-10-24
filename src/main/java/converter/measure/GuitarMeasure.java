@@ -136,7 +136,7 @@ public class GuitarMeasure extends TabMeasure{
 
     public Attributes getAttributesModel() {
         Attributes attributes = new Attributes();
-        //attributes.setDivisions(getDivisions());
+        attributes.setDivisions(this.divisions);
         attributes.setKey(new Key(0));
         if (this.changesTimeSignature)
             attributes.setTime(new Time(this.beatCount, this.beatType));
@@ -144,7 +144,7 @@ public class GuitarMeasure extends TabMeasure{
         String[][] tuning = Settings.getInstance().guitarTuning;
         if (this.measureCount == 1) {
             attributes.setClef(new Clef("TAB", 5));
-            attributes.setDivisions(Score.GLOBAL_DIVISIONS);
+            //attributes.setDivisions(this.divisions);
             List<StaffTuning> staffTunings = new ArrayList<>();
             for (int string = 0; string < 6; string++)
             	staffTunings.add(new StaffTuning(string + 1, tuning[5-string][0], Integer.parseInt(tuning[5-string][1])));

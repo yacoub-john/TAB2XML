@@ -177,10 +177,10 @@ public class TabRow implements ScoreComponent {
         return true;
     }
 
-    public int getDivisions() {
+    public int setDivisions() {
         int divisions = 0;
         for (TabMeasure measure : this.tabMeasures) {
-            divisions = Math.max(divisions,  measure.getDivisions());
+            divisions = Math.max(divisions,  measure.setDivisions());
         }
 
         return divisions;

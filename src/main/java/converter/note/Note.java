@@ -29,6 +29,10 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     public boolean isGrace;
     public static boolean SLASHED_GRACE = true;
     protected Map<NoteFactory.NoteDecor, String> noteDecorMap = new LinkedHashMap<>();
+    int divisions;
+    public void setDivisions(int divisions) {
+    	this.divisions = divisions;
+    }
 
 
     // A pattern that matches the note components of a measure line, like (2h7) or 8s3 or 12 or 4/2, etc.
@@ -89,7 +93,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     }
 
     protected String getType() {
-        double noteVal = (4.0 * (double) Score.GLOBAL_DIVISIONS)/this.duration;
+        double noteVal = (4.0 * (double) this.divisions)/this.duration;
         if (noteVal>=1024)
             return "1024th";
         else if (noteVal>=512)

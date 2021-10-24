@@ -181,10 +181,10 @@ public class TabSection implements ScoreComponent {
         return true;
     }
 
-    public int getDivisions() {
+    public int setDivisions() {
         int divisions = 0;
         for (TabRow measureGroup : this.tabRowList) {
-            divisions = Math.max(divisions,  measureGroup.getDivisions());
+            divisions = Math.max(divisions,  measureGroup.setDivisions());
         }
 
         return divisions;

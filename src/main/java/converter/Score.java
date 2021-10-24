@@ -34,7 +34,7 @@ public class Score implements ScoreComponent {
     private Map<Integer, String> scoreTextFragments;
     public static Instrument INSTRUMENT_MODE = Instrument.AUTO;
     public String instrumentType;
-    public static int GLOBAL_DIVISIONS = 1;
+    //public static int GLOBAL_DIVISIONS = 1;
     public static int CRITICAL_ERROR_CUTOFF = 1;
     public String title;
     public String artist;
@@ -46,7 +46,8 @@ public class Score implements ScoreComponent {
         scoreTextFragments = getScoreTextFragments(tabText);
         tabSectionList = createTabSectionList(scoreTextFragments);
         applyTimeSignatureUntilNextChange();
-        GLOBAL_DIVISIONS = getDivisions();
+        //GLOBAL_DIVISIONS = 
+        setDivisions();
         setDurations();
         if (INSTRUMENT_MODE == Instrument.AUTO) {
             boolean isGuitar = this.isGuitar(false);
@@ -136,10 +137,10 @@ public class Score implements ScoreComponent {
 	    }
 	}
 
-	public int getDivisions() {
+	public int setDivisions() {
 	    int divisions = 0;
 	    for (TabSection msurCollection : this.tabSectionList) {
-	        divisions = Math.max(divisions,  msurCollection.getDivisions());
+	        divisions = Math.max(divisions,  msurCollection.setDivisions());
 	    }
 	
 	    return divisions;

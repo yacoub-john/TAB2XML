@@ -173,13 +173,14 @@ public class DrumMeasure extends TabMeasure {
 
     private Attributes getAttributesModel() {
         Attributes attributes = new Attributes();
+        attributes.setDivisions(this.divisions);
         attributes.setKey(new Key(0));
         if (this.changesTimeSignature)
             attributes.setTime(new Time(this.beatCount, this.beatType));
 
         if (this.measureCount == 1) {
             attributes.setClef(new Clef("percussion", 2));
-            attributes.setDivisions(Score.GLOBAL_DIVISIONS);
+            
         }
         return attributes;
     }

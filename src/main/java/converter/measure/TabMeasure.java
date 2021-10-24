@@ -44,6 +44,7 @@ public abstract class TabMeasure implements ScoreComponent {
     boolean repeatEnd = false;
     int repeatCount = 0;
     public boolean changesTimeSignature = false;
+    int divisions;
 //    public boolean changesTimeSignature() {
 //        return this.changesTimeSignature;
 //    }
@@ -436,7 +437,7 @@ public abstract class TabMeasure implements ScoreComponent {
         return voiceSortedChordList;
     }
 
-    public int getDivisions() {
+    public int setDivisions() {
         double totalMeasureDuration = (double)beatCount/(double)beatType;
         double minDurationRatio = 0;
         for (List<Note> voice : this.voiceSortedNoteList) {
@@ -460,7 +461,13 @@ public abstract class TabMeasure implements ScoreComponent {
 
         //find out how many times we need to divide a 4th note to get our smallest duration note (e.g say the smallest duration note in our score is a 1/64th note (wholeNOteDuration = 64) then we need to divide a 4th note 64/4 times to get our smallest duration note)
         double divisions = roundedUpInverseStandardDuration*0.25;
-        return (int) Math.ceil(divisions);
+        this.divisions = (int) Math.ceil(divisions);
+        for (List<Note> voice : this.voiceSortedNoteList) {
+            for (Note note : voice) {
+                note.setDivisions(this.divisions);
+            }
+        }
+        return this.divisions;
     }
 
 
@@ -486,7 +493,7 @@ public abstract class TabMeasure implements ScoreComponent {
                 //  best results. It works pretty decent for now though
                 if (inverseStandardDuration<(roundedUpInverseStandardDuration+roundedDownInverseStandardDuration)/2) {
                     inverseStandardDuration = roundedDownInverseStandardDuration;
-                    double smallestUnit = 4.0*(double)Score.GLOBAL_DIVISIONS;
+                    double smallestUnit = 4.0*(double)this.divisions; //.GLOBAL_DIVISIONS;
                     double duration = smallestUnit/inverseStandardDuration;
                     note.duration = Math.max(1, duration);
                     continue;
@@ -502,7 +509,7 @@ public abstract class TabMeasure implements ScoreComponent {
                 }
                 inverseStandardDuration = roundedUpInverseStandardDuration;
                 //the smallest unit of duration (in terms of whole note divisions) given our divisions
-                double smallestInverseDurationUnit = 4.0*(double)Score.GLOBAL_DIVISIONS;
+                double smallestInverseDurationUnit = 4.0*(double)this.divisions; //.GLOBAL_DIVISIONS;
 
                 //if smallest unit of duration is 32 (1/32th note) and our note's duration is 8 (1/8th note) then we need 32/8 of our smallest duration note to make up our duration
                 double duration = smallestInverseDurationUnit/inverseStandardDuration;
