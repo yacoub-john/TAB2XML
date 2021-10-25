@@ -1,18 +1,22 @@
 package converter.measure;
 
-import GUI.MainView;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import converter.Score;
 import converter.measure_line.TabBassString;
 import converter.measure_line.TabDrumString;
 import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
-import models.measure.attributes.*;
+import models.measure.attributes.Attributes;
+import models.measure.attributes.Clef;
+import models.measure.attributes.Key;
+import models.measure.attributes.StaffDetails;
+import models.measure.attributes.StaffTuning;
+import models.measure.attributes.Time;
 import utility.Settings;
 import utility.ValidationError;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class BassMeasure extends GuitarMeasure {
     public static final int MIN_LINE_COUNT = 4;

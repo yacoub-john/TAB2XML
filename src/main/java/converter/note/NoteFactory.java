@@ -173,6 +173,7 @@ public class NoteFactory {
         if (!noteList.isEmpty()) return noteList;
         Note harmonic = createHarmonic(origin, position, distanceFromMeasureStart);
         if (harmonic!=null) {
+        	harmonic.distance ++; //So the distance is to the fret number, not the square bracket
             noteList.add(harmonic);
             return noteList;
         }

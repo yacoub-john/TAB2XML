@@ -190,11 +190,11 @@ public class TabSection implements ScoreComponent {
         return divisions;
     }
 
-    public void setDurations() {
-        for (TabRow measureGroup : this.tabRowList) {
-            measureGroup.setDurations();
-        }
-    }
+//    public void setDurations() {
+//        for (TabRow measureGroup : this.tabRowList) {
+//            measureGroup.setDurations();
+//        }
+//    }
 
     public List<TabRow> getTabRowList() {
         return this.tabRowList;

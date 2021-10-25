@@ -1,6 +1,9 @@
 package converter.measure;
 
-import GUI.MainView;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import converter.Score;
 import converter.measure_line.TabDrumString;
 import converter.measure_line.TabString;
@@ -18,10 +21,6 @@ import models.measure.direction.Words;
 import utility.Settings;
 import utility.ValidationError;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 public class DrumMeasure extends TabMeasure {
 
     private static final int MIN_LINE_COUNT = 1;
@@ -32,71 +31,15 @@ public class DrumMeasure extends TabMeasure {
         this.tabStringList = this.createTabStringList(this.lines, this.lineNamesAndPositions, this.positions);
         this.voiceSortedNoteList = this.getVoiceSortedNoteList();
         setChords();
-        calcDurationRatios();
+        setDurations();
     }
-    /**
-     * Validates that all MeasureLine objects in this GuitarMeasure are GuitarMeasureLine objects, and validates its
-     * aggregated MeasureLine objects. It stops evaluation at the first aggregated object which fails validation.
-     * TODO it might be better to not have it stop when one aggregated object fails validation, but instead have it
-     *      validate all of them and return a List of all aggregated objects that failed validation, so the user knows
-     *      all what is wrong with their tablature file, instead of having to fix one problem before being able to see
-     *      what the other problems with their text file is.
-     * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
-     * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
-     * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
-     * found in the root string from which it was derived (i.e Score.ROOT_STRING).
-     * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
-     */
+    
     @Override
-    public List<ValidationError> validate() {
-
-        //-----------------Validate yourself-------------------------
-        List<ValidationError> result = new ArrayList<>(super.validate()); //this validates if all MeasureLine objects in this measure are of the same type
-        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-
-        //if we are here, all MeasureLine objects are of the same type. Now, all we need to do is check if they are actually guitar measures
-        if (!(this.tabStringList.get(0) instanceof TabDrumString)) {
-            ValidationError error = new ValidationError(
-                    "All measure lines in this measure must be Drum measure lines.",
-                    1,
-                    this.getLinePositions()
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
-        }
-
-        if (this.tabStringList.size()<MIN_LINE_COUNT || this.tabStringList.size()>MAX_LINE_COUNT) {
-            HashMap<String, String> response = new HashMap<>();
-            String rangeMsg;
-            if (MIN_LINE_COUNT==MAX_LINE_COUNT)
-                rangeMsg = ""+MIN_LINE_COUNT;
-            else
-                rangeMsg = "between "+MIN_LINE_COUNT+" and "+MAX_LINE_COUNT;
-            ValidationError error = new ValidationError(
-                    "A Drum measure should have "+rangeMsg+" lines.",
-                    1,
-                    this.getLinePositions()
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
-        }
-
-        //-----------------Validate Aggregates (only if you dont have critical errors)------------------
-
-        for (ValidationError error : result) {
-            if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
-                return result;
-            }
-        }
-
-        for (TabString measureLine : this.tabStringList) {
-            result.addAll(measureLine.validate());
-        }
-
-        return result;
-    }
-
-    @Override
+	protected int adjustForDoubleCharacterNotes(int usefulMeasureLength) {
+		return usefulMeasureLength;
+	}
+    
+	@Override
     public models.measure.Measure getModel() {
         models.measure.Measure measureModel = new models.measure.Measure();
         measureModel.setNumber(this.measureCount);
@@ -184,4 +127,66 @@ public class DrumMeasure extends TabMeasure {
         }
         return attributes;
     }
+    
+	/**
+	 * Validates that all MeasureLine objects in this GuitarMeasure are GuitarMeasureLine objects, and validates its
+	 * aggregated MeasureLine objects. It stops evaluation at the first aggregated object which fails validation.
+	 * TODO it might be better to not have it stop when one aggregated object fails validation, but instead have it
+	 *      validate all of them and return a List of all aggregated objects that failed validation, so the user knows
+	 *      all what is wrong with their tablature file, instead of having to fix one problem before being able to see
+	 *      what the other problems with their text file is.
+	 * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
+	 * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
+	 * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
+	 * found in the root string from which it was derived (i.e Score.ROOT_STRING).
+	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
+	 */
+	@Override
+	public List<ValidationError> validate() {
+	
+	    //-----------------Validate yourself-------------------------
+	    List<ValidationError> result = new ArrayList<>(super.validate()); //this validates if all MeasureLine objects in this measure are of the same type
+	    int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
+	
+	    //if we are here, all MeasureLine objects are of the same type. Now, all we need to do is check if they are actually guitar measures
+	    if (!(this.tabStringList.get(0) instanceof TabDrumString)) {
+	        ValidationError error = new ValidationError(
+	                "All measure lines in this measure must be Drum measure lines.",
+	                1,
+	                this.getLinePositions()
+	        );
+	        if (ERROR_SENSITIVITY>= error.getPriority())
+	            result.add(error);
+	    }
+	
+	    if (this.tabStringList.size()<MIN_LINE_COUNT || this.tabStringList.size()>MAX_LINE_COUNT) {
+	        HashMap<String, String> response = new HashMap<>();
+	        String rangeMsg;
+	        if (MIN_LINE_COUNT==MAX_LINE_COUNT)
+	            rangeMsg = ""+MIN_LINE_COUNT;
+	        else
+	            rangeMsg = "between "+MIN_LINE_COUNT+" and "+MAX_LINE_COUNT;
+	        ValidationError error = new ValidationError(
+	                "A Drum measure should have "+rangeMsg+" lines.",
+	                1,
+	                this.getLinePositions()
+	        );
+	        if (ERROR_SENSITIVITY>= error.getPriority())
+	            result.add(error);
+	    }
+	
+	    //-----------------Validate Aggregates (only if you dont have critical errors)------------------
+	
+	    for (ValidationError error : result) {
+	        if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
+	            return result;
+	        }
+	    }
+	
+	    for (TabString measureLine : this.tabStringList) {
+	        result.addAll(measureLine.validate());
+	    }
+	
+	    return result;
+	}
 }

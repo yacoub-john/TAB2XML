@@ -48,7 +48,7 @@ public class Score implements ScoreComponent {
         applyTimeSignatureUntilNextChange();
         //GLOBAL_DIVISIONS = 
         setDivisions();
-        setDurations();
+        //setDurations();
         if (INSTRUMENT_MODE == Instrument.AUTO) {
             boolean isGuitar = this.isGuitar(false);
             boolean isDrum = this.isDrum(false);
@@ -129,7 +129,7 @@ public class Score implements ScoreComponent {
 	                if (measure.changesTimeSignature) {
 	                    currBeatCount = measure.getBeatCount();
 	                    currBeatType = measure.getBeatType();
-	                    continue;
+	                    //continue;
 	                }
 	                measure.setTimeSignature(currBeatCount, currBeatType);
 	            }
@@ -146,11 +146,11 @@ public class Score implements ScoreComponent {
 	    return divisions;
 	}
 
-	public void setDurations() {
-	    for (TabSection msurCollection : this.tabSectionList) {
-	        msurCollection.setDurations();
-	    }
-	}
+//	public void setDurations() {
+//	    for (TabSection msurCollection : this.tabSectionList) {
+//	        msurCollection.setDurations();
+//	    }
+//	}
 
 	public static void setInstrumentMode(Instrument InstrumentMode) {
         INSTRUMENT_MODE = InstrumentMode;

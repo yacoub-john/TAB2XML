@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import converter.Instrument;
-import converter.Score;
 import converter.ScoreComponent;
 import utility.Patterns;
 import utility.Settings;
@@ -22,7 +21,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     int stringNumber;
     public int distance;
     int position;
-    public double duration;
+    public int duration;
     public double durationRatio;
     public String sign;
     public int voice;
@@ -30,9 +29,10 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     public static boolean SLASHED_GRACE = true;
     protected Map<NoteFactory.NoteDecor, String> noteDecorMap = new LinkedHashMap<>();
     int divisions;
-    public void setDivisions(int divisions) {
-    	this.divisions = divisions;
-    }
+    int beatType;
+    int beatCount;
+    boolean isTriplet;
+    
 
 
     // A pattern that matches the note components of a measure line, like (2h7) or 8s3 or 12 or 4/2, etc.
@@ -62,38 +62,53 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         this(stringNumber, origin, position, lineName, distanceFromMeasureStart);
         this.voice = voice;
     }
-
-    public List<ValidationError> validate() {
-        List<ValidationError> result = new ArrayList<>();
-        if (!this.origin.equals(this.origin.strip())) {
-            ValidationError error = new ValidationError(
-                    "Adding whitespace might result in different timing than you expect.",
-                    3,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.position,
-                            this.position+this.origin.length()
-                    }))
-            );
-            int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
-        }
-        return result;
+    
+    public void setDivisions(int divisions) {
+    	this.divisions = divisions;
     }
-
-    public void setDurationRatio(double durationRatio) {
-        this.durationRatio = durationRatio;
+    
+    public void setBeatType(int bt) {
+    	this.beatType = bt;
     }
-
-
+    
+    public void setBeatCount(int bc) {
+    	this.beatCount = bc;
+    }
+    
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
 
     public boolean addDecor(NoteFactory.NoteDecor noteDecor, String message) {
         this.noteDecorMap.put(noteDecor, message);
         return true;
     }
 
-    protected String getType() {
-        double noteVal = (4.0 * (double) this.divisions)/this.duration;
+    public String getType() {
+    	int RESOLUTION = 192;
+    	int factor = RESOLUTION / (divisions * beatType);
+    	if (RESOLUTION % (divisions * beatType) != 0)
+    		System.out.println("Assumption wrong about divisions: " + divisions);
+    	int noteVal = factor * duration;
+    	switch (noteVal) {
+    	case 3: return "64th";
+    	case 6: return "32nd";
+    	case 8: isTriplet = true; return "16th";
+    	case 12: return "16th";
+    	case 24: return "eighth";
+    	case 36: dotCount = 1; return "eighth";
+    	case 48: return "quarter";
+    	case 72: dotCount = 1; return "quarter";
+    	case 96: return "half";
+    	case 144: dotCount = 1; return "half"; // 3 quarters
+    	case 192: return "whole";
+    	}
+    	if (noteVal == 48)
+    		{
+    		dotCount = 1;
+    		return "half";
+    		}
+        
         if (noteVal>=1024)
             return "1024th";
         else if (noteVal>=512)
@@ -125,24 +140,6 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         return "";
     }
 
-//    public int convertNameToNumber(String lineName) {
-//        lineName = lineName.strip();
-//        if (lineName.equals("e")) {
-//            return 1;
-//        } else if (lineName.equalsIgnoreCase("B")) {
-//            return 2;
-//        } else if (lineName.equalsIgnoreCase("G")) {
-//            return 3;
-//        } else if (lineName.equalsIgnoreCase("D")) {
-//            return 4;
-//        } else if (lineName.equalsIgnoreCase("A")) {
-//            return 5;
-//        } else if (lineName.equalsIgnoreCase("E")) {
-//            return 6;
-//        }
-//        return 0;
-//    }
-
     public boolean isGuitar() {
         // remember, invalid notes are still accepted but are created as GuitarNote objects. we want to be able to still convert despite having invalid notes, as long as we warn the user that they have invalid input. We might want to create a new concrete class, InvalidNote, that extends Note to take care of this so that we have the guarantee that this is valid.
         return this.origin.strip().matches(NoteFactory.FRET);
@@ -153,9 +150,27 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         return this.origin.strip().matches(NoteFactory.DRUM_NOTE_PATTERN);
     }
 
-    public abstract models.measure.note.Note getModel();
-
     public int compareTo(Note other) {
         return this.distance-other.distance;
     }
+	
+    public abstract models.measure.note.Note getModel();
+	
+	public List<ValidationError> validate() {
+	    List<ValidationError> result = new ArrayList<>();
+	    if (!this.origin.equals(this.origin.strip())) {
+	        ValidationError error = new ValidationError(
+	                "Adding whitespace might result in different timing than you expect.",
+	                3,
+	                new ArrayList<>(Collections.singleton(new Integer[]{
+	                        this.position,
+	                        this.position+this.origin.length()
+	                }))
+	        );
+	        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
+	        if (ERROR_SENSITIVITY>= error.getPriority())
+	            result.add(error);
+	    }
+	    return result;
+	}
 }
