@@ -6,6 +6,8 @@ import models.measure.note.notations.Notations;
 import models.measure.note.notations.Slide;
 import models.measure.note.notations.Slur;
 import models.measure.note.notations.technical.*;
+import utility.DoubleDigitStyle;
+import utility.Settings;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +16,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A class to extract notes from single notes or combinations of notes
+ * e.g. 6h8p6
+ */
 public class NoteFactory {
 	private int stringNumber;
     private String origin, lineName;
@@ -75,13 +81,17 @@ public class NoteFactory {
             noteList.add(new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
             return noteList;
         }
+        
         int[] groupIdx = {noteGroupMatcher.start(), noteGroupMatcher.end()};
+        
         if (groupIdx[0]>0) {
             noteList.add(new InvalidNote(stringNumber, origin.substring(0, groupIdx[0]), position, lineName, distanceFromMeasureStart));
         }
+        
         if (groupIdx[1]<origin.length()) {
             noteList.add(new InvalidNote(stringNumber, origin.substring(groupIdx[1]), position, lineName, distanceFromMeasureStart+groupIdx[1]));
         }
+        
         noteList.addAll(getNotes(origin, groupIdx[0], groupIdx[1]));
         return noteList;
     }
@@ -393,15 +403,20 @@ public class NoteFactory {
         return noteList;
     }
 
-    private GuitarNote createFret(String origin, int position, int distanceFromMeasureStart) {
-        if (!origin.matches(FRET)) return null;
-        if (this.instrument == Instrument.GUITAR)
-            return new GuitarNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
-        else if (this.instrument == Instrument.BASS)
-            return new BassNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
-        else
-            return null;
-    }
+	private GuitarNote createFret(String origin, int position, int distanceFromMeasureStart) {
+		if (!origin.matches(FRET))
+			return null;
+		if ((Settings.getInstance().ddStyle == DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_STRETCH)
+				|| (Settings.getInstance().ddStyle == DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_NO_STRETCH))
+			if (origin.length() == 2)
+				distanceFromMeasureStart++;
+		if (this.instrument == Instrument.GUITAR)
+			return new GuitarNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
+		else if (this.instrument == Instrument.BASS)
+			return new BassNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
+		else
+			return null;
+	}
 
     private boolean grace(Note graceNote, Note gracePair) {
         boolean success;

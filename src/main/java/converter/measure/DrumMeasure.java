@@ -28,93 +28,19 @@ public class DrumMeasure extends TabMeasure {
 
     public DrumMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasureInGroup) {
         super(lines, lineNamesAndPositions, linePositions, isFirstMeasureInGroup);
-        this.tabStringList = this.createTabStringList(this.lines, this.lineNamesAndPositions, this.positions);
-        this.voiceSortedNoteList = this.getVoiceSortedNoteList();
-        setChords();
-        setDurations();
     }
     
     @Override
-	protected int adjustForDoubleCharacterNotes(int usefulMeasureLength) {
+	protected int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureLength) {
 		return usefulMeasureLength;
 	}
     
 	@Override
-    public models.measure.Measure getModel() {
-        models.measure.Measure measureModel = new models.measure.Measure();
-        measureModel.setNumber(this.measureCount);
-        measureModel.setAttributes(this.getAttributesModel());
+	protected int adjustDurationForDoubleCharacterNotes(int duration, List<Note> chord, List<Note> nextChord) {
+		return duration;
+	}
 
-        List<models.measure.note.Note> noteBeforeBackupModels = new ArrayList<>();
-        List<models.measure.note.Note> noteAfterBackupModels = new ArrayList<>();
-        for (int i=0; i<this.voiceSortedNoteList.size(); i++) {
-            List<Note> voice = this.voiceSortedNoteList.get(i);
-            double backupDuration = 0;
-            double currentChordDuration = 0;
-            for (Note note : voice) {
-                if (note.voice==1)
-                    noteBeforeBackupModels.add(note.getModel());
-                if (note.voice==2)
-                    noteAfterBackupModels.add(note.getModel());
-                if (note.startsWithPreviousNote)
-                    currentChordDuration = Math.max(currentChordDuration, note.duration);
-                else {
-                    backupDuration += currentChordDuration;
-                    currentChordDuration = note.duration;
-                }
-            }
-            backupDuration += currentChordDuration;
-            if (voice.get(0).voice==1)
-                measureModel.setNotesBeforeBackup(noteBeforeBackupModels);
-            if (voice.get(0).voice==2)
-                measureModel.setNotesAfterBackup(noteAfterBackupModels);
-            if (i+1<this.voiceSortedNoteList.size()) {
-                measureModel.setBackup(new Backup((int)backupDuration));
-            }
-        }
-
-        List<BarLine> barLines = new ArrayList<>();
-        if (this.isRepeatStart()) {
-            BarLine barLine = new BarLine();
-            barLines.add(barLine);
-            barLine.setLocation("left");
-            barLine.setBarStyle("heavy-light");
-
-            Repeat repeat = new Repeat();
-            repeat.setDirection("forward");
-            barLine.setRepeat(repeat);
-
-            Direction direction = new Direction();
-            direction.setPlacement("above");
-            measureModel.setDirection(direction);
-
-            DirectionType directionType = new DirectionType();
-            direction.setDirectionType(directionType);
-
-            Words words = new Words();
-            words.setRelativeX(256.17);
-            words.setRelativeX(16.01);
-            words.setRepeatText("Repeat "+this.repeatCount+" times");
-            directionType.setWords(words);
-        }
-
-        if (this.isRepeatEnd()) {
-            BarLine barLine = new BarLine();
-            barLines.add(barLine);
-            barLine.setLocation("right");
-            barLine.setBarStyle("light-heavy");
-
-            Repeat repeat = new Repeat();
-            repeat.setDirection("backward");
-            barLine.setRepeat(repeat);
-        }
-
-        if (!barLines.isEmpty())
-            measureModel.setBarlines(barLines);
-        return measureModel;
-    }
-
-    private Attributes getAttributesModel() {
+	private Attributes getAttributesModel() {
         Attributes attributes = new Attributes();
         attributes.setDivisions(this.divisions);
         attributes.setKey(new Key(0));
@@ -128,6 +54,81 @@ public class DrumMeasure extends TabMeasure {
         return attributes;
     }
     
+	@Override
+	public models.measure.Measure getModel() {
+	    models.measure.Measure measureModel = new models.measure.Measure();
+	    measureModel.setNumber(this.measureCount);
+	    measureModel.setAttributes(this.getAttributesModel());
+	
+	    List<models.measure.note.Note> noteBeforeBackupModels = new ArrayList<>();
+	    List<models.measure.note.Note> noteAfterBackupModels = new ArrayList<>();
+	    for (int i=0; i<this.voiceSortedNoteList.size(); i++) {
+	        List<Note> voice = this.voiceSortedNoteList.get(i);
+	        double backupDuration = 0;
+	        double currentChordDuration = 0;
+	        for (Note note : voice) {
+	            if (note.voice==1)
+	                noteBeforeBackupModels.add(note.getModel());
+	            if (note.voice==2)
+	                noteAfterBackupModels.add(note.getModel());
+	            if (note.startsWithPreviousNote)
+	                currentChordDuration = Math.max(currentChordDuration, note.duration);
+	            else {
+	                backupDuration += currentChordDuration;
+	                currentChordDuration = note.duration;
+	            }
+	        }
+	        backupDuration += currentChordDuration;
+	        if (voice.get(0).voice==1)
+	            measureModel.setNotesBeforeBackup(noteBeforeBackupModels);
+	        if (voice.get(0).voice==2)
+	            measureModel.setNotesAfterBackup(noteAfterBackupModels);
+	        if (i+1<this.voiceSortedNoteList.size()) {
+	            measureModel.setBackup(new Backup((int)backupDuration));
+	        }
+	    }
+	
+	    List<BarLine> barLines = new ArrayList<>();
+	    if (this.isRepeatStart()) {
+	        BarLine barLine = new BarLine();
+	        barLines.add(barLine);
+	        barLine.setLocation("left");
+	        barLine.setBarStyle("heavy-light");
+	
+	        Repeat repeat = new Repeat();
+	        repeat.setDirection("forward");
+	        barLine.setRepeat(repeat);
+	
+	        Direction direction = new Direction();
+	        direction.setPlacement("above");
+	        measureModel.setDirection(direction);
+	
+	        DirectionType directionType = new DirectionType();
+	        direction.setDirectionType(directionType);
+	
+	        Words words = new Words();
+	        words.setRelativeX(256.17);
+	        words.setRelativeX(16.01);
+	        words.setRepeatText("Repeat "+this.repeatCount+" times");
+	        directionType.setWords(words);
+	    }
+	
+	    if (this.isRepeatEnd()) {
+	        BarLine barLine = new BarLine();
+	        barLines.add(barLine);
+	        barLine.setLocation("right");
+	        barLine.setBarStyle("light-heavy");
+	
+	        Repeat repeat = new Repeat();
+	        repeat.setDirection("backward");
+	        barLine.setRepeat(repeat);
+	    }
+	
+	    if (!barLines.isEmpty())
+	        measureModel.setBarlines(barLines);
+	    return measureModel;
+	}
+
 	/**
 	 * Validates that all MeasureLine objects in this GuitarMeasure are GuitarMeasureLine objects, and validates its
 	 * aggregated MeasureLine objects. It stops evaluation at the first aggregated object which fails validation.

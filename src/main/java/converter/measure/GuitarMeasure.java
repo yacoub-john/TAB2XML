@@ -11,6 +11,7 @@ import models.measure.barline.Repeat;
 import models.measure.direction.Direction;
 import models.measure.direction.DirectionType;
 import models.measure.direction.Words;
+import utility.DoubleDigitStyle;
 import utility.Settings;
 import utility.ValidationError;
 
@@ -23,22 +24,39 @@ public class GuitarMeasure extends TabMeasure{
 
     public GuitarMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasure) {
         super(lines, lineNamesAndPositions, linePositions, isFirstMeasure);
-        this.tabStringList = this.createTabStringList(this.lines, this.lineNamesAndPositions, this.positions);
-        this.voiceSortedNoteList = this.getVoiceSortedNoteList();
-        setChords();
-        setDurations();
     }
 
     @Override
-	protected int adjustForDoubleCharacterNotes(int usefulMeasureLength) {
+	protected int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureLength) {
 		for (List<List<Note>> chordList : getVoiceSortedChordList()) {
-			for (int i = 0; i < chordList.size(); i++) {
+			int start = 0;
+			//Start at 1 to ignore first chord
+			//If it is double digit, it has not been counted in usefulMeasureLength
+			//Applies only for NOTE ON SECOND DIGIT
+			if (Settings.getInstance().ddStyle == DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_STRETCH) 
+				start = 1;
+			for (int i = start; i < chordList.size(); i++) {
 				List<Note> chord = chordList.get(i);
 				if (isDoubleDigit(chord))
 					usefulMeasureLength--;
 			}
 		}
 		return usefulMeasureLength;
+	}
+
+	@Override
+	protected int adjustDurationForDoubleCharacterNotes(int duration, List<Note> chord, List<Note> nextChord) {
+		switch (Settings.getInstance().ddStyle) {
+		case NOTE_ON_FIRST_DIGIT_STRETCH: if (isDoubleDigit(chord)) duration --; break;
+		case NOTE_ON_FIRST_DIGIT_NO_STRETCH: 
+			break;
+		case NOTE_ON_SECOND_DIGIT_NO_STRETCH:
+			break;
+		case NOTE_ON_SECOND_DIGIT_STRETCH: if (isDoubleDigit(nextChord)) duration --; break;
+		default:
+			break;
+		}
+		return duration;
 	}
 
 	public Attributes getAttributesModel() {

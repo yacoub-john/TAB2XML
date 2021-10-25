@@ -54,23 +54,25 @@ public abstract class TabString implements ScoreComponent {
         return noteList;
     }
 
-    protected List<Note> createNoteList(int stringNumber, String line, int position) {
-        List<Note> noteList = new ArrayList<>();
-        Matcher noteMatcher = Pattern.compile(Note.PATTERN).matcher(line);
-        while(noteMatcher.find()) {
-            String match = noteMatcher.group();
-            String leadingStr = line.substring(0, noteMatcher.start()).replaceAll("\s", "");
-            int distanceFromMeasureStart = leadingStr.length();
-            if (!match.isBlank())
-                noteList.addAll(from(stringNumber, match, position+noteMatcher.start(), this.instrument, this.name, distanceFromMeasureStart));
-        }
-        return noteList;
-    }
+	protected List<Note> createNoteList(int stringNumber, String line, int position) {
+		List<Note> noteList = new ArrayList<>();
+		Matcher noteMatcher = Pattern.compile(Note.PATTERN).matcher(line);
+		while (noteMatcher.find()) {
+			String match = noteMatcher.group();
+			String leadingStr = line.substring(0, noteMatcher.start()).replaceAll("\s", "");
+			int distanceFromMeasureStart = leadingStr.length();
+			if (!match.isBlank()) {
+				NoteFactory nf = new NoteFactory(stringNumber, match, position + noteMatcher.start(), this.instrument, this.name, distanceFromMeasureStart);
+				noteList.addAll(nf.getNotes());
+			}
+		}
+		return noteList;
+	}
 
-    public List<Note> from(int stringNumber, String origin, int position, Instrument instrument, String lineName, int distanceFromMeasureStart) {
-        NoteFactory nf = new NoteFactory(stringNumber, origin, position, instrument, lineName, distanceFromMeasureStart);
-        return nf.getNotes();
-    }
+//    public List<Note> from(int stringNumber, String origin, int position, Instrument instrument, String lineName, int distanceFromMeasureStart) {
+//        NoteFactory nf = new NoteFactory(stringNumber, origin, position, instrument, lineName, distanceFromMeasureStart);
+//        return nf.getNotes();
+//    }
     
     public boolean isGuitar(boolean strictCheck) {
     	boolean x = GuitarUtils.getValidGuitarNames().contains(this.name.strip());

@@ -63,6 +63,10 @@ public abstract class TabMeasure implements ScoreComponent {
         this.lineNamesAndPositions = lineNamesAndPositions;
         this.positions = linePositions;
         this.isFirstMeasureInGroup = isFirstMeasureInGroup;
+        this.tabStringList = this.createTabStringList(this.lines, this.lineNamesAndPositions, this.positions);
+        this.voiceSortedNoteList = this.getVoiceSortedNoteList();
+        setChords();
+        setDurations();
     }
 
     /**
@@ -393,11 +397,13 @@ public abstract class TabMeasure implements ScoreComponent {
 			// Handle all but last chord
 			for (int i = 0; i < chordList.size() - 1; i++) {
 			    List<Note> chord = chordList.get(i);
+			    List<Note> nextChord = chordList.get(i+1);
 			    int currentChordDistance = chord.get(0).distance;
-			    int nextChordDistance = chordList.get(i+1).get(0).distance;
+			    int nextChordDistance = nextChord.get(0).distance;
 			
 			    int duration = nextChordDistance-currentChordDistance;
-			    if (isDoubleDigit(chord)) duration --;
+			    duration = adjustDurationForDoubleCharacterNotes(duration, chord, nextChord);
+			    
 			
 			    for (Note note : chord) {
 			        note.setDuration(duration);
@@ -418,7 +424,9 @@ public abstract class TabMeasure implements ScoreComponent {
         }
     }
     
-    protected boolean isDoubleDigit(List<Note> chord) {
+    protected abstract int adjustDurationForDoubleCharacterNotes(int duration, List<Note> chord, List<Note> nextChord);
+    
+	protected boolean isDoubleDigit(List<Note> chord) {
     	boolean doubleDigit = false;
     	for (Note note : chord) {
 	    	if (note.origin.length() == 2) doubleDigit = true;
@@ -477,7 +485,7 @@ public abstract class TabMeasure implements ScoreComponent {
         int firstNotePosition = voiceSortedNoteList.get(0).get(0).distance;
         int usefulMeasureLength = measureLength - firstNotePosition;
         // Must subtract for double digit numbers
-        usefulMeasureLength = adjustForDoubleCharacterNotes(usefulMeasureLength); 
+        usefulMeasureLength = adjustDivisionsForDoubleCharacterNotes(usefulMeasureLength); 
         divisions = (usefulMeasureLength - (usefulMeasureLength % beatCount)) / beatCount;
         //System.out.println(divisions);
 //        double minDurationRatio = 0;
@@ -511,7 +519,9 @@ public abstract class TabMeasure implements ScoreComponent {
         return divisions;
     }
 
-protected abstract int adjustForDoubleCharacterNotes(int usefulMeasureLength);
+protected abstract int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureLength);
+
+
 //    public int setDivisionsOld() {
 //        double totalMeasureDuration = (double)beatCount/(double)beatType;
 //        double minDurationRatio = 0;
