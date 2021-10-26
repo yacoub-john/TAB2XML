@@ -36,7 +36,7 @@ public class ConvertWindowController extends Application {
     
     @FXML
     private void saveButtonClicked() {
-    	Score score = new Score(mvc.TEXT_AREA.getText());
+    	Score score = new Score(mvc.mainText.getText());
         MusicXMLCreator mxlc = new MusicXMLCreator(score);
         if (!titleField.getText().isBlank())
             Settings.getInstance().title = titleField.getText();

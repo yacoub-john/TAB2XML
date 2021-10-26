@@ -72,7 +72,7 @@ public class CurrentSongSettingsWindowController extends Application {
 		default -> err = 4;
 		}
 		Settings.getInstance().errorSensitivity = err;
-		mvc.mainView.refresh();
+		mvc.refresh();
 	}
 
 	@FXML

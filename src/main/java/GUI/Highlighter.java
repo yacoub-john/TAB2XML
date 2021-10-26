@@ -1,40 +1,76 @@
 package GUI;
 
-import converter.Score;
-import converter.measure.TabMeasure;
-import javafx.concurrent.Task;
-import javafx.scene.control.Button;
-import javafx.scene.control.IndexRange;
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.reactfx.Subscription;
-
-import utility.Settings;
-import utility.Range;
-import utility.ValidationError;
-
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MainView {
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.event.MouseOverTextEvent;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
+
+import converter.Converter;
+import converter.Score;
+import converter.measure.TabMeasure;
+import javafx.concurrent.Task;
+import javafx.geometry.Point2D;
+import javafx.scene.control.Button;
+import javafx.scene.control.IndexRange;
+import javafx.scene.control.Label;
+import javafx.stage.Popup;
+import utility.Range;
+import utility.Settings;
+import utility.ValidationError;
+
+public class Highlighter {
     protected static TreeMap<Range, ValidationError> ACTIVE_ERRORS = new TreeMap<>();
     
-    private CodeArea TEXT_AREA;
-    private Button convertButton;
-    private Button previewButton;
+    private int HOVER_DELAY = 30;
+    private MainViewController mvc;
+    private Converter converter;
+    
     protected static ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public MainView(CodeArea TEXT_AREA, Button convertButton, Button previewButton) {
-        this.TEXT_AREA = TEXT_AREA;
-        this.convertButton = convertButton;
-        this.previewButton = previewButton;
+    public Highlighter(MainViewController mvc, Converter conv) {
+    	this.mvc = mvc;
+    	this.converter = conv;
+		
+    	enableHighlighting();
+
+		Popup popup = new Popup();
+		Label popupMsg = new Label();
+		popupMsg.setStyle(
+				"-fx-background-color: black;" +
+						"-fx-text-fill: white;" +
+				"-fx-padding: 5;");
+		popup.getContent().add(popupMsg);
+
+		mvc.mainText.setMouseOverTextDelay(Duration.ofMillis(HOVER_DELAY));
+		mvc.mainText.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
+			if (Highlighter.ACTIVE_ERRORS.isEmpty()) return;
+			int chIdx = e.getCharacterIndex();
+			String message = Highlighter.getMessageOfCharAt(chIdx);
+			if (message.isEmpty()) return;
+			Point2D pos = e.getScreenPosition();
+			popupMsg.setText(message);
+			popup.show(mvc.mainText, pos.getX(), pos.getY() + 10);
+		});
+		mvc.mainText.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
+			popup.hide();
+		});
     }
 
     public Task<StyleSpans<Collection<String>>> computeHighlightingAsync() {
-        String text = TEXT_AREA.getText();
+        String text = mvc.mainText.getText();
 
         Task<StyleSpans<Collection<String>>> task = new Task<>() {
             @Override
@@ -47,29 +83,27 @@ public class MainView {
         return task;
     }
     
-    public void refresh() {
-        TEXT_AREA.replaceText(new IndexRange(0, TEXT_AREA.getText().length()), TEXT_AREA.getText()+" ");
-    }
-
+    
     private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
-        TEXT_AREA.setStyleSpans(0, highlighting);
+        mvc.mainText.setStyleSpans(0, highlighting);
     }
 
     private StyleSpans<Collection<String>> computeHighlighting(String text) {
-        Score score = new Score(text);
-        if (score.getTabSectionList().isEmpty())
-        {
-            convertButton.setDisable(true);
-            previewButton.setDisable(true);
+        converter.update();
+        if (converter.hasNothing()){
+        	mvc.saveMXLButton.setDisable(true);
+        	mvc.previewButton.setDisable(true);
+        	mvc.showMXLButton.setDisable(true);
         }
         else
         {
-            convertButton.setDisable(false);
-            previewButton.setDisable(false);
+        	mvc.saveMXLButton.setDisable(false);
+        	mvc.previewButton.setDisable(false);
+        	mvc.showMXLButton.setDisable(false);
         }
 
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-        ACTIVE_ERRORS = this.filterOverlappingRanges(this.createErrorRangeMap(score.validate()));
+        ACTIVE_ERRORS = this.filterOverlappingRanges(this.createErrorRangeMap(converter.validate()));
         if (ACTIVE_ERRORS.isEmpty()) {
             spansBuilder.add(Collections.emptyList(), text.length());
             return spansBuilder.create();
@@ -154,10 +188,10 @@ public class MainView {
 
     public void enableHighlighting() {
         //Subscription cleanupWhenDone = 
-    	TEXT_AREA.multiPlainChanges()
+    	mvc.mainText.multiPlainChanges()
                 .successionEnds(Duration.ofMillis(350))
                 .supplyTask(this::computeHighlightingAsync)
-                .awaitLatest(TEXT_AREA.multiPlainChanges())
+                .awaitLatest(mvc.mainText.multiPlainChanges())
                 .filterMap(t -> {
                     if(t.isSuccess()) {
                         return Optional.of(t.get());
@@ -170,12 +204,12 @@ public class MainView {
     }
 
     public boolean goToMeasure(int measureCount) {
-        TabMeasure measure = new Score(TEXT_AREA.getText()).getMeasure(measureCount);
+        TabMeasure measure = new Score(mvc.mainText.getText()).getMeasure(measureCount);
         if (measure==null) return false;
         List<Integer[]> linePositions = measure.getLinePositions();
-        TEXT_AREA.moveTo(linePositions.get(0)[0]);
-        TEXT_AREA.requestFollowCaret();
-        TEXT_AREA.requestFocus();
+        mvc.mainText.moveTo(linePositions.get(0)[0]);
+        mvc.mainText.requestFollowCaret();
+        mvc.mainText.requestFocus();
         return true;
     }
 }

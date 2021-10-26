@@ -29,7 +29,7 @@ public class MainApp extends Application {
     }
 
     public static void exit() {
-        MainView.executor.shutdown();
+        Highlighter.executor.shutdown();
         NotePlayer.kill();
     }
 

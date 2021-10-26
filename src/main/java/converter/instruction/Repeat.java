@@ -1,6 +1,6 @@
 package converter.instruction;
 
-import GUI.MainView;
+import GUI.Highlighter;
 import converter.TabSection;
 import converter.TabRow;
 import converter.ScoreComponent;

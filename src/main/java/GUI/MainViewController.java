@@ -17,6 +17,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
 
+import converter.Converter;
 import converter.Score;
 import javafx.application.Application;
 import javafx.application.HostServices;
@@ -48,7 +49,7 @@ import utility.Settings;
 
 public class MainViewController extends Application {
 	
-	private int HOVER_DELAY = 30;
+	
 	private Preferences prefs;
 	public File saveFile;
 	private static boolean isEditingSavedFile;
@@ -57,17 +58,20 @@ public class MainViewController extends Application {
 	public Window convertWindow;
 	public Window settingsWindow;
 
-	public MainView mainView;
+	public Highlighter highlighter;
+	public Converter converter;
 
-	@FXML public CodeArea TEXT_AREA;
+	@FXML public CodeArea mainText;
 
-	@FXML private TextField gotoMeasureField;
-	@FXML private CheckBox wrapCheckbox;
-	@FXML private BorderPane borderPane;
-	@FXML private Button convertButton;
-	@FXML private Button previewButton;
-	@FXML private Button goToline;
-	@FXML private ComboBox<String> cmbScoreType;
+	@FXML  TextField gotoMeasureField;
+	@FXML  CheckBox wrapCheckbox;
+	@FXML  BorderPane borderPane;
+	@FXML  Button saveTabButton;
+	@FXML  Button saveMXLButton;
+	@FXML  Button showMXLButton;
+	@FXML  Button previewButton;
+	@FXML  Button goToline;
+	@FXML  ComboBox<String> cmbScoreType;
 
 
 	public MainViewController() {
@@ -81,42 +85,9 @@ public class MainViewController extends Application {
 
 	@FXML 
 	public void initialize() {
-		mainView = new MainView(TEXT_AREA, convertButton, previewButton);
-		initializeTextAreaErrorPopups();
-		ContextMenu context = new ContextMenu();
-		MenuItem menuItem = new MenuItem("Play Notes");
-		menuItem.setOnAction(e -> {
-			new NotePlayer(TEXT_AREA);
-		});
-		context.getItems().add(menuItem);
-		TEXT_AREA.setContextMenu(context);
-	}
-
-	private void initializeTextAreaErrorPopups() {
-		TEXT_AREA.setParagraphGraphicFactory(LineNumberFactory.get(TEXT_AREA));
-		mainView.enableHighlighting();
-
-		Popup popup = new Popup();
-		Label popupMsg = new Label();
-		popupMsg.setStyle(
-				"-fx-background-color: black;" +
-						"-fx-text-fill: white;" +
-				"-fx-padding: 5;");
-		popup.getContent().add(popupMsg);
-
-		TEXT_AREA.setMouseOverTextDelay(Duration.ofMillis(HOVER_DELAY));
-		TEXT_AREA.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
-			if (MainView.ACTIVE_ERRORS.isEmpty()) return;
-			int chIdx = e.getCharacterIndex();
-			String message = MainView.getMessageOfCharAt(chIdx);
-			if (message.isEmpty()) return;
-			Point2D pos = e.getScreenPosition();
-			popupMsg.setText(message);
-			popup.show(TEXT_AREA, pos.getX(), pos.getY() + 10);
-		});
-		TEXT_AREA.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
-			popup.hide();
-		});
+		mainText.setParagraphGraphicFactory(LineNumberFactory.get(mainText));
+		converter = new Converter(this);
+		highlighter = new Highlighter(this, converter);
 	}
 
 	@FXML
@@ -163,7 +134,7 @@ public class MainViewController extends Application {
 	private void handleNew() {
 		boolean userOkToGoAhead = promptSave();
 		if (!userOkToGoAhead) return;
-		this.TEXT_AREA.clear();
+		this.mainText.clear();
 		isEditingSavedFile = false;
 	}
 
@@ -191,7 +162,7 @@ public class MainViewController extends Application {
 		if (openedFile.exists()) {
 			try {
 				String newText = Files.readString(Path.of(openedFile.getAbsolutePath())).replace("\r\n", "\n");
-				TEXT_AREA.replaceText(new IndexRange(0, TEXT_AREA.getText().length()), newText);
+				mainText.replaceText(new IndexRange(0, mainText.getText().length()), newText);
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -200,7 +171,7 @@ public class MainViewController extends Application {
 		saveFile = openedFile;
 		isEditingSavedFile = true;
 		//Is this needed?
-		mainView.computeHighlightingAsync();
+		highlighter.computeHighlightingAsync();
 
 	}
 
@@ -219,7 +190,7 @@ public class MainViewController extends Application {
 		if (newSaveFile==null) return false;
 		try {
 			FileWriter myWriter = new FileWriter(newSaveFile.getPath());
-			myWriter.write(TEXT_AREA.getText());
+			myWriter.write(mainText.getText());
 			myWriter.close();
 
 			saveFile = newSaveFile;
@@ -236,7 +207,7 @@ public class MainViewController extends Application {
 			return this.handleSaveAs();
 		try {
 			FileWriter myWriter = new FileWriter(saveFile.getPath());
-			myWriter.write(TEXT_AREA.getText());
+			myWriter.write(mainText.getText());
 			myWriter.close();
 		} catch (IOException e) {
 			return false;
@@ -247,10 +218,10 @@ public class MainViewController extends Application {
 	private boolean promptSave() {
 
 		//we don't care about overwriting a blank file. If file is blank, we are ok to go. it doesn't matter if it is saved or not
-		if (TEXT_AREA.getText().isBlank())  return true;
+		if (mainText.getText().isBlank())  return true;
 
 		try {
-			if (saveFile!=null && Files.readString(Path.of(saveFile.getAbsolutePath())).replace("\r\n", "\n").equals(TEXT_AREA.getText()))
+			if (saveFile!=null && Files.readString(Path.of(saveFile.getAbsolutePath())).replace("\r\n", "\n").equals(mainText.getText()))
 				return true;    //if file didn't change, we are ok to go. no need to save anything, no chance of overwriting.
 		}catch (Exception e){
 			e.printStackTrace();
@@ -300,7 +271,7 @@ public class MainViewController extends Application {
 	}
 
 	@FXML
-	private void convertButtonHandle() {
+	private void saveTabButtonHandle() {
 		Parent root;
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/convertWindow.fxml"));
@@ -308,6 +279,37 @@ public class MainViewController extends Application {
 			ConvertWindowController controller = loader.getController();
 			controller.setMainViewController(this);
 			convertWindow = this.openNewWindow(root, "ConversionOptions");
+		} catch (IOException e) {
+			Logger logger = Logger.getLogger(getClass().getName());
+			logger.log(Level.SEVERE, "Failed to create new Window.", e);
+		}
+	}
+	
+	@FXML
+	private void saveMXLButtonHandle() {
+		Parent root;
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/convertWindow.fxml"));
+			root = loader.load();
+			ConvertWindowController controller = loader.getController();
+			controller.setMainViewController(this);
+			convertWindow = this.openNewWindow(root, "ConversionOptions");
+		} catch (IOException e) {
+			Logger logger = Logger.getLogger(getClass().getName());
+			logger.log(Level.SEVERE, "Failed to create new Window.", e);
+		}
+	}
+	
+	@FXML
+	private void showMXLButtonHandle() {
+		Parent root;
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/showMXL.fxml"));
+			root = loader.load();
+			ShowMXLController controller = loader.getController();
+			controller.setMainViewController(this);
+			controller.update();
+			convertWindow = this.openNewWindow(root, "MusicXML output");
 		} catch (IOException e) {
 			Logger logger = Logger.getLogger(getClass().getName());
 			logger.log(Level.SEVERE, "Failed to create new Window.", e);
@@ -321,20 +323,24 @@ public class MainViewController extends Application {
 
 	@FXML
 	private void setWrapProperty() {
-		TEXT_AREA.setWrapText(this.wrapCheckbox.isSelected());
+		mainText.setWrapText(this.wrapCheckbox.isSelected());
 	}
 
 	@FXML
 	private void handleScoreType() {
 		InstrumentSetting = cmbScoreType.getValue().toString().strip();
 		Score.INSTRUMENT_MODE = MusicXMLCreator.getInstrumentEnum(InstrumentSetting);
-		mainView.refresh();
+		refresh();
 	}
+
+	public void refresh() {
+        mainText.replaceText(new IndexRange(0, mainText.getText().length()), mainText.getText()+" ");
+    }
 
 	@FXML
 	private void handleGotoMeasure() {
 		int measureNumber = Integer.parseInt( gotoMeasureField.getText() );
-		if (!mainView.goToMeasure(measureNumber)) {
+		if (!highlighter.goToMeasure(measureNumber)) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setContentText("Measure " + measureNumber + " could not be found.");
 			alert.setHeaderText(null);

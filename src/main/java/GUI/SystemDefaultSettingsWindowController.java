@@ -65,7 +65,7 @@ public class SystemDefaultSettingsWindowController extends Application {
 		default -> err = 4;
 		}
 		prefs.put("errorSensitivity", err+"");
-		mvc.mainView.refresh();
+		mvc.refresh();
 	}
 
 	@FXML
