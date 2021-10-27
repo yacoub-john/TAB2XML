@@ -25,6 +25,7 @@ public class MusicXMLCreator {
             xmlString = mapper.writeValueAsString(score.getModel());
             xmlString = xmlString.replace("noteBefore", "note");
             xmlString = xmlString.replace("noteAfter", "note");
+            xmlString = xmlString.replaceAll("\\R[ \\t]*<midiinstruments>[\\s\\S]*</midiinstruments>[ \\t]*\\R", "\n");
         }catch (JsonProcessingException | TXMLException e) {
             e.printStackTrace();
             return "";

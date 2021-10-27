@@ -73,7 +73,7 @@ public class ShowMXLController extends Application {
 
 	@FXML 
 	public void initialize() {
-		
+		mxlText.setParagraphGraphicFactory(LineNumberFactory.get(mxlText));
 	}
 
     public void setMainViewController(MainViewController mvcInput) {

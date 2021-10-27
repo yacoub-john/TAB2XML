@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class TabMeasure implements ScoreComponent {
-    public static int GLOBAL_MEASURE_COUNT;
+    public static int MEASURE_INDEX;
     
     protected int measureCount;
     protected int beatCount = Settings.getInstance().tsNum;
@@ -56,7 +56,7 @@ public abstract class TabMeasure implements ScoreComponent {
     }
 
     public TabMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasureInGroup) {
-        this.measureCount = ++GLOBAL_MEASURE_COUNT;
+        this.measureCount = ++MEASURE_INDEX;
         this.lines = lines;
         this.lineCount = this.lines.size();
         this.lineNamesAndPositions = lineNamesAndPositions;

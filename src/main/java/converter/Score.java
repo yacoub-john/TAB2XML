@@ -16,6 +16,7 @@ import models.Creator;
 import models.Identification;
 import models.Part;
 import models.ScorePartwise;
+import models.part_list.MIDIInstrument;
 import models.part_list.PartList;
 import models.part_list.ScoreInstrument;
 import models.part_list.ScorePart;
@@ -24,45 +25,20 @@ import utility.Settings;
 import utility.ValidationError;
 
 public class Score implements ScoreComponent {
-    private List<TabSection> tabSectionList;
-    // Score.tabText is only public for the JUnit tester to work. Its access modifier should be protected so that
-    // it will not be changed by anything outside the converter package as the "position" instance variable of other
-    // classes in this package (e.g TabString) shows the position of the measure line in this String, thus they depend
-    // on this String staying the same. It cannot be final as we will want to create different Score objects to convert
-    // different Strings.
-    public static String tabText;
-    private Map<Integer, String> scoreTextFragments;
-    //public static Instrument INSTRUMENT_MODE = Settings.getInstance().instrument; // Instrument.AUTO;
-    //public String instrumentType;
-    //public static int GLOBAL_DIVISIONS = 1;
+
+	public static String tabText;
+	private Map<Integer, String> scoreTextFragments;
+	private List<TabSection> tabSectionList;
     public static int CRITICAL_ERROR_CUTOFF = 1;
-    public String title;
-    public String artist;
 
     public Score(String textInput) {
-    	TabMeasure.GLOBAL_MEASURE_COUNT = 0;
+    	TabMeasure.MEASURE_INDEX = 0;
         
     	tabText = textInput;
         scoreTextFragments = getScoreTextFragments(tabText);
         tabSectionList = createTabSectionList(scoreTextFragments);
         applyTimeSignatureUntilNextChange();
-        //GLOBAL_DIVISIONS = 
         setDivisions();
-        //setDurations();
-//        if (INSTRUMENT_MODE == Instrument.AUTO) {
-//            boolean isGuitar = this.isGuitar(false);
-//            boolean isDrum = this.isDrum(false);
-//            boolean isBass = this.isBass(false);
-//            if (!isBass && !isGuitar && !isDrum)
-//                this.instrumentType = "invalid";
-//            if ((isBass && isGuitar) || (isGuitar && isDrum) || (isBass && isDrum))
-//                this.instrumentType = "mixed";
-//            else if (isGuitar) this.instrumentType = Instrument.GUITAR.name();
-//            else if (isDrum) this.instrumentType = Instrument.DRUMS.name();
-//            else if (isBass) this.instrumentType = Instrument.BASS.name();
-//        }else {
-//            this.instrumentType = INSTRUMENT_MODE.name();
-//        }
     }
 
     /**
@@ -146,16 +122,6 @@ public class Score implements ScoreComponent {
 	    return divisions;
 	}
 
-//	public void setDurations() {
-//	    for (TabSection msurCollection : this.tabSectionList) {
-//	        msurCollection.setDurations();
-//	    }
-//	}
-
-//	public static void setInstrumentMode(Instrument InstrumentMode) {
-//        INSTRUMENT_MODE = InstrumentMode;
-//    }
-
     public TabMeasure getMeasure(int measureCount) {
         for (TabSection mCol : this.getTabSectionList()) {
             for (TabRow mGroup : mCol.getTabRowList()) {
@@ -200,10 +166,16 @@ public class Score implements ScoreComponent {
         List<ScorePart> scoreParts = new ArrayList<>();
         ScorePart scorePart = new ScorePart("P1", "Drumset");
         List<ScoreInstrument> scoreInstruments = new ArrayList<>();
+        List<MIDIInstrument> midiInstruments = new ArrayList<>();
+        
         for (String partID : TabDrumString.USED_DRUM_PARTS) {
             scoreInstruments.add(new ScoreInstrument(partID, DrumUtils.getFullName(partID)));
+            // Assumption: partID is of the form P1-IXX, where XX are digits
+            int pitch = Integer.parseInt(partID.substring(4, 6));
+            midiInstruments.add(new MIDIInstrument(partID, pitch));
         }
         scorePart.setScoreInstruments(scoreInstruments);
+        scorePart.setMIDIInstruments(midiInstruments);
         scoreParts.add(scorePart);
 
         return new PartList(scoreParts);
@@ -281,9 +253,9 @@ public class Score implements ScoreComponent {
 	            isGuitar = this.isGuitar(true);
 	        }
 	        if (Settings.getInstance().instrument == Instrument.AUTO && ((isDrum && isGuitar)||(isDrum && isBass)))
-	            throw new MixedScoreTypeException("A score must be only of one type");
+	            throw new MixedScoreTypeException("Multi-instrument tablatures are not supported at this time.");
 	        if (!isDrum && !isGuitar && !isBass)
-	            throw new InvalidScoreTypeException("The type of this score could not be detected. Specify its type or fix the error in the text input.");
+	            throw new InvalidScoreTypeException("The instrument for this tablature could not be detected. Please specify in Settings -> Current Song Settings.");
 	    }
 	
 	    List<models.measure.Measure> measures = new ArrayList<>();
@@ -303,10 +275,10 @@ public class Score implements ScoreComponent {
 	        partList = this.getBassPartList();
 	
 	    ScorePartwise scorePartwise = new ScorePartwise("3.1", partList, parts);
-	    if (this.title!=null && !this.title.isBlank())
-	        scorePartwise.setMovementTitle(this.title);
-	    if (this.artist!=null && !this.artist.isBlank())
-	        scorePartwise.setIdentification(new Identification(new Creator("composer", this.artist)));
+	   // if (this.title!=null && !this.title.isBlank())
+	        scorePartwise.setMovementTitle(Settings.getInstance().title);
+	   // if (this.artist!=null && !this.artist.isBlank())
+	        scorePartwise.setIdentification(new Identification(new Creator("composer", Settings.getInstance().artist)));
 	    return scorePartwise;
 	}
 
