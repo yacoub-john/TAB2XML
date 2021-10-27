@@ -90,7 +90,7 @@ public class Highlighter {
 
     private StyleSpans<Collection<String>> computeHighlighting(String text) {
         converter.update();
-        if (converter.hasNothing()){
+        if (converter.getScore().getTabSectionList().isEmpty()){
         	mvc.saveMXLButton.setDisable(true);
         	mvc.previewButton.setDisable(true);
         	mvc.showMXLButton.setDisable(true);
@@ -203,14 +203,5 @@ public class Highlighter {
                 .subscribe(this::applyHighlighting);
     }
 
-    public boolean goToMeasure(int measureCount) {
-        TabMeasure measure = new Score(mvc.mainText.getText()).getMeasure(measureCount);
-        if (measure==null) return false;
-        List<Integer[]> linePositions = measure.getLinePositions();
-        mvc.mainText.moveTo(linePositions.get(0)[0]);
-        mvc.mainText.requestFollowCaret();
-        mvc.mainText.requestFocus();
-        return true;
-    }
 }
 

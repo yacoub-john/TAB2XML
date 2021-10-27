@@ -1,8 +1,5 @@
 package converter;
 
 public enum Instrument {
-    GUITAR("Guitar"), DRUM("Drum"), BASS("Bass"), AUTO("Auto");
-
-    Instrument(String name) {
-    }
+    GUITAR, DRUMS, BASS, AUTO, NONE;
 }

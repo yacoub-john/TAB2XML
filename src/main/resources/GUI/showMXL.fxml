@@ -16,7 +16,7 @@
             <children>
                 <VirtualizedScrollPane layoutX="693.0" layoutY="70.0" prefHeight="507.0" prefWidth="898.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="32.0" BorderPane.alignment="CENTER">
                     <content>
-                        <CodeArea fx:id="mainText" stylesheets="@text_input_styles.css" />
+                        <CodeArea fx:id="mxlText" stylesheets="@text_input_styles.css" />
                     </content>
                 </VirtualizedScrollPane>
                 <AnchorPane layoutX="13.0" prefHeight="32.0" prefWidth="974.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="0.0" />
@@ -24,7 +24,7 @@
                     <children>
                   <HBox layoutY="11.0" spacing="5.0" AnchorPane.rightAnchor="0.0">
                      <children>
-                        <Button fx:id="saveMXLButton" disable="true" layoutX="15.0" layoutY="15.0" mnemonicParsing="false" onAction="#saveMXLButtonHandle" text="Save MusicXML" />
+                        <Button fx:id="saveMXLButton" disable="false" layoutX="15.0" layoutY="15.0" mnemonicParsing="false" onAction="#saveMXLButtonHandle" text="Save MusicXML" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

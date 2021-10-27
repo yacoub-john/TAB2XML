@@ -32,8 +32,8 @@ public class Score implements ScoreComponent {
     // different Strings.
     public static String tabText;
     private Map<Integer, String> scoreTextFragments;
-    public static Instrument INSTRUMENT_MODE = Instrument.AUTO;
-    public String instrumentType;
+    //public static Instrument INSTRUMENT_MODE = Settings.getInstance().instrument; // Instrument.AUTO;
+    //public String instrumentType;
     //public static int GLOBAL_DIVISIONS = 1;
     public static int CRITICAL_ERROR_CUTOFF = 1;
     public String title;
@@ -41,7 +41,7 @@ public class Score implements ScoreComponent {
 
     public Score(String textInput) {
     	TabMeasure.GLOBAL_MEASURE_COUNT = 0;
-        TabMeasure.PREV_MEASURE_TYPE = Instrument.AUTO;
+        
     	tabText = textInput;
         scoreTextFragments = getScoreTextFragments(tabText);
         tabSectionList = createTabSectionList(scoreTextFragments);
@@ -49,20 +49,20 @@ public class Score implements ScoreComponent {
         //GLOBAL_DIVISIONS = 
         setDivisions();
         //setDurations();
-        if (INSTRUMENT_MODE == Instrument.AUTO) {
-            boolean isGuitar = this.isGuitar(false);
-            boolean isDrum = this.isDrum(false);
-            boolean isBass = this.isBass(false);
-            if (!isBass && !isGuitar && !isDrum)
-                this.instrumentType = "invalid";
-            if ((isBass && isGuitar) || (isGuitar && isDrum) || (isBass && isDrum))
-                this.instrumentType = "mixed";
-            else if (isGuitar) this.instrumentType = Instrument.GUITAR.name();
-            else if (isDrum) this.instrumentType = Instrument.DRUM.name();
-            else if (isBass) this.instrumentType = Instrument.BASS.name();
-        }else {
-            this.instrumentType = INSTRUMENT_MODE.name();
-        }
+//        if (INSTRUMENT_MODE == Instrument.AUTO) {
+//            boolean isGuitar = this.isGuitar(false);
+//            boolean isDrum = this.isDrum(false);
+//            boolean isBass = this.isBass(false);
+//            if (!isBass && !isGuitar && !isDrum)
+//                this.instrumentType = "invalid";
+//            if ((isBass && isGuitar) || (isGuitar && isDrum) || (isBass && isDrum))
+//                this.instrumentType = "mixed";
+//            else if (isGuitar) this.instrumentType = Instrument.GUITAR.name();
+//            else if (isDrum) this.instrumentType = Instrument.DRUMS.name();
+//            else if (isBass) this.instrumentType = Instrument.BASS.name();
+//        }else {
+//            this.instrumentType = INSTRUMENT_MODE.name();
+//        }
     }
 
     /**
@@ -152,9 +152,9 @@ public class Score implements ScoreComponent {
 //	    }
 //	}
 
-	public static void setInstrumentMode(Instrument InstrumentMode) {
-        INSTRUMENT_MODE = InstrumentMode;
-    }
+//	public static void setInstrumentMode(Instrument InstrumentMode) {
+//        INSTRUMENT_MODE = InstrumentMode;
+//    }
 
     public TabMeasure getMeasure(int measureCount) {
         for (TabSection mCol : this.getTabSectionList()) {
@@ -222,8 +222,8 @@ public class Score implements ScoreComponent {
     }
 
     public boolean isGuitar(boolean strictCheck) {
-        if (!strictCheck && Score.INSTRUMENT_MODE != Instrument.AUTO) {
-            return Score.INSTRUMENT_MODE == Instrument.GUITAR;
+        if (!strictCheck && Settings.getInstance().instrument != Instrument.AUTO) {
+            return Settings.getInstance().instrument == Instrument.GUITAR;
         }
         for (TabSection msurCollection : this.tabSectionList) {
             if (!msurCollection.isGuitar(strictCheck))
@@ -233,8 +233,8 @@ public class Score implements ScoreComponent {
     }
 
     public boolean isDrum(boolean strictCheck) {
-        if (!strictCheck && Score.INSTRUMENT_MODE != Instrument.AUTO) {
-            return Score.INSTRUMENT_MODE == Instrument.DRUM;
+        if (!strictCheck && Settings.getInstance().instrument != Instrument.AUTO) {
+            return Settings.getInstance().instrument == Instrument.DRUMS;
         }
         for (TabSection msurCollection : this.tabSectionList) {
             if (!msurCollection.isDrum(strictCheck))
@@ -244,8 +244,8 @@ public class Score implements ScoreComponent {
     }
 
     public boolean isBass(boolean strictCheck) {
-        if (!strictCheck && Score.INSTRUMENT_MODE != Instrument.AUTO) {
-            return Score.INSTRUMENT_MODE == Instrument.BASS;
+        if (!strictCheck && Settings.getInstance().instrument != Instrument.AUTO) {
+            return Settings.getInstance().instrument == Instrument.BASS;
         }
         for (TabSection msurCollection : this.tabSectionList) {
             if (!msurCollection.isBass(strictCheck))
@@ -266,11 +266,11 @@ public class Score implements ScoreComponent {
 	    boolean isDrum = false;
 	    boolean isBass = false;
 	
-	    if (INSTRUMENT_MODE ==Instrument.GUITAR)
+	    if (Settings.getInstance().instrument ==Instrument.GUITAR)
 	        isGuitar = true;
-	    else if (INSTRUMENT_MODE ==Instrument.DRUM)
+	    else if (Settings.getInstance().instrument ==Instrument.DRUMS)
 	        isDrum = true;
-	    else if (INSTRUMENT_MODE ==Instrument.BASS)
+	    else if (Settings.getInstance().instrument ==Instrument.BASS)
 	        isBass = true;
 	    else {
 	        isGuitar = this.isGuitar(false);
@@ -280,7 +280,7 @@ public class Score implements ScoreComponent {
 	            isDrum = this.isDrum(true);
 	            isGuitar = this.isGuitar(true);
 	        }
-	        if (INSTRUMENT_MODE == Instrument.AUTO && ((isDrum && isGuitar)||(isDrum && isBass)))
+	        if (Settings.getInstance().instrument == Instrument.AUTO && ((isDrum && isGuitar)||(isDrum && isBass)))
 	            throw new MixedScoreTypeException("A score must be only of one type");
 	        if (!isDrum && !isGuitar && !isBass)
 	            throw new InvalidScoreTypeException("The type of this score could not be detected. Specify its type or fix the error in the text input.");

@@ -3,10 +3,16 @@ package utility;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import converter.Instrument;
+import converter.note.NoteFactory;
+
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DrumUtils {
     private static String IdToFullNamePath = "DrumIDtoFullName.csv";
@@ -168,4 +174,63 @@ public class DrumUtils {
         return getDisplayStepMap().keySet();
     }
     
+    public static double isDrumLineLikelihood(String name, String line, Instrument instrumentBias) {
+	    double instrumentBiasWeight = 0.2;  // weight attached when we are told to have a bias for drum notes
+	    double lineNameWeight = 0.5;  // weight attached when the line name is a drum line name
+	    double noteGroupWeight = 0.3;   // ratio of notes that are drum notes vs {all other notes, both valid and invalid}
+	
+	    if (!DrumUtils.isValidName(name))
+	        return 0;
+	    double score = lineNameWeight + (instrumentBias==Instrument.DRUMS ? instrumentBiasWeight : 0);
+	    line = line.replaceAll("\s", "");
+	
+	    int charGroups = 0;
+	    Matcher charGroupMatcher = Pattern.compile("[^-]+").matcher(line);
+	    while (charGroupMatcher.find())
+	        charGroups++;
+	
+	    int noteGroups = 0;
+	    Matcher noteGroupMatcher = Pattern.compile(NoteFactory.DRUM_NOTE_GROUP_PATTERN).matcher(line);
+	    while (noteGroupMatcher.find()) {
+	        //in-case a guitar note group has -'s inside it (e.g 5---h3 is a valid guitar note group for a hammer on,
+	        // but will distort the ratio of character group to note group because one note group contains 2 character groups)
+	        charGroupMatcher = Pattern.compile("[^-]+").matcher(line);
+	        while(charGroupMatcher.find())
+	            noteGroups++;
+	    }
+	    if (charGroups==0)
+	        score += noteGroupWeight;
+	    else
+	        score += ((double) noteGroups/(double) charGroups)*noteGroupWeight;
+	    return score;
+	}
+
+
+//	private static double adjustRawConfidenceScore(double confidence) {
+//	    //Exponential Decay (increasing form)
+//	    //https://people.richland.edu/james/lecture/m116/logs/models.html
+//	    double lowerLimit = 0.5;
+//	    double size = 0.5;
+//	    return lowerLimit + 0.5*(1-Math.exp(-5*confidence));
+//	}
+
+
+	
+
+
+	public static double isDrumMeasureLikelihood(List<String> lineList, List<String[]> lineNameList) {
+	    double score = 0;
+	    int lineCount = lineList.size();
+	    for (int i=0; i<lineCount; i++) {
+	        score += isDrumLineLikelihood(lineNameList.get(i)[0], lineList.get(i), Instrument.AUTO);
+	    }
+	    if (lineCount==0)
+	        score += 1; //if there is risk of zero division error, assign the full weight
+	    else
+	        score += (score/lineCount);
+	
+	    return score;
+	}
+
+
 }

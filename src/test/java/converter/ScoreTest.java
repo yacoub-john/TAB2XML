@@ -22,7 +22,7 @@ public class ScoreTest {
 
     @BeforeEach
     void init() {
-        Score.INSTRUMENT_MODE = Instrument.AUTO;
+    	Settings.getInstance().instrument = Instrument.AUTO;
     }
 
     /**

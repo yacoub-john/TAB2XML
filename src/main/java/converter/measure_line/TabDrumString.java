@@ -21,7 +21,7 @@ public class TabDrumString extends TabString {
 
     public TabDrumString(int stringNumber, String line, String[] nameAndPosition, int position) {
         super(stringNumber, line, nameAndPosition, position);
-        this.instrument = Instrument.DRUM;
+        this.instrument = Instrument.DRUMS;
         this.partID = DrumUtils.getPartID(this.name);
         if (this.partID!=null)
             USED_DRUM_PARTS.add(this.partID);

@@ -8,10 +8,13 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -19,6 +22,7 @@ import org.fxmisc.richtext.event.MouseOverTextEvent;
 
 import converter.Converter;
 import converter.Score;
+import converter.measure.TabMeasure;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.fxml.FXML;
@@ -57,7 +61,7 @@ public class ShowMXLController extends Application {
 
 	public Highlighter highlighter;
 
-	@FXML public CodeArea mainText;
+	@FXML public CodeArea mxlText;
 
 	@FXML  TextField gotoMeasureField;
 	@FXML  Button goToline;
@@ -77,37 +81,50 @@ public class ShowMXLController extends Application {
     }
     
     public void update() {
-		mainText.replaceText(mvc.converter.getMusicXML());
-
+		mxlText.replaceText(mvc.converter.getMusicXML());
+		mxlText.moveTo(0);
+		mxlText.requestFollowCaret();
+        mxlText.requestFocus();
 	}
 		@FXML
 	private void saveMXLButtonHandle() {
-//		Parent root;
-//		try {
-//			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/convertWindow.fxml"));
-//			root = loader.load();
-//			ConvertWindowController controller = loader.getController();
-//			controller.setMainViewController(this);
-//			convertWindow = this.openNewWindow(root, "ConversionOptions");
-//		} catch (IOException e) {
-//			Logger logger = Logger.getLogger(getClass().getName());
-//			logger.log(Level.SEVERE, "Failed to create new Window.", e);
-//		}
+		mvc.saveMXLButtonHandle();
 	}
 
 	@FXML
 	private void handleGotoMeasure() {
 		//TODO Must rewrite
-		int measureNumber = Integer.parseInt( gotoMeasureField.getText() );
-		if (!highlighter.goToMeasure(measureNumber)) {
+		int measureNumber = Integer.parseInt(gotoMeasureField.getText() );
+		if (!goToMeasure(measureNumber)) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setContentText("Measure " + measureNumber + " could not be found.");
 			alert.setHeaderText(null);
 			alert.show();
 		}
-
 	}
 
+    private boolean goToMeasure(int measureCount) {
+    	//Pattern textBreakPattern = Pattern.compile("((\\R|^)[ ]*(?=\\R)){2,}|^|$");
+    	Pattern mxlMeasurePattern = Pattern.compile("<measure number=\"" + measureCount + "\">");
+        Matcher mxlMeasureMatcher = mxlMeasurePattern.matcher(mxlText.getText());
+        
+        if (mxlMeasureMatcher.find()) {
+        	int pos = mxlMeasureMatcher.start();
+        	mxlText.moveTo(pos);
+        	mxlText.requestFollowCaret();
+        	Pattern newLinePattern = Pattern.compile("\\R");
+        	Matcher newLineMatcher = newLinePattern.matcher(mxlText.getText().substring(pos));
+        	for (int i = 0; i < 30; i++) newLineMatcher.find();
+        	int endPos = newLineMatcher.start();
+        	mxlText.moveTo(pos+endPos);
+        	mxlText.requestFollowCaret();
+        	//mxlText.moveTo(pos);
+            mxlText.requestFocus();
+            return true;
+            }
+        else return false;        
+    }
+    
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 

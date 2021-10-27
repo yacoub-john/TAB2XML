@@ -27,8 +27,7 @@ import java.util.regex.Pattern;
 
 public abstract class TabMeasure implements ScoreComponent {
     public static int GLOBAL_MEASURE_COUNT;
-    public static Instrument PREV_MEASURE_TYPE;
-    private static double FOLLOW_PREV_MEASURE_WEIGHT = 0.3;
+    
     protected int measureCount;
     protected int beatCount = Settings.getInstance().tsNum;
     protected int beatType = Settings.getInstance().tsDen;
@@ -87,7 +86,7 @@ public abstract class TabMeasure implements ScoreComponent {
             String line = lines.get(i);
             String[] nameAndPosition = namesAndPosition.get(i);
             int position = linePositions.get(i);
-            Instrument instrumentBias = this instanceof BassMeasure ? Instrument.BASS : this instanceof DrumMeasure ? Instrument.DRUM : this instanceof GuitarMeasure ? Instrument.GUITAR : Instrument.AUTO;
+            Instrument instrumentBias = this instanceof BassMeasure ? Instrument.BASS : this instanceof DrumMeasure ? Instrument.DRUMS : this instanceof GuitarMeasure ? Instrument.GUITAR : Instrument.AUTO;
             measureLineList.add(newTabString(i+1,line, nameAndPosition, position, instrumentBias, this instanceof BassMeasure ? true : false));
         }
         return measureLineList;
@@ -108,16 +107,17 @@ public abstract class TabMeasure implements ScoreComponent {
      * or DrumMeasureLine
      */
     private TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position, Instrument bias, boolean prefBass) {
-        if (Score.INSTRUMENT_MODE!=Instrument.AUTO) {
-            return switch (Score.INSTRUMENT_MODE) {
+        if (Settings.getInstance().instrument!=Instrument.AUTO) {
+            return switch (Settings.getInstance().instrument) {
                 case GUITAR -> new TabGuitarString(stringNumber, line, nameAndPosition, position);
                 case BASS -> new TabBassString(stringNumber, line, nameAndPosition, position);
-                case DRUM -> new TabDrumString(stringNumber, line, nameAndPosition, position);
+                case DRUMS -> new TabDrumString(stringNumber, line, nameAndPosition, position);
                 case AUTO -> null;
+                case NONE -> null;
             };
         }else {
-            double guitarLikelihood = isGuitarLineLikelihood(nameAndPosition[0], line, bias);
-            double drumLikelihood = isDrumLineLikelihood(nameAndPosition[0], line, bias);
+            double guitarLikelihood = GuitarUtils.isGuitarLineLikelihood(nameAndPosition[0], line, bias);
+            double drumLikelihood = DrumUtils.isDrumLineLikelihood(nameAndPosition[0], line, bias);
             if (guitarLikelihood >= drumLikelihood) {
                 if (prefBass)
                     return new TabBassString(stringNumber, line, nameAndPosition, position);
@@ -128,268 +128,6 @@ public abstract class TabMeasure implements ScoreComponent {
         }
     }
     
-    public static double isGuitarLineLikelihood(String name, String line, Instrument instrumentBias) {
-        double instrumentBiasWeight = 0.2;  // weight attached when we are told to have a bias for guitar notes
-        double lineNameWeight = 0.5;  // weight attached when the line name is a guitar line name
-        double noteGroupWeight = 0.3;   // ratio of notes that are guitar notes vs {all other notes, both valid and invalid}
-
-        if (!GuitarUtils.isValidName(name))
-            return 0;
-        double score = lineNameWeight + (instrumentBias==Instrument.GUITAR ? instrumentBiasWeight : 0);
-        line = line.replaceAll("\s", "");
-
-        int charGroups = 0;
-        Matcher charGroupMatcher = Pattern.compile("[^-]+").matcher(line);
-        while (charGroupMatcher.find())
-            charGroups++;
-
-        int noteGroups = 0;
-        Matcher noteGroupMatcher = Pattern.compile(NoteFactory.GUITAR_NOTE_GROUP_PATTERN).matcher(line);
-        while (noteGroupMatcher.find()) {
-            //in-case a guitar note group has -'s inside it (e.g 5---h3 is a valid guitar note group for a hammer on,
-            // but will distort the ratio of character group to note group because one note group contains 2 character groups)
-            charGroupMatcher = Pattern.compile("[^-]+").matcher(line);
-            while(charGroupMatcher.find())
-                noteGroups++;
-        }
-        if (charGroups==0)
-            score += noteGroupWeight;
-        else
-            score += ((double) noteGroups/(double) charGroups)*noteGroupWeight;
-        return score;
-    }
-
-    public static double isDrumLineLikelihood(String name, String line, Instrument instrumentBias) {
-        double instrumentBiasWeight = 0.2;  // weight attached when we are told to have a bias for drum notes
-        double lineNameWeight = 0.5;  // weight attached when the line name is a drum line name
-        double noteGroupWeight = 0.3;   // ratio of notes that are drum notes vs {all other notes, both valid and invalid}
-
-        if (!DrumUtils.isValidName(name))
-            return 0;
-        double score = lineNameWeight + (instrumentBias==Instrument.DRUM ? instrumentBiasWeight : 0);
-        line = line.replaceAll("\s", "");
-
-        int charGroups = 0;
-        Matcher charGroupMatcher = Pattern.compile("[^-]+").matcher(line);
-        while (charGroupMatcher.find())
-            charGroups++;
-
-        int noteGroups = 0;
-        Matcher noteGroupMatcher = Pattern.compile(NoteFactory.DRUM_NOTE_GROUP_PATTERN).matcher(line);
-        while (noteGroupMatcher.find()) {
-            //in-case a guitar note group has -'s inside it (e.g 5---h3 is a valid guitar note group for a hammer on,
-            // but will distort the ratio of character group to note group because one note group contains 2 character groups)
-            charGroupMatcher = Pattern.compile("[^-]+").matcher(line);
-            while(charGroupMatcher.find())
-                noteGroups++;
-        }
-        if (charGroups==0)
-            score += noteGroupWeight;
-        else
-            score += ((double) noteGroups/(double) charGroups)*noteGroupWeight;
-        return score;
-    }
-
-
-    /**
-     * Creates an instance of the abstract Measure class whose concrete type is either GuitarMeasure or DrumMeasure, depending
-     * on if the features of the input String Lists resemble a drum measure or a Guitar measure(this is determined by the
-     * MeasureLine.isGuitar() and MeasureLine.isDrum() methods). If its features could not be deciphered or it has features
-     * of both guitar and drum features, it defaults to creating a GuitarMeasure object and further error checking can
-     * be done by calling GuitarMeasure().validate() on the object.
-     * @param lineList A list of the insides of each measure lines that makes up this measure (without the line names) (parallel list with the other two List parameters)
-     * @param lineNameList A list of the names of each the measure lines that makes up this measure (parallel list with the other two List parameters)
-     * @param linePositionList A list of the positions of the insides of each of the measure lines that make up this (parallel list with the other two List parameters)
-     *                         measure, where a line's position is the index at which the line is located in the root
-     *                         String from which it was derived (Score.ROOT_STRING)
-     * @param isFirstMeasureInGroup specifies weather this measure is the first one in its measure group. (useful to know, so we only add the xml measure attributes to the first measure)
-     *
-     * @return A Measure object which is either of type GuitarMeasure if the measure was understood to be a guitar
-     * measure, or of type DrumMeasure if the measure was understood to be of type DrumMeasure
-     */
-    public static TabMeasure from(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {
-        boolean repeatStart = checkRepeatStart(lineList);
-        boolean repeatEnd = checkRepeatEnd(lineList);
-        String repeatCountStr = extractRepeatCount(lineList);
-        removeRepeatMarkings(lineList, linePositionList, repeatStart, repeatEnd, repeatCountStr);
-        int repeatCount = 1;
-        if (!repeatCountStr.isEmpty()) {
-            Matcher numMatcher = Pattern.compile("(?<=\\])[0-9]+").matcher(repeatCountStr);
-            numMatcher.find();
-            repeatCountStr = numMatcher.group();
-            repeatCount = Integer.parseInt(repeatCountStr);
-        }
-
-        TabMeasure measure;
-        if (Score.INSTRUMENT_MODE!=Instrument.AUTO) {
-            measure = switch (Score.INSTRUMENT_MODE) {
-                case GUITAR -> new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                case BASS -> new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                case DRUM -> new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                case AUTO -> null;
-            };
-        }else {
-            double guitarLikelihood = isGuitarMeasureLikelihood(lineList, lineNameList);
-            double drumLikelihood = isDrumMeasureLikelihood(lineList, lineNameList);
-            double bassLikelihood = isBassMeasureLikelihood(lineList, lineNameList);
-
-            //adjusting values
-            double guitarLikelihoodAdj = guitarLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.GUITAR ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
-            double drumLikelihoodAdj = drumLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.DRUM ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
-            double bassLikelihoodAdj = bassLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.BASS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
-
-            if (guitarLikelihoodAdj >= drumLikelihoodAdj && guitarLikelihoodAdj >= bassLikelihoodAdj) {
-                measure = new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                PREV_MEASURE_TYPE = Instrument.GUITAR;
-                // the more confident we are about what type of measure this is, the more we want the next measure to be likely to follow it.
-                //dont use the guitarLikelihoodAdj "Adj" score to calculate confidence or else the effect will build on itself everytime we adjust the FOLLOW_PREV_MEASURE_WEIGHT value
-                double confidenceScore = guitarLikelihood-Math.min(Math.max(drumLikelihood, bassLikelihood), guitarLikelihood);
-
-                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
-            }else if (bassLikelihoodAdj >= drumLikelihoodAdj){
-                measure = new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                PREV_MEASURE_TYPE = Instrument.BASS;
-                double confidenceScore = bassLikelihood-Math.min(Math.max(drumLikelihood, guitarLikelihood)*2, bassLikelihood);
-                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
-            }else {
-                measure = new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                PREV_MEASURE_TYPE = Instrument.DRUM;
-                double confidenceScore = drumLikelihood-Math.min(Math.max(bassLikelihood, guitarLikelihood)*2, drumLikelihood);
-                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
-            }
-        }
-        if (repeatStart)
-            measure.setRepeat(repeatCount, RepeatType.START);
-        if (repeatEnd)
-            measure.setRepeat(repeatCount, RepeatType.END);
-        return measure;
-    }
-
-    private static double adjustRawConfidenceScore(double confidence) {
-        //Exponential Decay (increasing form)
-        //https://people.richland.edu/james/lecture/m116/logs/models.html
-        double lowerLimit = 0.5;
-        double size = 0.5;
-        return lowerLimit + 0.5*(1-Math.exp(-5*confidence));
-    }
-
-    private static double isGuitarMeasureLikelihood(List<String> lineList, List<String[]> lineNameList) {
-        double score = 0;
-        int lineCount = lineList.size();
-        for (int i=0; i<lineCount; i++) {
-            score += isGuitarLineLikelihood(lineNameList.get(i)[0], lineList.get(i), Instrument.AUTO);
-        }
-        if (lineCount==0)
-            score += 1; //if there is risk of zero division error, assign the full weight
-        else
-            score += (score/lineCount);
-
-        return score;
-    }
-
-    private static double isDrumMeasureLikelihood(List<String> lineList, List<String[]> lineNameList) {
-        double score = 0;
-        int lineCount = lineList.size();
-        for (int i=0; i<lineCount; i++) {
-            score += isDrumLineLikelihood(lineNameList.get(i)[0], lineList.get(i), Instrument.AUTO);
-        }
-        if (lineCount==0)
-            score += 1; //if there is risk of zero division error, assign the full weight
-        else
-            score += (score/lineCount);
-
-        return score;
-    }
-
-    private static double isBassMeasureLikelihood(List<String> lineList, List<String[]> lineNameList) {
-        double withinSizeBias = 0.1;  //weight for if the number of lines in this measure is within the size cap of Bass measures
-
-        //---------this code block must be the exact same as isGuitarMeasureLikelihood (except the PREV_MEASURE_TYPE part)
-        double guitarScore = isGuitarMeasureLikelihood(lineList, lineNameList);
-        double bassScore = guitarScore;
-        if (lineList.size()>=BassMeasure.MIN_LINE_COUNT && lineList.size()<=BassMeasure.MAX_LINE_COUNT)
-            bassScore += withinSizeBias;
-        return bassScore;
-    }
-
-    private static boolean checkRepeatStart(List<String> lines) {
-        boolean repeatStart = true;
-        int repeatStartMarkCount = 0;
-        for (String line : lines) {
-            repeatStart &= line.strip().startsWith("|");
-            if (line.strip().startsWith("|*")) repeatStartMarkCount++;
-        }
-        repeatStart &= repeatStartMarkCount>=2;
-        return repeatStart;
-    }
-    private static boolean checkRepeatEnd(List<String> lines) {
-        boolean repeatEnd = true;
-        int repeatEndMarkCount = 0;
-        for (int i=1; i<lines.size(); i++) {
-            String line = lines.get(i);
-            repeatEnd &= line.strip().endsWith("|");
-            if (line.strip().endsWith("*|")) repeatEndMarkCount++;
-        }
-        repeatEnd &= repeatEndMarkCount>=2;
-        return repeatEnd;
-    }
-    private static String extractRepeatCount(List<String> lines) {
-        if (!checkRepeatEnd(lines)) return "";
-        Matcher numMatcher = Pattern.compile("(?<=[^0-9])[0-9]+(?=[ ]|"+ Patterns.DIVIDER+"|$)").matcher(lines.get(0));
-        if (!numMatcher.find()) return "";
-        return "["+numMatcher.start()+"]"+numMatcher.group();
-    }
-
-    private static void removeRepeatMarkings(List<String> lines, List<Integer> linePositions, boolean repeatStart, boolean repeatEnd, String repeatCountStr) {
-        if (!repeatCountStr.isEmpty()){
-            Matcher posMatcher = Pattern.compile("(?<=\\[)[0-9]+(?=\\])").matcher(repeatCountStr);
-            Matcher numMatcher = Pattern.compile("(?<=\\])[0-9]+").matcher(repeatCountStr);
-            posMatcher.find();
-            numMatcher.find();
-            int position = Integer.parseInt(posMatcher.group());
-            int numLen = numMatcher.group().length();
-            String line = lines.get(0);
-            line = line.substring(0, position)+"-".repeat(Math.max(numLen-1, 0))+line.substring(position+numLen);
-            //remove extra - which overlaps with the |'s
-            /*
-            -----------4|
-            -----------||
-            ----------*||   we wanna remove the -'s on the same column as the *'s. we do that for the first measure line in the code right below. the code lower handles the case for the rest of the lines.
-            ----------*||
-            -----------||
-            -----------||
-             */
-            String tmp1 = line.substring(0, position-1);
-            String tmp2 = position>=line.length() ? "" : line.substring(position);
-            line = tmp1+tmp2;
-            lines.set(0, line);
-        }
-        for(int i=0; i<lines.size(); i++) {
-            String line = lines.get(i);
-            int linePosition = linePositions.get(i);
-            if (line.startsWith("|*")){
-                linePosition+=2;
-                line = line.substring(2);
-            }else if(line.startsWith("|")) {
-                int offset;
-                if (repeatStart) offset = 2;
-                else offset = 1;
-                linePosition += offset;
-                line = line.substring(offset);
-            }
-            if (line.endsWith("*|"))
-                line = line.substring(0, line.length()-2);
-            else if (line.endsWith("|")) {
-                int offset;
-                if (repeatEnd) offset = 2;
-                else offset = 1;
-                line = line.substring(0, line.length() - offset);
-            }
-            lines.set(i, line);
-            linePositions.set(i, linePosition);
-        }
-    }
-
     public void setDurations() {
         for (List<List<Note>> chordList : getVoiceSortedChordList()) {
             int maxMeasureLineLen = getMaxMeasureLineLength();

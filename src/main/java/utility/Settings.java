@@ -1,5 +1,7 @@
 package utility;
 
+import converter.Instrument;
+
 public class Settings {
 
     private Settings(){}
@@ -18,4 +20,6 @@ public class Settings {
     public String[][] guitarTuning = {{"E","4"},{"B","3"},{"G","3"},{"D","3"},{"A","2"},{"E","2"}};
     
     public DoubleDigitStyle ddStyle = DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_STRETCH;
+    
+    public Instrument instrument = Instrument.AUTO;
 }

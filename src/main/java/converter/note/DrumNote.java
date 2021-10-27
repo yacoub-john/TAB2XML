@@ -20,7 +20,7 @@ public class DrumNote extends Note{
 
     public DrumNote (int stringNumber, String origin, int position, String lineName, int distanceFromMeasure){
         super(stringNumber, origin, position, lineName, distanceFromMeasure);
-        this.instrument = Instrument.DRUM;
+        this.instrument = Instrument.DRUMS;
         this.partID = DrumUtils.getPartID(lineName, origin);
         if (lineName.strip().equalsIgnoreCase("BD"))
             this.voice = 2;

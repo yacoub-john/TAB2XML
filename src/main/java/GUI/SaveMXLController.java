@@ -14,7 +14,7 @@ import javafx.stage.Window;
 import utility.MusicXMLCreator;
 import utility.Settings;
 
-public class ConvertWindowController extends Application {
+public class SaveMXLController extends Application {
 
     private MainViewController mvc;
     private static Window convertWindow = new Stage();
@@ -36,13 +36,13 @@ public class ConvertWindowController extends Application {
     
     @FXML
     private void saveButtonClicked() {
-    	Score score = new Score(mvc.mainText.getText());
-        MusicXMLCreator mxlc = new MusicXMLCreator(score);
+    	//Score score = new Score(mvc.mainText.getText());
+       // MusicXMLCreator mxlc = new MusicXMLCreator(score);
         if (!titleField.getText().isBlank())
             Settings.getInstance().title = titleField.getText();
         if (!artistField.getText().isBlank())
         	Settings.getInstance().artist = artistField.getText();
-        String generatedOutput = mxlc.generateMusicXML();
+       // String generatedOutput = mxlc.generateMusicXML();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save As");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MusicXML files", "*.musicxml", "*.xml", "*.mxl");
@@ -75,7 +75,8 @@ public class ConvertWindowController extends Application {
         File file = fileChooser.showSaveDialog(convertWindow);
 
         if (file != null) {
-            saveToXMLFile(generatedOutput, file);
+            mvc.converter.saveMusicXMLFile(file);
+            
             mvc.saveFile = file;
             cancelButtonClicked();
         }
@@ -84,18 +85,6 @@ public class ConvertWindowController extends Application {
     @FXML
     private void cancelButtonClicked()  {
     	mvc.convertWindow.hide();
-    }
-
-
-    private void saveToXMLFile(String content, File file) {
-        try {
-            PrintWriter writer;
-            writer = new PrintWriter(file);
-            writer.println(content);
-            writer.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
 
     @Override

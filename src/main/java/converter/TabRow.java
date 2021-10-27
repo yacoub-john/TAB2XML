@@ -6,9 +6,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import converter.instruction.Instruction;
+import converter.instruction.RepeatType;
+import converter.measure.BassMeasure;
 import converter.measure.DrumMeasure;
 import converter.measure.GuitarMeasure;
 import converter.measure.TabMeasure;
+import converter.note.NoteFactory;
+import utility.DrumUtils;
+import utility.GuitarUtils;
 import utility.Patterns;
 import utility.Range;
 import utility.Settings;
@@ -20,7 +25,8 @@ public class TabRow implements ScoreComponent {
 	public List<String> lines = new ArrayList<>();
 	public List<Integer> positions = new ArrayList<>();
     public List<Instruction> instructions = new ArrayList<>();
-
+    private Instrument PREV_MEASURE_TYPE = Instrument.AUTO;
+    private static double FOLLOW_PREV_MEASURE_WEIGHT = 0.3;
     /**
      * Creates a TabRow object from a List of Strings which represent the lines in the tablature row
      * @param origin a List<String> containing the lines which are meant to represent a tablature row. Each String in
@@ -81,9 +87,11 @@ public class TabRow implements ScoreComponent {
             //Find the name at the beginning of a text line
             //Returns an array of two strings, first is the line name, next is the position of it (as a string)
             String[] lineName = nameOf(currentLine, currentLineStartPos);
-            if (lineName[0] == "") lineName[0] = Settings.getInstance().guitarTuning[i][0];    // Keep using what ever tuning was previously set
-            Settings.getInstance().guitarTuning[i][0] = lineName[0];  // Update tuning. Only likely to make a difference for the first measure
-
+            //Guitar kludge
+            if (i < 6) {
+            	if (lineName[0] == "") lineName[0] = Settings.getInstance().guitarTuning[i][0];    // Keep using what ever tuning was previously set if this is guitar
+            	Settings.getInstance().guitarTuning[i][0] = lineName[0];  // Update tuning. Only likely to make a difference for the first measure
+            }
             int measureCount = 0;
             Matcher measureInsidesMatcher = Pattern.compile(Patterns.INSIDES_PATTERN).matcher(currentLine);
             while (measureInsidesMatcher.find()) {
@@ -113,12 +121,166 @@ public class TabRow implements ScoreComponent {
             List<Integer> measureLinePositionList = positionsList.get(i);
             List<String[]> measureLineNameList = namesList.get(i);
 
-            measureList.add(TabMeasure.from(measureLineList, measureLineNameList, measureLinePositionList, isFirstMeasureInGroup));
+            measureList.add(from(measureLineList, measureLineNameList, measureLinePositionList, isFirstMeasureInGroup));
             isFirstMeasureInGroup = false;
         }
         return measureList;
     }
 
+    /**
+     * Creates an instance of the abstract Measure class whose concrete type is either GuitarMeasure or DrumMeasure, depending
+     * on if the features of the input String Lists resemble a drum measure or a Guitar measure(this is determined by the
+     * MeasureLine.isGuitar() and MeasureLine.isDrum() methods). If its features could not be deciphered or it has features
+     * of both guitar and drum features, it defaults to creating a GuitarMeasure object and further error checking can
+     * be done by calling GuitarMeasure().validate() on the object.
+     * @param lineList A list of the insides of each measure lines that makes up this measure (without the line names) (parallel list with the other two List parameters)
+     * @param lineNameList A list of the names of each the measure lines that makes up this measure (parallel list with the other two List parameters)
+     * @param linePositionList A list of the positions of the insides of each of the measure lines that make up this (parallel list with the other two List parameters)
+     *                         measure, where a line's position is the index at which the line is located in the root
+     *                         String from which it was derived (Score.ROOT_STRING)
+     * @param isFirstMeasureInGroup specifies weather this measure is the first one in its measure group. (useful to know, so we only add the xml measure attributes to the first measure)
+     *
+     * @return A Measure object which is either of type GuitarMeasure if the measure was understood to be a guitar
+     * measure, or of type DrumMeasure if the measure was understood to be of type DrumMeasure
+     */
+    public TabMeasure from(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {
+        boolean repeatStart = checkRepeatStart(lineList);
+        boolean repeatEnd = checkRepeatEnd(lineList);
+        String repeatCountStr = extractRepeatCount(lineList);
+        removeRepeatMarkings(lineList, linePositionList, repeatStart, repeatEnd, repeatCountStr);
+        int repeatCount = 1;
+        if (!repeatCountStr.isEmpty()) {
+            Matcher numMatcher = Pattern.compile("(?<=\\])[0-9]+").matcher(repeatCountStr);
+            numMatcher.find();
+            repeatCountStr = numMatcher.group();
+            repeatCount = Integer.parseInt(repeatCountStr);
+        }
+
+        TabMeasure measure;
+        if (Settings.getInstance().instrument!=Instrument.AUTO) {
+            measure = switch (Settings.getInstance().instrument) {
+                case GUITAR -> new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+                case BASS -> new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+                case DRUMS -> new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+                case AUTO -> null;
+                case NONE -> null;
+            };
+        }else {
+            double guitarLikelihood = GuitarUtils.isGuitarMeasureLikelihood(lineList, lineNameList);
+            double drumLikelihood = DrumUtils.isDrumMeasureLikelihood(lineList, lineNameList);
+            double bassLikelihood = GuitarUtils.isBassMeasureLikelihood(lineList, lineNameList);
+
+            //adjusting values
+            double guitarLikelihoodAdj = guitarLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.GUITAR ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+            double drumLikelihoodAdj = drumLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.DRUMS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+            double bassLikelihoodAdj = bassLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.BASS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+
+            if (guitarLikelihoodAdj >= drumLikelihoodAdj && guitarLikelihoodAdj >= bassLikelihoodAdj) {
+                measure = new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+                PREV_MEASURE_TYPE = Instrument.GUITAR;
+                // the more confident we are about what type of measure this is, the more we want the next measure to be likely to follow it.
+                //dont use the guitarLikelihoodAdj "Adj" score to calculate confidence or else the effect will build on itself everytime we adjust the FOLLOW_PREV_MEASURE_WEIGHT value
+                double confidenceScore = guitarLikelihood-Math.min(Math.max(drumLikelihood, bassLikelihood), guitarLikelihood);
+
+                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
+            }else if (bassLikelihoodAdj >= drumLikelihoodAdj){
+                measure = new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+                PREV_MEASURE_TYPE = Instrument.BASS;
+                double confidenceScore = bassLikelihood-Math.min(Math.max(drumLikelihood, guitarLikelihood)*2, bassLikelihood);
+                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
+            }else {
+                measure = new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+                PREV_MEASURE_TYPE = Instrument.DRUMS;
+                double confidenceScore = drumLikelihood-Math.min(Math.max(bassLikelihood, guitarLikelihood)*2, drumLikelihood);
+                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
+            }
+        }
+        if (repeatStart)
+            measure.setRepeat(repeatCount, RepeatType.START);
+        if (repeatEnd)
+            measure.setRepeat(repeatCount, RepeatType.END);
+        return measure;
+    }
+    
+    private static boolean checkRepeatStart(List<String> lines) {
+        boolean repeatStart = true;
+        int repeatStartMarkCount = 0;
+        for (String line : lines) {
+            repeatStart &= line.strip().startsWith("|");
+            if (line.strip().startsWith("|*")) repeatStartMarkCount++;
+        }
+        repeatStart &= repeatStartMarkCount>=2;
+        return repeatStart;
+    }
+    private static boolean checkRepeatEnd(List<String> lines) {
+        boolean repeatEnd = true;
+        int repeatEndMarkCount = 0;
+        for (int i=1; i<lines.size(); i++) {
+            String line = lines.get(i);
+            repeatEnd &= line.strip().endsWith("|");
+            if (line.strip().endsWith("*|")) repeatEndMarkCount++;
+        }
+        repeatEnd &= repeatEndMarkCount>=2;
+        return repeatEnd;
+    }
+    private static String extractRepeatCount(List<String> lines) {
+        if (!checkRepeatEnd(lines)) return "";
+        Matcher numMatcher = Pattern.compile("(?<=[^0-9])[0-9]+(?=[ ]|"+ Patterns.DIVIDER+"|$)").matcher(lines.get(0));
+        if (!numMatcher.find()) return "";
+        return "["+numMatcher.start()+"]"+numMatcher.group();
+    }
+
+    private static void removeRepeatMarkings(List<String> lines, List<Integer> linePositions, boolean repeatStart, boolean repeatEnd, String repeatCountStr) {
+        if (!repeatCountStr.isEmpty()){
+            Matcher posMatcher = Pattern.compile("(?<=\\[)[0-9]+(?=\\])").matcher(repeatCountStr);
+            Matcher numMatcher = Pattern.compile("(?<=\\])[0-9]+").matcher(repeatCountStr);
+            posMatcher.find();
+            numMatcher.find();
+            int position = Integer.parseInt(posMatcher.group());
+            int numLen = numMatcher.group().length();
+            String line = lines.get(0);
+            line = line.substring(0, position)+"-".repeat(Math.max(numLen-1, 0))+line.substring(position+numLen);
+            //remove extra - which overlaps with the |'s
+            /*
+            -----------4|
+            -----------||
+            ----------*||   we wanna remove the -'s on the same column as the *'s. we do that for the first measure line in the code right below. the code lower handles the case for the rest of the lines.
+            ----------*||
+            -----------||
+            -----------||
+             */
+            String tmp1 = line.substring(0, position-1);
+            String tmp2 = position>=line.length() ? "" : line.substring(position);
+            line = tmp1+tmp2;
+            lines.set(0, line);
+        }
+        for(int i=0; i<lines.size(); i++) {
+            String line = lines.get(i);
+            int linePosition = linePositions.get(i);
+            if (line.startsWith("|*")){
+                linePosition+=2;
+                line = line.substring(2);
+            }else if(line.startsWith("|")) {
+                int offset;
+                if (repeatStart) offset = 2;
+                else offset = 1;
+                linePosition += offset;
+                line = line.substring(offset);
+            }
+            if (line.endsWith("*|"))
+                line = line.substring(0, line.length()-2);
+            else if (line.endsWith("|")) {
+                int offset;
+                if (repeatEnd) offset = 2;
+                else offset = 1;
+                line = line.substring(0, line.length() - offset);
+            }
+            lines.set(i, line);
+            linePositions.set(i, linePosition);
+        }
+    }
+
+    
     private String[] nameOf(String measureLineStr, int lineStartIdx) {
         Pattern measureLineNamePttrn = Pattern.compile(Patterns.measureNameExtractPattern());
         Matcher measureLineNameMatcher = measureLineNamePttrn.matcher(measureLineStr);
@@ -288,5 +450,11 @@ public class TabRow implements ScoreComponent {
             outStr.append(this.tabMeasures.get(this.tabMeasures.size()-1).toString());
         return outStr.toString();
     }
+
+
+	
+
+	
+
 
 }

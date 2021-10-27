@@ -148,7 +148,7 @@ public class NoteFactory {
             patternPackage.put("note-pattern", GUITAR_NOTE_PATTERN);
             patternPackage.put("connector-pattern", GUITAR_NOTE_CONNECTOR);
             return patternPackage;
-        }else if (this.instrument == Instrument.DRUM) {
+        }else if (this.instrument == Instrument.DRUMS) {
             patternPackage.put("instrument", "drum");
             patternPackage.put("note-group-pattern", DRUM_NOTE_GROUP_PATTERN);
             patternPackage.put("note-pattern", DRUM_NOTE_PATTERN);

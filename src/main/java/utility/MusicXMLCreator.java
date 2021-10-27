@@ -37,11 +37,12 @@ public class MusicXMLCreator {
                 + xmlString;
         return xmlString;
     }
+    
     public static Instrument getInstrumentEnum(String instrument) {
         if (instrument.equalsIgnoreCase("guitar"))
             return Instrument.GUITAR;
         else if (instrument.equalsIgnoreCase("drum"))
-            return Instrument.DRUM;
+            return Instrument.DRUMS;
         else if (instrument.equalsIgnoreCase("bass"))
             return Instrument.BASS;
         else
