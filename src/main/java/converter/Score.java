@@ -41,7 +41,15 @@ public class Score implements ScoreComponent {
         setDivisions();
     }
 
-    /**
+    public String detectedInstrument() {
+    	String inst = "None";
+		if (isGuitar(true)) inst = "Guitar";
+		if (isBass(true)) inst = "Bass";
+		if (isDrum(true)) inst = "Drums";
+		return inst;
+	}
+
+	/**
      * Breaks input text (at wherever it finds blank lines) up into smaller pieces to make further analysis of each
      * piece of text with regex more efficient
      * @param input the string which is to be broken up into its fragments

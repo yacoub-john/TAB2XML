@@ -24,6 +24,11 @@ public class Converter {
 	public void update() {
 		score = new Score(mvc.mainText.getText());
 		mxlc = new MusicXMLCreator(score);
+		//mvc.setDetectedInstrument(score.detectedInstrument());
+	}
+	
+	public String detectedInstrument() {
+		return score.detectedInstrument();
 	}
 	
 	public String getMusicXML() {

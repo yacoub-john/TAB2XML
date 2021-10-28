@@ -60,7 +60,7 @@ public class MainViewController extends Application {
 	public Converter converter;
 
 	@FXML  Label mainViewState;
-	@FXML  Label instrumentMode;
+	@FXML  TextField instrumentMode;
 	
 	@FXML public CodeArea mainText;
 
@@ -392,6 +392,7 @@ public class MainViewController extends Application {
             @Override
             protected StyleSpans<Collection<String>> call() {
             	converter.update();
+            	instrumentMode.setText(converter.detectedInstrument());
                 if (converter.getScore().getTabSectionList().isEmpty()){
                 	saveMXLButton.setDisable(true);
                 	previewButton.setDisable(true);
@@ -414,5 +415,11 @@ public class MainViewController extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
+	}
+
+	public void setDetectedInstrument(String detectedInstrument) {
+		
+		System.out.println(detectedInstrument);
+		
 	}
 }
