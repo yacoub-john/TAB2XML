@@ -7,19 +7,25 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.StyleSpans;
 
 import converter.Converter;
 import converter.measure.TabMeasure;
 import javafx.application.Application;
 import javafx.application.HostServices;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -43,10 +49,10 @@ import utility.Settings;
 public class MainViewController extends Application {
 	
 	private Preferences prefs;
+	public static ExecutorService executor = Executors.newSingleThreadExecutor();
 	public File saveFile;
 	private static boolean isEditingSavedFile;
-	//private String InstrumentSetting = "auto";
-
+	
 	public Window convertWindow;
 	public Window settingsWindow;
 
@@ -83,6 +89,7 @@ public class MainViewController extends Application {
 		mainText.setParagraphGraphicFactory(LineNumberFactory.get(mainText));
 		converter = new Converter(this);
 		highlighter = new Highlighter(this, converter);
+    	listenforTextAreaChanges();
 	}
 
 	@FXML
@@ -92,7 +99,6 @@ public class MainViewController extends Application {
 
 		HostServices hostServices = getHostServices();
 		hostServices.showDocument(file.getAbsolutePath());
-
 	}
 
 	@FXML
@@ -165,8 +171,6 @@ public class MainViewController extends Application {
 
 		saveFile = openedFile;
 		isEditingSavedFile = true;
-		//Is this needed?
-		highlighter.computeHighlightingAsync();
 
 	}
 
@@ -364,6 +368,49 @@ public class MainViewController extends Application {
         return true;
     }
 
+    public void listenforTextAreaChanges() {
+        //Subscription cleanupWhenDone = 
+    	mainText.multiPlainChanges()
+                .successionEnds(Duration.ofMillis(350))
+                .supplyTask(this::update)
+                .awaitLatest(mainText.multiPlainChanges())
+                .filterMap(t -> {
+                    if(t.isSuccess()) {
+                        return Optional.of(t.get());
+                    } else {
+                        t.getFailure().printStackTrace();
+                        return Optional.empty();
+                    }
+                })
+                .subscribe(highlighter::applyHighlighting);
+    }
+    
+    public Task<StyleSpans<Collection<String>>> update() {
+    	String text = mainText.getText();
+
+        Task<StyleSpans<Collection<String>>> task = new Task<>() {
+            @Override
+            protected StyleSpans<Collection<String>> call() {
+            	converter.update();
+                if (converter.getScore().getTabSectionList().isEmpty()){
+                	saveMXLButton.setDisable(true);
+                	previewButton.setDisable(true);
+                	showMXLButton.setDisable(true);
+                }
+                else
+                {
+                	saveMXLButton.setDisable(false);
+                	previewButton.setDisable(false);
+                	showMXLButton.setDisable(false);
+                }
+                return highlighter.computeHighlighting(text);
+            }
+        };
+        executor.execute(task);
+        task.isDone();
+        return task;
+    }
+    
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 

@@ -29,7 +29,8 @@ public class MainApp extends Application {
     }
 
     public static void exit() {
-        Highlighter.executor.shutdown();
+    	
+        MainViewController.executor.shutdown();
         NotePlayer.kill();
     }
 
