@@ -32,12 +32,14 @@ public class DrumMeasure extends TabMeasure {
     
     @Override
 	protected int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureLength) {
-		return usefulMeasureLength;
+    	// Divisions is doubled for drums to account for double notes "d"
+		return 2 * usefulMeasureLength;
 	}
     
 	@Override
 	protected int adjustDurationForDoubleCharacterNotes(int duration, List<Note> chord, List<Note> nextChord) {
-		return duration;
+		// Divisions is doubled for drums to account for double notes "d"
+		return duration * 2;
 	}
 
 	private Attributes getAttributesModel() {

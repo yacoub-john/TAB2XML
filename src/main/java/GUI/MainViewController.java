@@ -136,6 +136,7 @@ public class MainViewController extends Application {
 		boolean userOkToGoAhead = promptSave();
 		if (!userOkToGoAhead) return;
 		this.mainText.clear();
+		instrumentMode.setText("None");
 		isEditingSavedFile = false;
 	}
 
@@ -392,7 +393,7 @@ public class MainViewController extends Application {
             @Override
             protected StyleSpans<Collection<String>> call() {
             	converter.update();
-            	instrumentMode.setText(converter.detectedInstrument());
+            	
                 if (converter.getScore().getTabSectionList().isEmpty()){
                 	saveMXLButton.setDisable(true);
                 	previewButton.setDisable(true);

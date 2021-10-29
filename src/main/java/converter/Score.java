@@ -43,9 +43,9 @@ public class Score implements ScoreComponent {
 
     public String detectedInstrument() {
     	String inst = "None";
-		if (isGuitar(true)) inst = "Guitar";
-		if (isBass(true)) inst = "Bass";
-		if (isDrum(true)) inst = "Drums";
+		if (isGuitar(false)) inst = "Guitar";
+		if (isBass(false)) inst = "Bass";
+		if (isDrum(false)) inst = "Drums";
 		return inst;
 	}
 

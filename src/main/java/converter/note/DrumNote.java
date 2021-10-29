@@ -29,7 +29,7 @@ public class DrumNote extends Note{
     @Override
     public void setDuration(int durationRatio) {
         if (this.origin.strip().equalsIgnoreCase("d"))
-            this.duration = durationRatio/2;
+            this.duration = durationRatio / 2;
         else
             this.duration = durationRatio;
     }

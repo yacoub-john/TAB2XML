@@ -86,8 +86,8 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
 
     public String getType() {
     	int RESOLUTION = 192;
-    	int factor = RESOLUTION / (divisions * beatType);
-    	if (RESOLUTION % (divisions * beatType) != 0)
+    	int factor = RESOLUTION / (divisions * 4);
+    	if (RESOLUTION % (divisions * 4) != 0)
     		System.out.println("Assumption wrong about divisions: " + divisions);
     	int noteVal = factor * duration;
     	switch (noteVal) {
@@ -95,11 +95,15 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     	case 6: return "32nd";
     	case 8: isTriplet = true; return "16th";
     	case 12: return "16th";
+    	case 16: isTriplet = true; return "eighth";
     	case 24: return "eighth";
+    	case 32: isTriplet = true; return "quarter";
     	case 36: dotCount = 1; return "eighth";
     	case 48: return "quarter";
+    	case 64: isTriplet = true; return "half";
     	case 72: dotCount = 1; return "quarter";
     	case 96: return "half";
+    	case 128: isTriplet = true; return "whole";
     	case 144: dotCount = 1; return "half"; // 3 quarters
     	case 192: return "whole";
     	}

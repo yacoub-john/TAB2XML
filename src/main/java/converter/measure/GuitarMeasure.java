@@ -52,7 +52,7 @@ public class GuitarMeasure extends TabMeasure{
 			break;
 		case NOTE_ON_SECOND_DIGIT_NO_STRETCH:
 			break;
-		case NOTE_ON_SECOND_DIGIT_STRETCH: if (isDoubleDigit(nextChord)) duration --; break;
+		case NOTE_ON_SECOND_DIGIT_STRETCH: if (nextChord != null && isDoubleDigit(nextChord)) duration --; break;
 		default:
 			break;
 		}
