@@ -124,37 +124,20 @@ public class GuitarNote extends Note {
         return Integer.parseInt(lineOctaveMatcher.group());
     }
 
+    @Override
 	public models.measure.note.Note getModel() {
-	    models.measure.note.Note noteModel = new models.measure.note.Note();
-	    if (this.startsWithPreviousNote)
-	        noteModel.setChord(new Chord());
+    	
+	    models.measure.note.Note noteModel = super.getModel();
+	    
 	    noteModel.setPitch(new Pitch(this.step, this.alter, this.octave));
-	    noteModel.setVoice(this.voice);
-	    String noteType = this.getType();
-	    if (!noteType.isEmpty())
-	        noteModel.setType(noteType);
-	
-	    noteModel.setDuration(this.duration);  //we are guaranteed this.duration is greater or equal ot 1. look at Measure.setDurations()
-	
-	    Technical technical = new Technical();
+
+	    Notations notations = noteModel.getNotations();
+	    Technical technical = notations.getTechnical();
 	    technical.setString(this.stringNumber);
 	    technical.setFret(this.fret);
-	
-	    Notations notations = new Notations();
 	    notations.setTechnical(technical);
 	    noteModel.setNotations(notations);
-	
-	    //dot's don't work for some reason
-	    List<Dot> dots = new ArrayList<>();
-	    for (int i=0; i<this.dotCount; i++){
-	        dots.add(new Dot());
-	    }
-	    if (!dots.isEmpty())
-	        noteModel.setDots(dots);
-	    for (NoteFactory.NoteDecor noteDecor : this.noteDecorMap.keySet()) {
-	        if (noteDecorMap.get(noteDecor).equals("success"))
-	            noteDecor.applyTo(noteModel);
-	    }
+	    
 	    return noteModel;
 	}
 

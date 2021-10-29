@@ -8,7 +8,7 @@ import models.measure.note.notations.Notations;
 
 import java.util.List;
 
-@JsonPropertyOrder({"grace", "chord", "pitch", "rest", "unpitched", "duration", "instrument", "voice", "type", "dot", "stem", "notehead", "beam", "notations"})
+@JsonPropertyOrder({"grace", "chord", "pitch", "rest", "unpitched", "duration", "instrument", "voice", "type", "dot", "time-modification", "stem", "notehead", "beam", "notations"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Note {
     Grace grace;
@@ -22,12 +22,14 @@ public class Note {
     String type;
     @JacksonXmlProperty(localName = "dot")
     @JacksonXmlElementWrapper(useWrapping = false)
-    public List<Dot> dots;
+    List<Dot> dots;
+    @JacksonXmlProperty(localName = "time-modification")
+	TimeModification timemodification;
     String stem;
     String notehead;
     Beam beam;
     Notations notations;
-
+    
     public Grace getGrace() {
         return grace;
     }
@@ -139,4 +141,12 @@ public class Note {
     public void setDots(List<Dot> dots) {
         this.dots = dots;
     }
+
+	public TimeModification getTimeModification() {
+		return timemodification;
+	}
+
+	public void setTimeModification(TimeModification timemodification) {
+		this.timemodification = timemodification;
+	}
 }

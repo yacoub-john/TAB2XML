@@ -26,6 +26,8 @@ public class MusicXMLCreator {
             xmlString = xmlString.replace("noteBefore", "note");
             xmlString = xmlString.replace("noteAfter", "note");
             xmlString = xmlString.replaceAll("\\R[ \\t]*<midiinstruments>[\\s\\S]*</midiinstruments>[ \\t]*\\R", "\n");
+            xmlString = xmlString.replaceAll("\\R[ \\t]*<timeModification>\\s*<actual-notes>\\d+</actual-notes>\\s*<normal-notes>\\d+</normal-notes>\\s*</timeModification>[ \\t]*\\R", "\n");
+           
         }catch (JsonProcessingException | TXMLException e) {
             e.printStackTrace();
             return "";

@@ -8,6 +8,12 @@ import java.util.Map;
 
 import converter.Instrument;
 import converter.ScoreComponent;
+import models.measure.note.Chord;
+import models.measure.note.Dot;
+import models.measure.note.Pitch;
+import models.measure.note.TimeModification;
+import models.measure.note.notations.Notations;
+import models.measure.note.notations.technical.Technical;
 import utility.Patterns;
 import utility.Settings;
 import utility.ValidationError;
@@ -92,6 +98,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     	int noteVal = factor * duration;
     	switch (noteVal) {
     	case 3: return "64th";
+    	case 4: isTriplet = true; return "32nd";
     	case 6: return "32nd";
     	case 8: isTriplet = true; return "16th";
     	case 12: return "16th";
@@ -158,7 +165,39 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         return this.distance-other.distance;
     }
 	
-    public abstract models.measure.note.Note getModel();
+    public models.measure.note.Note getModel() {
+    	
+    	models.measure.note.Note noteModel = new models.measure.note.Note();
+    	
+ 	    if (this.startsWithPreviousNote) noteModel.setChord(new Chord());
+ 	    noteModel.setDuration(this.duration);
+ 	    noteModel.setVoice(this.voice);
+ 	    
+ 	    Notations notations = new Notations();
+ 	    Technical technical = new Technical();
+ 	    notations.setTechnical(technical);
+ 	    noteModel.setNotations(notations);
+ 	  
+ 	    String noteType = this.getType();
+ 	    if (!noteType.isEmpty())
+ 	        noteModel.setType(noteType);
+ 	    if (this.isTriplet) {
+ 	       	TimeModification tm = new TimeModification(3,2);
+ 	    	noteModel.setTimeModification(tm);	
+ 	    }
+ 	    List<Dot> dots = new ArrayList<>();
+ 	    for (int i=0; i<this.dotCount; i++){
+ 	        dots.add(new Dot());
+ 	    }
+ 	    if (!dots.isEmpty())
+ 	        noteModel.setDots(dots);
+ 	    
+ 	    for (NoteFactory.NoteDecor noteDecor : this.noteDecorMap.keySet()) {
+ 	        if (noteDecorMap.get(noteDecor).equals("success"))
+ 	            noteDecor.applyTo(noteModel);
+ 	    }
+ 	    return noteModel;
+    }
 	
 	public List<ValidationError> validate() {
 	    List<ValidationError> result = new ArrayList<>();

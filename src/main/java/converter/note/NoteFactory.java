@@ -207,17 +207,18 @@ public class NoteFactory {
     }
 
     private List<Note> createDrag(String origin, int position, int distanceFromMeasureStart) {
-        Note note1 = createDrumNote(origin, position, distanceFromMeasureStart);
-        Note note2 = createDrumNote(origin, position, distanceFromMeasureStart);
-        note2.addDecor((noteModel) -> {
-            noteModel.setChord(null);
-            return true;
-        }, "success");
-        List<Note> notes = new ArrayList<>();
-        notes.add(note1);
-        notes.add(note2);
-        slur(note1, note2);
-        return notes;
+//        Note note1 = createDrumNote(origin, position, distanceFromMeasureStart);
+//        Note note2 = createDrumNote(origin, position, distanceFromMeasureStart);
+//        note2.addDecor((noteModel) -> {
+//            noteModel.setChord(null);
+//            return true;
+//        }, "success");
+//        List<Note> notes = new ArrayList<>();
+//        notes.add(note1);
+//        notes.add(note2);
+//        //slur(note1, note2);
+//        return notes;
+    	return createFlam(origin, position, distanceFromMeasureStart);
     }
 
     private Note createDrumNote(String origin, int position, int distanceFromMeasureStart) {

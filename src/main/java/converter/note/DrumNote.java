@@ -28,37 +28,23 @@ public class DrumNote extends Note{
 
     @Override
     public void setDuration(int durationRatio) {
-        if (this.origin.strip().equalsIgnoreCase("d"))
-            this.duration = durationRatio / 2;
-        else
             this.duration = durationRatio;
     }
 
-    /**
-     * gets the type of this model depending on what you need
-     *  like notes, duration of notes, which drum part,
-     */
-    public models.measure.note.Note getModel(){ //toXML
-        models.measure.note.Note noteModel = new models.measure.note.Note();
-        if (this.startsWithPreviousNote)
-            noteModel.setChord(new Chord());
+    @Override
+    public models.measure.note.Note getModel(){ 
+        
+    	models.measure.note.Note noteModel = super.getModel();
 
         noteModel.setUnpitched(IDtoDisplayStepAndDisplayOctave());
-        noteModel.setDuration((int) this.duration);
         noteModel.setInstrument(new models.measure.note.Instrument(this.partID));
-        noteModel.setVoice(this.voice);
-        String noteType = this.getType();
-        if (!noteType.isEmpty())
-            noteModel.setType(noteType);
+        //TODO Should test better for bass drum here
         noteModel.setStem(this.lineName.strip().equalsIgnoreCase("BD") ? "down" : "up");
         String noteHead = this.origin.strip();
         // If text is "o", don't need a note head
         if (!(noteHead.equalsIgnoreCase("f") || noteHead.equalsIgnoreCase("d") || noteHead.equalsIgnoreCase("o")))
             noteModel.setNotehead(noteHead.toLowerCase());
-        for (NoteFactory.NoteDecor noteDecor : this.noteDecorMap.keySet()) {
-            if (noteDecorMap.get(noteDecor).equals("success"))
-                noteDecor.applyTo(noteModel);
-        }
+        
         return noteModel;
     }
 
