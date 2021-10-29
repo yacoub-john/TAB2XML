@@ -1,6 +1,7 @@
 package converter.measure;
 
 import converter.Score;
+import converter.measure_line.TabDrumString;
 import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
 import converter.note.Note;
@@ -59,6 +60,11 @@ public class GuitarMeasure extends TabMeasure{
 		return duration;
 	}
 
+	protected TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position)
+	{
+		return new TabGuitarString(stringNumber, line, nameAndPosition, position);
+	}
+	
 	public Attributes getAttributesModel() {
         Attributes attributes = new Attributes();
         attributes.setDivisions(this.divisions);

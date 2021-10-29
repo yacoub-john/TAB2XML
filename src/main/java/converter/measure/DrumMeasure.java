@@ -40,6 +40,11 @@ public class DrumMeasure extends TabMeasure {
 		return duration;
 	}
 
+	protected TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position)
+	{
+		return new TabDrumString(stringNumber, line, nameAndPosition, position);
+	}
+	
 	private Attributes getAttributesModel() {
         Attributes attributes = new Attributes();
         attributes.setDivisions(this.divisions);

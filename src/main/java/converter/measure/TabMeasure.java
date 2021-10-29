@@ -69,15 +69,15 @@ public abstract class TabMeasure implements ScoreComponent {
     }
 
     /**
-     * Creates a List of MeasureLine objects from the provided string representation of a Measure.
-     * These MeasureLine objects are not guaranteed to be valid. you can find out if all the Measure
-     * objects in this MeasureGroup are actually valid by calling the Measure().validate() method.
+     * Creates a List of TabString objects from the provided string representation of a Measure.
+     * These TabString objects are not guaranteed to be valid. you can find out if all the TabMeasure
+     * objects in this MeasureGroup are actually valid by calling the TabMeasure().validate() method.
      * @param lines a List of Strings where each String represents a line of the measure. It is a parallel list with lineNames and linePositions
      * @param namesAndPosition a List of Strings where each String represents the name of a line of the measure. It is a parallel list with lines and linePositions
      * @param linePositions a List of Integers where each number represents the starting index of a line of the measure,
-     *                      where a starting index of a line is the index where the line can be found in the root string,
+     *                      where a starting index of a line is the index where the line can be found in
      *                      Score.tabText, from where it was derived. It is a parallel list with lineNames and lines
-     * @return A list of MeasureLine objects. The concrete class type of these MeasureLine objects is determined
+     * @return A list of TabString objects. The concrete class type of these TabString objects is determined
      * from the input String lists(lines and lineNames), and they are not guaranteed to all be of the same type.
      */
     protected List<TabString> createTabStringList(List<String> lines, List<String[]> namesAndPosition, List<Integer> linePositions) {
@@ -86,8 +86,8 @@ public abstract class TabMeasure implements ScoreComponent {
             String line = lines.get(i);
             String[] nameAndPosition = namesAndPosition.get(i);
             int position = linePositions.get(i);
-            Instrument instrumentBias = this instanceof BassMeasure ? Instrument.BASS : this instanceof DrumMeasure ? Instrument.DRUMS : this instanceof GuitarMeasure ? Instrument.GUITAR : Instrument.AUTO;
-            measureLineList.add(newTabString(i+1,line, nameAndPosition, position, instrumentBias, this instanceof BassMeasure ? true : false));
+            //Instrument instrumentBias = this instanceof BassMeasure ? Instrument.BASS : this instanceof DrumMeasure ? Instrument.DRUMS : this instanceof GuitarMeasure ? Instrument.GUITAR : Instrument.AUTO;
+            measureLineList.add(newTabString(i+1,line, nameAndPosition, position));
         }
         return measureLineList;
     }
@@ -106,27 +106,27 @@ public abstract class TabMeasure implements ScoreComponent {
      * @return a MeasureLine object derived from the information in the input Strings. Either of type GuitarMeasureLine
      * or DrumMeasureLine
      */
-    private TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position, Instrument bias, boolean prefBass) {
-        if (Settings.getInstance().instrument!=Instrument.AUTO) {
-            return switch (Settings.getInstance().instrument) {
-                case GUITAR -> new TabGuitarString(stringNumber, line, nameAndPosition, position);
-                case BASS -> new TabBassString(stringNumber, line, nameAndPosition, position);
-                case DRUMS -> new TabDrumString(stringNumber, line, nameAndPosition, position);
-                case AUTO -> null;
-                case NONE -> null;
-            };
-        }else {
-            double guitarLikelihood = GuitarUtils.isGuitarLineLikelihood(nameAndPosition[0], line, bias);
-            double drumLikelihood = DrumUtils.isDrumLineLikelihood(nameAndPosition[0], line, bias);
-            if (guitarLikelihood >= drumLikelihood) {
-                if (prefBass)
-                    return new TabBassString(stringNumber, line, nameAndPosition, position);
-                else
-                    return new TabGuitarString(stringNumber, line, nameAndPosition, position);
-            } else
-                return new TabDrumString(stringNumber, line, nameAndPosition, position);
-        }
-    }
+    protected abstract TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position);
+    //{
+//        if (Settings.getInstance().instrument!=Instrument.AUTO) {
+//            return switch (Settings.getInstance().instrument) {
+//                case GUITAR -> new TabGuitarString(stringNumber, line, nameAndPosition, position);
+//                case BASS -> new TabBassString(stringNumber, line, nameAndPosition, position);
+//                case DRUMS -> new TabDrumString(stringNumber, line, nameAndPosition, position);
+//                case AUTO -> null;
+//            };
+//        }else {
+//            double guitarLikelihood = GuitarUtils.isGuitarLineLikelihood(nameAndPosition[0], line, bias);
+//            double drumLikelihood = DrumUtils.isDrumLineLikelihood(nameAndPosition[0], line, bias);
+//            if (guitarLikelihood >= drumLikelihood) {
+//                if (prefBass)
+//                    return new TabBassString(stringNumber, line, nameAndPosition, position);
+//                else
+//                    return new TabGuitarString(stringNumber, line, nameAndPosition, position);
+//            } else
+//                return new TabDrumString(stringNumber, line, nameAndPosition, position);
+//        }
+//
     
     public void setDurations() {
         for (List<List<Note>> chordList : getVoiceSortedChordList()) {
@@ -435,8 +435,8 @@ protected abstract int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureL
 
     public List<Note> getSortedNoteList() {
         List<Note> sortedNoteList = new ArrayList<>();
-        for (TabString measureLine : this.tabStringList) {
-            sortedNoteList.addAll(measureLine.getNoteList());
+        for (TabString tabString : this.tabStringList) {
+            sortedNoteList.addAll(tabString.getNoteList());
         }
         Collections.sort(sortedNoteList);
         return sortedNoteList;
@@ -508,11 +508,11 @@ protected abstract int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureL
 	    boolean lineSizeEqual = true;
 	
 	    int previousLineLength = -1;
-	    for (TabString measureLine : this.tabStringList) {
-	        hasGuitarMeasureLines &= measureLine instanceof TabGuitarString;
-	        hasDrumMeasureLines &= measureLine instanceof TabDrumString;
+	    for (TabString tabString : this.tabStringList) {
+	        hasGuitarMeasureLines &= tabString instanceof TabGuitarString;
+	        hasDrumMeasureLines &= tabString instanceof TabDrumString;
 	
-	        int currentLineLength = measureLine.line.replace("\s", "").length();
+	        int currentLineLength = tabString.line.replace("\s", "").length();
 	        lineSizeEqual &= (previousLineLength<0) || previousLineLength==currentLineLength;
 	        previousLineLength = currentLineLength;
 	    }

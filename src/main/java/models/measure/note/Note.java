@@ -1,5 +1,6 @@
 package models.measure.note;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
@@ -9,6 +10,8 @@ import models.measure.note.notations.Notations;
 import java.util.List;
 
 @JsonPropertyOrder({"grace", "chord", "pitch", "rest", "unpitched", "duration", "instrument", "voice", "type", "dot", "time-modification", "stem", "notehead", "beam", "notations"})
+
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Note {
     Grace grace;
@@ -118,7 +121,9 @@ public class Note {
         return notehead;
     }
 
+    // Guaranteed to not return null
     public Notations getNotations() {
+    	if (notations == null) notations = new Notations();
         return notations;
     }
 

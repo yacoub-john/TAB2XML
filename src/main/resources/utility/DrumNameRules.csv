@@ -3,6 +3,8 @@ C,false
 CC,false
 R,false
 RC,false
+T,true
+t,true
 HT,false
 MT,false
 FT,false

@@ -25,7 +25,9 @@ public class Notations {
         return slurs;
     }
 
+    // Guaranteed to not return null
     public Technical getTechnical() {
+        if (technical == null) technical = new Technical();
         return technical;
     }
 

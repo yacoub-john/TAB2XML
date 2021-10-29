@@ -26,6 +26,10 @@ public class BassMeasure extends GuitarMeasure {
         super(lines, lineNamesAndPositions, linePositions, isFirstMeasure);
     }
 
+	protected TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position)
+	{
+		return new TabBassString(stringNumber, line, nameAndPosition, position);
+	}
     @Override
     public Attributes getAttributesModel() {
         Attributes attributes = new Attributes();

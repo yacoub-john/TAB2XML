@@ -36,7 +36,7 @@ public class TabDrumString extends TabString {
      * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
      * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
      * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
-     * found in the root string from which it was derived (i.e Score.ROOT_STRING).
+     * found in the root string from which it was derived (i.e Score.tabText).
      * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
      */
     public List<ValidationError> validate() {

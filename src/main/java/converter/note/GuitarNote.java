@@ -133,6 +133,7 @@ public class GuitarNote extends Note {
 
 	    Notations notations = noteModel.getNotations();
 	    Technical technical = notations.getTechnical();
+ 	    
 	    technical.setString(this.stringNumber);
 	    technical.setFret(this.fret);
 	    notations.setTechnical(technical);

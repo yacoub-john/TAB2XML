@@ -59,9 +59,10 @@ public class GuitarUtils {
 	    double score = 0;
 	    int lineCount = lineList.size();
 	    for (int i=0; i<lineCount; i++) {
-	        score += isGuitarLineLikelihood(lineNameList.get(i)[0], lineList.get(i), Instrument.AUTO);
+	        score += isGuitarLineLikelihood(lineNameList.get(i)[0], lineList.get(i));
 	    }
 	    if (lineCount==0)
+	    	//TODO This should really be an exception
 	        score += 1; //if there is risk of zero division error, assign the full weight
 	    else
 	        score += (score/lineCount);
@@ -69,25 +70,24 @@ public class GuitarUtils {
 	    return score;
 	}
 	
-	public static double isBassMeasureLikelihood(List<String> lineList, List<String[]> lineNameList) {
-	    double withinSizeBias = 0.1;  //weight for if the number of lines in this measure is within the size cap of Bass measures
+//	public static double isBassMeasureLikelihood(List<String> lineList, List<String[]> lineNameList) {
+//	    double withinSizeBias = 0.1;  //weight for if the number of lines in this measure is within the size cap of Bass measures
+//	
+//	    //---------this code block must be the exact same as isGuitarMeasureLikelihood (except the PREV_MEASURE_TYPE part)
+//	    double guitarScore = isGuitarMeasureLikelihood(lineList, lineNameList);
+//	    double bassScore = guitarScore;
+//	    if (lineList.size()>=BassMeasure.MIN_LINE_COUNT && lineList.size()<=BassMeasure.MAX_LINE_COUNT)
+//	        bassScore += withinSizeBias;
+//	    return bassScore;
+//	}
 	
-	    //---------this code block must be the exact same as isGuitarMeasureLikelihood (except the PREV_MEASURE_TYPE part)
-	    double guitarScore = isGuitarMeasureLikelihood(lineList, lineNameList);
-	    double bassScore = guitarScore;
-	    if (lineList.size()>=BassMeasure.MIN_LINE_COUNT && lineList.size()<=BassMeasure.MAX_LINE_COUNT)
-	        bassScore += withinSizeBias;
-	    return bassScore;
-	}
-	
-	public static double isGuitarLineLikelihood(String name, String line, Instrument instrumentBias) {
-	    double instrumentBiasWeight = 0.2;  // weight attached when we are told to have a bias for guitar notes
+	private static double isGuitarLineLikelihood(String name, String line) {
 	    double lineNameWeight = 0.5;  // weight attached when the line name is a guitar line name
-	    double noteGroupWeight = 0.3;   // ratio of notes that are guitar notes vs {all other notes, both valid and invalid}
+	    double noteGroupWeight = 0.5;   // ratio of notes that are guitar notes vs {all other notes, both valid and invalid}
 	
 	    if (!GuitarUtils.isValidName(name))
 	        return 0;
-	    double score = lineNameWeight + (instrumentBias==Instrument.GUITAR ? instrumentBiasWeight : 0);
+	    double score = lineNameWeight;
 	    line = line.replaceAll("\s", "");
 	
 	    int charGroups = 0;

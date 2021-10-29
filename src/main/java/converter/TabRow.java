@@ -156,45 +156,51 @@ public class TabRow implements ScoreComponent {
             repeatCount = Integer.parseInt(repeatCountStr);
         }
 
-        TabMeasure measure;
-        if (Settings.getInstance().instrument!=Instrument.AUTO) {
-            measure = switch (Settings.getInstance().instrument) {
-                case GUITAR -> new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                case BASS -> new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                case DRUMS -> new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                case AUTO -> null;
-                case NONE -> null;
-            };
-        }else {
-            double guitarLikelihood = GuitarUtils.isGuitarMeasureLikelihood(lineList, lineNameList);
-            double drumLikelihood = DrumUtils.isDrumMeasureLikelihood(lineList, lineNameList);
-            double bassLikelihood = GuitarUtils.isBassMeasureLikelihood(lineList, lineNameList);
-
-            //adjusting values
-            double guitarLikelihoodAdj = guitarLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.GUITAR ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
-            double drumLikelihoodAdj = drumLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.DRUMS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
-            double bassLikelihoodAdj = bassLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.BASS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
-
-            if (guitarLikelihoodAdj >= drumLikelihoodAdj && guitarLikelihoodAdj >= bassLikelihoodAdj) {
-                measure = new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                PREV_MEASURE_TYPE = Instrument.GUITAR;
-                // the more confident we are about what type of measure this is, the more we want the next measure to be likely to follow it.
-                //dont use the guitarLikelihoodAdj "Adj" score to calculate confidence or else the effect will build on itself everytime we adjust the FOLLOW_PREV_MEASURE_WEIGHT value
-                double confidenceScore = guitarLikelihood-Math.min(Math.max(drumLikelihood, bassLikelihood), guitarLikelihood);
-
-                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
-            }else if (bassLikelihoodAdj >= drumLikelihoodAdj){
-                measure = new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                PREV_MEASURE_TYPE = Instrument.BASS;
-                double confidenceScore = bassLikelihood-Math.min(Math.max(drumLikelihood, guitarLikelihood)*2, bassLikelihood);
-                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
-            }else {
-                measure = new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-                PREV_MEASURE_TYPE = Instrument.DRUMS;
-                double confidenceScore = drumLikelihood-Math.min(Math.max(bassLikelihood, guitarLikelihood)*2, drumLikelihood);
-                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
-            }
-        }
+        TabMeasure measure = switch (Settings.getInstance().instrument) {
+        case GUITAR -> new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+        case BASS -> new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+        case DRUMS -> new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+        case AUTO -> detectAndCreateMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+    };
+    
+//        TabMeasure measure;
+//        if (Settings.getInstance().instrument!=Instrument.AUTO) {
+//            measure = switch (Settings.getInstance().instrument) {
+//                case GUITAR -> new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+//                case BASS -> new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+//                case DRUMS -> new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+//                case AUTO -> null;
+//            };
+//        }else {
+//            double guitarLikelihood = GuitarUtils.isGuitarMeasureLikelihood(lineList, lineNameList);
+//            double drumLikelihood = DrumUtils.isDrumMeasureLikelihood(lineList, lineNameList);
+//            double bassLikelihood = GuitarUtils.isBassMeasureLikelihood(lineList, lineNameList);
+//
+//            //adjusting values
+//            double guitarLikelihoodAdj = guitarLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.GUITAR ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+//            double drumLikelihoodAdj = drumLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.DRUMS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+//            double bassLikelihoodAdj = bassLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.BASS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+//
+//            if (guitarLikelihoodAdj >= drumLikelihoodAdj && guitarLikelihoodAdj >= bassLikelihoodAdj) {
+//                measure = new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+//                PREV_MEASURE_TYPE = Instrument.GUITAR;
+//                // the more confident we are about what type of measure this is, the more we want the next measure to be likely to follow it.
+//                //dont use the guitarLikelihoodAdj "Adj" score to calculate confidence or else the effect will build on itself everytime we adjust the FOLLOW_PREV_MEASURE_WEIGHT value
+//                double confidenceScore = guitarLikelihood-Math.min(Math.max(drumLikelihood, bassLikelihood), guitarLikelihood);
+//
+//                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
+//            }else if (bassLikelihoodAdj >= drumLikelihoodAdj){
+//                measure = new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+//                PREV_MEASURE_TYPE = Instrument.BASS;
+//                double confidenceScore = bassLikelihood-Math.min(Math.max(drumLikelihood, guitarLikelihood)*2, bassLikelihood);
+//                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
+//            }else {
+//                measure = new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+//                PREV_MEASURE_TYPE = Instrument.DRUMS;
+//                double confidenceScore = drumLikelihood-Math.min(Math.max(bassLikelihood, guitarLikelihood)*2, drumLikelihood);
+//                //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
+//            }
+//        }
         if (repeatStart)
             measure.setRepeat(repeatCount, RepeatType.START);
         if (repeatEnd)
@@ -202,7 +208,49 @@ public class TabRow implements ScoreComponent {
         return measure;
     }
     
-    private static boolean checkRepeatStart(List<String> lines) {
+    private TabMeasure detectAndCreateMeasure(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {
+    	double guitarLikelihood = GuitarUtils.isGuitarMeasureLikelihood(lineList, lineNameList);
+        double drumLikelihood = DrumUtils.isDrumMeasureLikelihood(lineList, lineNameList);
+        //double bassLikelihood = GuitarUtils.isBassMeasureLikelihood(lineList, lineNameList);
+
+        //adjusting values
+//        double guitarLikelihoodAdj = guitarLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.GUITAR ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+//        double drumLikelihoodAdj = drumLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.DRUMS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+//        double bassLikelihoodAdj = bassLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.BASS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+
+        double guitarLikelihoodAdj = guitarLikelihood;
+        double drumLikelihoodAdj = drumLikelihood;
+        //double bassLikelihoodAdj = bassLikelihood;
+        
+        TabMeasure measure;
+        if (guitarLikelihoodAdj >= drumLikelihoodAdj) {
+        	// If it's a 6-string bass, the user has to set it explicitly in Current Song Settings
+        	if (lineList.size() >= 6)
+        		measure = new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+        	else
+        		measure = new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+//            PREV_MEASURE_TYPE = Instrument.GUITAR;
+//            // the more confident we are about what type of measure this is, the more we want the next measure to be likely to follow it.
+//            //dont use the guitarLikelihoodAdj "Adj" score to calculate confidence or else the effect will build on itself everytime we adjust the FOLLOW_PREV_MEASURE_WEIGHT value
+//            double confidenceScore = guitarLikelihood-Math.min(Math.max(drumLikelihood, bassLikelihood), guitarLikelihood);
+
+            //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
+//        }else if (bassLikelihoodAdj >= drumLikelihoodAdj){
+//            measure = new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+//            PREV_MEASURE_TYPE = Instrument.BASS;
+//            double confidenceScore = bassLikelihood-Math.min(Math.max(drumLikelihood, guitarLikelihood)*2, bassLikelihood);
+//            //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
+        }else {
+            measure = new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+//            PREV_MEASURE_TYPE = Instrument.DRUMS;
+//            double confidenceScore = drumLikelihood-Math.min(Math.max(bassLikelihood, guitarLikelihood)*2, drumLikelihood);
+//            //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
+        }
+		return measure;
+	}
+
+
+	private static boolean checkRepeatStart(List<String> lines) {
         boolean repeatStart = true;
         int repeatStartMarkCount = 0;
         for (String line : lines) {

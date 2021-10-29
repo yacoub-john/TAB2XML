@@ -173,11 +173,6 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
  	    noteModel.setDuration(this.duration);
  	    noteModel.setVoice(this.voice);
  	    
- 	    Notations notations = new Notations();
- 	    Technical technical = new Technical();
- 	    notations.setTechnical(technical);
- 	    noteModel.setNotations(notations);
- 	  
  	    String noteType = this.getType();
  	    if (!noteType.isEmpty())
  	        noteModel.setType(noteType);
