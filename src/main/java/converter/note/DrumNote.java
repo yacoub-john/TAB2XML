@@ -7,23 +7,32 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import converter.Instrument;
+import converter.measure_line.TabDrumString;
 import models.measure.note.Chord;
 import models.measure.note.Unpitched;
+import utility.DrumPiece;
+import utility.DrumPieceInfo;
 import utility.DrumUtils;
 import utility.Settings;
 import utility.ValidationError;
 
 public class DrumNote extends Note{
 
-    String partID;
+    //String partID;
+    private DrumPiece drumPiece;
+    private DrumPieceInfo drumPieceInfo;
     public static String COMPONENT_PATTERN = createComponentPattern();
 
     public DrumNote (int stringNumber, String origin, int position, String lineName, int distanceFromMeasure){
         super(stringNumber, origin, position, lineName, distanceFromMeasure);
         this.instrument = Instrument.DRUMS;
-        this.partID = DrumUtils.getPartID(lineName, origin);
-        if (lineName.strip().equalsIgnoreCase("BD"))
-            this.voice = 2;
+        drumPiece = DrumUtils.getDrumPiece(lineName.strip(), origin.strip());
+        if (drumPiece != null)
+            TabDrumString.USED_DRUM_PARTS.add(drumPiece);
+        //TODO Debug voice 2 issues
+        //if ((drumPiece == DrumPiece.Bass_Drum_1) || (drumPiece == DrumPiece.Bass_Drum_1))
+        //    this.voice = 2;
+        drumPieceInfo = DrumUtils.drumSet.get(drumPiece);
     }
 
     @Override
@@ -33,23 +42,15 @@ public class DrumNote extends Note{
 
     @Override
     public models.measure.note.Note getModel(){ 
-        
     	models.measure.note.Note noteModel = super.getModel();
-
-        noteModel.setUnpitched(IDtoDisplayStepAndDisplayOctave());
-        noteModel.setInstrument(new models.measure.note.Instrument(this.partID));
+        noteModel.setUnpitched(new Unpitched(drumPieceInfo.getStep(), drumPieceInfo.getOctave()));
+        noteModel.setInstrument(new models.measure.note.Instrument(this.drumPieceInfo.getMidiID()));
         //TODO Should test better for bass drum here
         noteModel.setStem(this.lineName.strip().equalsIgnoreCase("BD") ? "down" : "up");
         String noteHead = this.origin.strip();
-        // If text is "o", don't need a note head
-        if (!(noteHead.equalsIgnoreCase("f") || noteHead.equalsIgnoreCase("d") || noteHead.equalsIgnoreCase("o")))
-            noteModel.setNotehead(noteHead.toLowerCase());
-        
+        if ((noteHead.equalsIgnoreCase("x")) || ((noteHead.equalsIgnoreCase("o") && drumPiece == DrumPiece.Open_Hi_Hat)))
+            noteModel.setNotehead("x");
         return noteModel;
-    }
-
-    public Unpitched IDtoDisplayStepAndDisplayOctave(){
-        return this.partID==null ? null : new Unpitched(DrumUtils.getDisplayStep(this.partID), DrumUtils.getDisplayOctave(this.partID));
     }
 
     public List<ValidationError> validate() {

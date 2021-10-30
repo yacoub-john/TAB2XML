@@ -46,7 +46,7 @@ public class TabSection implements ScoreComponent {
      *                             (i.e "[startIdx]stringContent")
      * @return A List of MeasureGroup objects.
      */
-    private List<TabRow> createMeasureGroupList(String measureGroupCollectionString) {
+    private List<TabRow> createTabRowList(String measureGroupCollectionString) {
         List<TabRow> measureGroupList = new ArrayList<>();
 
         // separating the start index from the input String
@@ -100,11 +100,13 @@ public class TabSection implements ScoreComponent {
 
         List<Range> identifiedComponents = new ArrayList<>();       //to prevent the same thing being identified as two different components (e.g being identified as both a comment and an instruction)
 
+        Range tabRowRange = null;
         // Extract the measure group collection and create the list of MeasureGroup objects with it
         Matcher matcher = Pattern.compile("((^|\\n)"+validLinePattern()+")+").matcher(origin);
         if (matcher.find()) { // we don't use while loop because we are guaranteed that there is going to be just one of this pattern
-            this.tabRowList = createMeasureGroupList("[" + (this.position + matcher.start()) + "]" + matcher.group());
-            identifiedComponents.add(new Range(matcher.start(), matcher.end()));
+            this.tabRowList = createTabRowList("[" + (this.position + matcher.start()) + "]" + matcher.group());
+            //identifiedComponents.add(new Range(matcher.start(), matcher.end()));
+            tabRowRange = new Range(matcher.start(), matcher.end());
         }
 
         // Extract instructions
@@ -112,17 +114,19 @@ public class TabSection implements ScoreComponent {
         while(matcher.find()) {
             //first make sure that what was identified as one thing is not being identified as a different thing.
             Range instructionLineRange = new Range(matcher.start(), matcher.end());
-            boolean continueWhileLoop = false;
-            boolean isTopInstruction = true;
-            for (Range range : identifiedComponents) {
-                if (range.overlaps(instructionLineRange)) {
-                    continueWhileLoop = true;
-                    break;
-                }
-                if (range.getEnd()<=instructionLineRange.getStart())
-                    isTopInstruction = false;
-            }
-            if (continueWhileLoop) continue;
+//            boolean continueWhileLoop = false;
+//            boolean isTopInstruction = true;
+//            for (Range range : identifiedComponents) {
+//                if (range.overlaps(instructionLineRange)) {
+//                    continueWhileLoop = true;
+//                    break;
+//                }
+//                if (range.getEnd()<=instructionLineRange.getStart())
+//                    isTopInstruction = false;
+//            }
+//            if (continueWhileLoop) continue;
+            boolean isTopInstruction = false;
+            if (instructionLineRange.compareTo(tabRowRange) < 0) isTopInstruction = true;
             if (isTopInstruction)
                 this.instructionList.addAll(Instruction.from(matcher.group(), this.position+matcher.start(), Instruction.TOP));
             else

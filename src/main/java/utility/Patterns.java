@@ -86,7 +86,7 @@ public class Patterns {
     private static Set<String> getValidNames() {
         HashSet<String> nameSet = new HashSet<>();
         nameSet.addAll(GuitarUtils.getValidGuitarNames());
-        nameSet.addAll(DrumUtils.DRUM_NAME_SET);
+        nameSet.addAll(DrumUtils.getNickNameSet());
         return nameSet;
     }
 }

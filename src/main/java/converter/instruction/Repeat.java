@@ -44,6 +44,8 @@ public class Repeat extends Instruction {
                 Range tabRowRange = tabRow.getRelativeRange();
                 if (tabRowRange == null) continue;
                 if (!this.getRelativeRange().overlaps(tabRowRange)) continue;
+                // Getting here means we are dealing with a repeat instruction above the tab row
+                tabRow.removeRepeatInstruction();
                 for (TabMeasure measure : tabRow.getMeasureList()) {
                     Range measureRange = measure.getRelativeRange();
                     if (measureRange==null || !this.getRelativeRange().overlaps(measureRange)) continue;

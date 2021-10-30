@@ -1,177 +1,95 @@
 package utility;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
-
-import converter.Instrument;
-import converter.note.NoteFactory;
-
-import java.io.FileReader;
-import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import converter.Instrument;
+import converter.note.NoteFactory;
+
 public class DrumUtils {
-    private static String IdToFullNamePath = "DrumIDtoFullName.csv";
-    private static String NameRulesPath = "DrumNameRules.csv";
-    private static String NameToIdPath = "DrumNameToID.csv";
-    private static String PartInfoPath = "DrumPartInfo.csv";
-    private static HashMap<String, String> NAME_CASE_SENSITIVITY_MAP = getNameCaseSensitivityMap();
-    private static HashMap<String, String> NAME_TO_ID_MAP = getNameToIDMap();
-    private static HashMap<String, String> ID_TO_FULL_NAME_MAP = getIDtoFullNameMap();
-    private static HashMap<String, String> DISPLAY_STEP_MAP = getDisplayStepMap();
-    private static HashMap<String, String> DISPLAY_OCTAVE_MAP = getDisplayOctaveMap();
+	
+	public static HashMap<DrumPiece, DrumPieceInfo> drumSet = new HashMap<>();
+	private static HashMap<String, DrumPiece> drumNickNames = new HashMap<>();;
+	
+public static void createDrumSet() {
+		
+	    // The nicknames are probably not needed
+		List<String> kickNames = new ArrayList<String>(Arrays.asList("B","BD"));
+		DrumPieceInfo kick = new DrumPieceInfo(kickNames, "P1-I36", "Bass Drum 1", "F", 4);
+		
+		List<String> snareNames = new ArrayList<String>(Arrays.asList("S","SD"));
+		DrumPieceInfo snare = new DrumPieceInfo(snareNames, "P1-I39", "Snare", "C", 5);
+		
+		List<String> closedhihatNames = new ArrayList<String>(Arrays.asList("HH","CH"));
+		DrumPieceInfo closedHiHat = new DrumPieceInfo(closedhihatNames, "P1-I43", "Closed Hi-Hat", "G", 5);
+		
+		List<String> openHiHatNames = new ArrayList<String>(Arrays.asList("HH","OH"));
+		DrumPieceInfo openHiHat = new DrumPieceInfo(openHiHatNames, "P1-I47", "Open Hi-Hat", "E", 5);
+		
+		List<String> rideNames = new ArrayList<String>(Arrays.asList("R","RD"));
+		DrumPieceInfo ride = new DrumPieceInfo(rideNames, "P1-I52", "Ride Cymbal 1", "F", 5);
+		
+		List<String> crashNames = new ArrayList<String>(Arrays.asList("C","CC"));
+		DrumPieceInfo crash = new DrumPieceInfo(crashNames, "P1-I50", "Crash Cymbal 1", "A", 5);
+		
+		List<String> highTomNames = new ArrayList<String>(Arrays.asList("T","HT"));
+		DrumPieceInfo highTom = new DrumPieceInfo(highTomNames, "P1-I48", "Low-Mid Tom", "E", 5);
+		
+		List<String> midTomNames = new ArrayList<String>(Arrays.asList("t","MT"));
+		DrumPieceInfo midTom = new DrumPieceInfo(midTomNames, "P1-I46", "Low Tom", "D", 5);
+		
+		List<String> floorTomNames = new ArrayList<String>(Arrays.asList("F","FT"));
+		DrumPieceInfo floorTom = new DrumPieceInfo(floorTomNames, "P1-I44", "High Floor Tom", "A", 4);
+		
+		drumSet.put(DrumPiece.Bass_Drum_1, kick);
+		drumSet.put(DrumPiece.Snare, snare);
+		drumSet.put(DrumPiece.Open_Hi_Hat, openHiHat);
+		drumSet.put(DrumPiece.Closed_Hi_Hat, closedHiHat);
+		drumSet.put(DrumPiece.Ride_Cymbal_1, ride);
+		drumSet.put(DrumPiece.Crash_Cymbal_1, crash);
+		drumSet.put(DrumPiece.Low_Mid_Tom, highTom);
+		drumSet.put(DrumPiece.Low_Tom, midTom);
+		drumSet.put(DrumPiece.High_Floor_Tom, floorTom);
+		
+	}
 
+	public static void createDrumNickNames() {
+		
+		List<String> kickNames = new ArrayList<String>(Arrays.asList("B","BD"));
+		List<String> snareNames = new ArrayList<String>(Arrays.asList("S","SD"));
+		List<String> hihatNames = new ArrayList<String>(Arrays.asList("HH"));
+		List<String> rideNames = new ArrayList<String>(Arrays.asList("R","RD"));
+		List<String> crashNames = new ArrayList<String>(Arrays.asList("C","CC"));
+		List<String> highTomNames = new ArrayList<String>(Arrays.asList("T","HT"));
+		List<String> midTomNames = new ArrayList<String>(Arrays.asList("t","MT"));
+		List<String> floorTomNames = new ArrayList<String>(Arrays.asList("F","FT"));
 
-    public static Set<String> DRUM_NAME_SET = getNameSet();
-    public static Set<String> DRUM_PART_ID_SET = getPartIDSet();
-
-
-    public static String getPartID(String partName, String noteSymbol) {
-        String name = getTrueName(partName, noteSymbol);
-        return name!=null ? NAME_TO_ID_MAP.get(name) : null;
-    }
-    public static String getPartID(String partName) {
-        String name = getTrueName(partName);
-        return name!=null ? NAME_TO_ID_MAP.get(name) : null;
-    }
-    public static String getFullName(String partID) {
-        return ID_TO_FULL_NAME_MAP.get(partID.toUpperCase());
-    }
-
-    public static String getDisplayStep(String partID) {
-        return DISPLAY_STEP_MAP.get(partID);
-    }
-
-    public static int getDisplayOctave(String partID) {
-        return Integer.parseInt(DISPLAY_OCTAVE_MAP.get(partID));
-    }
-
-    public static boolean isValidName(String partName) {
-        return getTrueName(partName)!=null;
-    }
-
-    public static boolean isSupportedName(String partName) {
-        String partID = getPartID(partName);
-        return partID != null && DRUM_PART_ID_SET.contains(partID);
-    }
-
-    private static String getTrueName(String partName, String noteSymbol) {
-        if (partName.strip().equalsIgnoreCase("HH")) {
-            if (noteSymbol.strip().equalsIgnoreCase("x"))
-                return "HH";
-            else if (noteSymbol.strip().equalsIgnoreCase("o"))
-                return "hh";
-        }
-        return getTrueName(partName);
-    }
-
-    private static String getTrueName(String partName) {
-        partName = partName.strip();
-        if (DRUM_NAME_SET.contains(partName))
-            return partName;
-        else if (DRUM_NAME_SET.contains(partName.toUpperCase()) && !isCaseSensitive(partName.toUpperCase()))
-            return partName.toUpperCase();
-        else if (DRUM_NAME_SET.contains(partName.toLowerCase()) && !isCaseSensitive(partName.toLowerCase()))
-            return partName.toLowerCase();
-        return null;
-    }
-
-    /**
-     *
-     * @param partName precondition: must be a name which is contained (case-sensitive) in the first column of the file "DrumNameRules.csv"
-     * @return
-     */
-    private static boolean isCaseSensitive(String partName) {
-        return Boolean.parseBoolean(NAME_CASE_SENSITIVITY_MAP.get(partName));
-    }
-
-    private static Iterable<CSVRecord> parseCSV(String path) {
-        Iterable<CSVRecord> records = null;
-        try (Reader reader = new FileReader(DrumUtils.class.getResource(path).getFile())) {
-            records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(reader);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return records;
-    }
-
-    private static HashMap<String, String> getNameCaseSensitivityMap() {
-        HashMap<String, String> nameCaseSensitivityMap = new HashMap<>();
-        try (Reader reader = new FileReader(DrumUtils.class.getResource(NameRulesPath).getFile())) {
-            Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(reader);
-            for (CSVRecord record : records) {
-                nameCaseSensitivityMap.put(record.get("Name"), record.get("Case Sensitive"));
-            }
-            return nameCaseSensitivityMap;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return nameCaseSensitivityMap;
-    }
-
-    private static HashMap<String, String> getNameToIDMap() {
-        HashMap<String, String> nameToIdMap = new HashMap<>();
-        try (Reader reader = new FileReader(DrumUtils.class.getResource(NameToIdPath).getFile())) {
-            Iterable <CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(reader);
-            for (CSVRecord record : records) {
-                nameToIdMap.put(record.get("Name"), record.get("Part ID"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return nameToIdMap;
-    }
-
-    private static HashMap<String, String> getIDtoFullNameMap() {
-        HashMap<String, String> idToFullNameMap = new HashMap<>();
-        try (Reader reader = new FileReader(DrumUtils.class.getResource(IdToFullNamePath).getFile())) {
-            Iterable <CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(reader);
-            for (CSVRecord record : records) {
-                idToFullNameMap.put(record.get("Part ID"), record.get("Full Name"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return idToFullNameMap;
-    }
-
-    private static HashMap<String, String> getDisplayStepMap() {
-        HashMap<String, String> idToFullNameMap = new HashMap<>();
-        try (Reader reader = new FileReader(DrumUtils.class.getResource(PartInfoPath).getFile())) {
-            Iterable <CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(reader);
-            for (CSVRecord record : records) {
-                idToFullNameMap.put(record.get("Part ID"), record.get("Display Step"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return idToFullNameMap;
-    }
-
-    private static HashMap<String, String> getDisplayOctaveMap() {
-        HashMap<String, String> idToFullNameMap = new HashMap<>();
-        try (Reader reader = new FileReader(DrumUtils.class.getResource(PartInfoPath).getFile())) {
-            Iterable <CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(reader);
-            for (CSVRecord record : records) {
-                idToFullNameMap.put(record.get("Part ID"), record.get("Display Octave"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return idToFullNameMap;
-    }
-
-
-    private static Set<String> getNameSet() {
-        return getNameToIDMap().keySet();
-    }
-
-    private static Set<String> getPartIDSet() {
-        return getDisplayStepMap().keySet();
+		for (String s: kickNames) drumNickNames.put(s, DrumPiece.Bass_Drum_1);
+		for (String s: snareNames) drumNickNames.put(s, DrumPiece.Snare);
+		for (String s: hihatNames) drumNickNames.put(s, DrumPiece.Closed_Hi_Hat);
+		for (String s: rideNames) drumNickNames.put(s, DrumPiece.Ride_Cymbal_1);
+		for (String s: crashNames) drumNickNames.put(s, DrumPiece.Crash_Cymbal_1);
+		for (String s: highTomNames) drumNickNames.put(s, DrumPiece.Low_Mid_Tom);
+		for (String s: midTomNames) drumNickNames.put(s, DrumPiece.Low_Tom);
+		for (String s: floorTomNames) drumNickNames.put(s, DrumPiece.High_Floor_Tom);
+		
+	}
+	
+	public static DrumPiece getDrumPiece(String nickName, String hit)
+	{
+		DrumPiece result =  DrumUtils.drumNickNames.get(nickName);
+		if ((hit.equals("o")) && (result == DrumPiece.Closed_Hi_Hat)) 
+			result = DrumPiece.Open_Hi_Hat;
+		return result;
+	}
+	
+    public static Set<String> getNickNameSet() {
+        return drumNickNames.keySet();
     }
     
     public static double isDrumLineLikelihood(String name, String line, Instrument instrumentBias) {
@@ -179,7 +97,7 @@ public class DrumUtils {
 	    double lineNameWeight = 0.5;  // weight attached when the line name is a drum line name
 	    double noteGroupWeight = 0.3;   // ratio of notes that are drum notes vs {all other notes, both valid and invalid}
 	
-	    if (!DrumUtils.isValidName(name))
+	    if (!getNickNameSet().contains(name.strip()))
 	        return 0;
 	    double score = lineNameWeight + (instrumentBias==Instrument.DRUMS ? instrumentBiasWeight : 0);
 	    line = line.replaceAll("\s", "");

@@ -20,6 +20,8 @@ import models.part_list.MIDIInstrument;
 import models.part_list.PartList;
 import models.part_list.ScoreInstrument;
 import models.part_list.ScorePart;
+import utility.DrumPiece;
+import utility.DrumPieceInfo;
 import utility.DrumUtils;
 import utility.Settings;
 import utility.ValidationError;
@@ -33,6 +35,8 @@ public class Score implements ScoreComponent {
 
     public Score(String textInput) {
     	TabMeasure.MEASURE_INDEX = 0;
+    	DrumUtils.createDrumSet();
+    	DrumUtils.createDrumNickNames();
         
     	tabText = textInput;
         scoreTextFragments = getScoreTextFragments(tabText);
@@ -176,8 +180,10 @@ public class Score implements ScoreComponent {
         List<ScoreInstrument> scoreInstruments = new ArrayList<>();
         List<MIDIInstrument> midiInstruments = new ArrayList<>();
         
-        for (String partID : TabDrumString.USED_DRUM_PARTS) {
-            scoreInstruments.add(new ScoreInstrument(partID, DrumUtils.getFullName(partID)));
+        for (DrumPiece d : TabDrumString.USED_DRUM_PARTS) {
+        	DrumPieceInfo drumPieceInfo = DrumUtils.drumSet.get(d);
+        	String partID = drumPieceInfo.getMidiID();
+            scoreInstruments.add(new ScoreInstrument(partID, drumPieceInfo.getFullName()));
             // Assumption: partID is of the form P1-IXX, where XX are digits
             int pitch = Integer.parseInt(partID.substring(4, 6));
             midiInstruments.add(new MIDIInstrument(partID, pitch));

@@ -14,16 +14,8 @@ import utility.Settings;
 import utility.ValidationError;
 
 public class TabGuitarString extends TabString {
-    //public static List<String> OCTAVE_LIST = createOctaveList();
-    public static String COMPONENT = "[0-9hHpPsS\\/\\\\]";
 
-    //Not used
-//    private static ArrayList<String> createOctaveList() {
-//        String[] names = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
-//        ArrayList<String> nameList = new ArrayList<>();
-//        nameList.addAll(Arrays.asList(names));
-//        return nameList;
-//    }
+    public static String COMPONENT = "[0-9hHpPsS\\/\\\\]";
 
     public TabGuitarString(int stringNumber, String line, String[] nameAndPosition, int position) {
         super(stringNumber, line, nameAndPosition, position);
@@ -36,7 +28,7 @@ public class TabGuitarString extends TabString {
 
         
         if (!GuitarUtils.isValidName(this.name)) {
-            String message = DrumUtils.isValidName(this.name)
+            String message = DrumUtils.getNickNameSet().contains(this.name.strip())
                     ? "A Guitar measure line is expected here."
                     : "Invalid measure line.";
 

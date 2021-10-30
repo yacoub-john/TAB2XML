@@ -86,7 +86,7 @@ public abstract class TabString implements ScoreComponent {
     }
 
     public boolean isDrum(boolean strictCheck) {
-    	boolean x = DrumUtils.isValidName(this.name.strip());
+    	boolean x = DrumUtils.getNickNameSet().contains(this.name.strip());
         if (!x) return false;
         if (!strictCheck) return true;
         for (Note note : this.noteList) {

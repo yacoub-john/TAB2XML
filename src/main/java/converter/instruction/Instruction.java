@@ -17,8 +17,8 @@ public abstract class Instruction {
     public static Bottom BOTTOM = new Bottom();
     public static String LINE_PATTERN = getLinePattern();
 
-    private String content;
-    private int position;
+    protected String content;
+    protected int position;
     private RelativePosition relativePosition;
     private boolean hasBeenApplied;
 
@@ -27,7 +27,7 @@ public abstract class Instruction {
         this.position = position;
 
         int relStartPos = position - Score.tabText.substring(0,position).lastIndexOf("\n");
-        int relEndPos = relStartPos + content.length();
+        int relEndPos = relStartPos + content.length() - 1;
 
         if (topOrBottom instanceof Top)
             this.relativePosition = new Top(relStartPos, relEndPos);

@@ -465,13 +465,16 @@ protected abstract int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureL
         return this.tabStringList.size() >= BassMeasure.MIN_LINE_COUNT && this.tabStringList.size() <= BassMeasure.MAX_LINE_COUNT;
     }
 
+    /**
+     * @return the range of the first line of the measure in its text line
+     */
     public Range getRelativeRange() {
         if (this.lines.isEmpty()) return null;
         int position;
         if (this.isFirstMeasureInGroup)
             position = Integer.parseInt(lineNamesAndPositions.get(0)[1]);   // use the starting position of the name instead.
         else
-            position = this.positions.get(0)-1;       // use the starting position of the inside of the measure minus one, so that it also captures the starting line of that measure "|"
+            position = this.positions.get(0);       // Took that -1 away: use the starting position of the inside of the measure minus one, so that it also captures the starting line of that measure "|"
         int relStartPos = position-Score.tabText.substring(0,position).lastIndexOf("\n");
         String line = this.lines.get(0);
         int lineLength = 0;

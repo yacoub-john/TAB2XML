@@ -9,22 +9,22 @@ import java.util.Set;
 import converter.Instrument;
 import converter.Score;
 import converter.note.Note;
+import utility.DrumPiece;
 import utility.DrumUtils;
-import utility.GuitarUtils;
 import utility.Settings;
 import utility.ValidationError;
 
 public class TabDrumString extends TabString {
-    public static Set<String> USED_DRUM_PARTS = new HashSet<>();
+    public static Set<DrumPiece> USED_DRUM_PARTS = new HashSet<>();
     public static String COMPONENT = "[xXoOdDfF]";
-    private String partID;
+    private DrumPiece drumPiece;
 
     public TabDrumString(int stringNumber, String line, String[] nameAndPosition, int position) {
         super(stringNumber, line, nameAndPosition, position);
         this.instrument = Instrument.DRUMS;
-        this.partID = DrumUtils.getPartID(this.name);
-        if (this.partID!=null)
-            USED_DRUM_PARTS.add(this.partID);
+        drumPiece = DrumUtils.getDrumPiece(name.strip(), line.strip());
+        if (drumPiece != null)
+             USED_DRUM_PARTS.add(drumPiece);
         this.noteList = this.createNoteList(stringNumber, this.line, position);
     }
 
@@ -43,23 +43,9 @@ public class TabDrumString extends TabString {
         List<ValidationError> result = new ArrayList<>(super.validate());
         int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
-        if (!DrumUtils.isValidName(this.name)) {
-            String message = GuitarUtils.isValidName(this.name)
-                    ? "A Drum measure line is expected here."
-                    : "Invalid measure line name.";
+        if (!DrumUtils.getNickNameSet().contains(this.name.strip())) {
             ValidationError error = new ValidationError(
-                    message,
-                    1,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.namePosition,
-                            this.position+this.line.length()
-                    }))
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
-        }else if (this.partID==null || !DrumUtils.isSupportedName(this.name)) {
-            ValidationError error = new ValidationError(
-                    "This drum part is unsupported.",
+                    "This drum piece is not recognized. Update Settings -> Current Song Settings to include it",
                     1,
                     new ArrayList<>(Collections.singleton(new Integer[]{
                             this.namePosition,

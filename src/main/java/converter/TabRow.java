@@ -56,7 +56,14 @@ public class TabRow implements ScoreComponent {
     }
 
 
-    /**
+    public void removeRepeatInstruction() {
+		lines.remove(0);
+		positions.remove(0);
+		tabMeasures = createTabMeasureList(lines, positions);
+	}
+
+
+	/**
      * Creates a List of TabMeasure objects from the provided string representation of a TabRow.
      * These TabMeasure objects are not guaranteed to be valid. You can find out if all the TabMeasure
      * objects in this TabRow are actually valid by calling the TabRow.validate() method.
@@ -406,6 +413,10 @@ public class TabRow implements ScoreComponent {
         return this.tabMeasures;
     }
 
+    
+    /**
+     * @return the range of the first line of this TabRow, first character is at position 1
+     */
     public Range getRelativeRange() {
         if (this.lines.isEmpty()) return null;
         int position = this.positions.get(0);

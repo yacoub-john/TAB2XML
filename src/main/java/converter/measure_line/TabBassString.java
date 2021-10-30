@@ -24,7 +24,7 @@ public class TabBassString extends TabGuitarString{
         List<ValidationError> result = new ArrayList<>(super.validate());
 
         if (!GuitarUtils.isValidName(this.name)) {
-            String message = DrumUtils.isValidName(this.name)
+            String message = DrumUtils.getNickNameSet().contains(this.name.strip())
                     ? "A Bass string name is expected here."
                     : "Invalid measure line name.";
             ValidationError error = new ValidationError(
