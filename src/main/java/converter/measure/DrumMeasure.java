@@ -36,7 +36,17 @@ public class DrumMeasure extends TabMeasure {
 	}
     
 	@Override
-	protected int adjustDurationForDoubleCharacterNotes(int duration, List<Note> chord, List<Note> nextChord) {
+	protected int adjustDurationForSpecialCases(int duration, List<Note> chord, List<Note> nextChord) {
+		// Duration should be 1 for choked cymbals
+		boolean choke = false;
+		for (Note note : chord) {
+			if (note.origin.equals("#")) {
+				choke = true;
+				break;
+			}
+		}
+//		if (choke)
+//			duration = 1;
 		return duration;
 	}
 
@@ -48,11 +58,12 @@ public class DrumMeasure extends TabMeasure {
 	private Attributes getAttributesModel() {
         Attributes attributes = new Attributes();
         attributes.setDivisions(this.divisions);
-        attributes.setKey(new Key(0));
+        
         if (this.changesTimeSignature)
             attributes.setTime(new Time(this.beatCount, this.beatType));
 
         if (this.measureCount == 1) {
+        	attributes.setKey(new Key(0));
             attributes.setClef(new Clef("percussion", 2));
             
         }

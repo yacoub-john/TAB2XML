@@ -25,8 +25,7 @@ public class TabRow implements ScoreComponent {
 	public List<String> lines = new ArrayList<>();
 	public List<Integer> positions = new ArrayList<>();
     public List<Instruction> instructions = new ArrayList<>();
-    private Instrument PREV_MEASURE_TYPE = Instrument.AUTO;
-    private static double FOLLOW_PREV_MEASURE_WEIGHT = 0.3;
+    private boolean removedRepeatInstruction = false;
     /**
      * Creates a TabRow object from a List of Strings which represent the lines in the tablature row
      * @param origin a List<String> containing the lines which are meant to represent a tablature row. Each String in
@@ -56,11 +55,14 @@ public class TabRow implements ScoreComponent {
     }
 
 
-    public void removeRepeatInstruction() {
-		lines.remove(0);
-		positions.remove(0);
-		TabMeasure.MEASURE_INDEX -= tabMeasures.size();
-		tabMeasures = createTabMeasureList(lines, positions);
+	public void removeRepeatInstruction() {
+		if (!removedRepeatInstruction) {
+			lines.remove(0);
+			positions.remove(0);
+			TabMeasure.MEASURE_INDEX -= tabMeasures.size();
+			tabMeasures = createTabMeasureList(lines, positions);
+			removedRepeatInstruction = true;
+		}
 	}
 
 

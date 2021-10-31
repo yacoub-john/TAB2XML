@@ -55,7 +55,7 @@ public class NoteFactory {
     public static final String GUITAR_NOTE_GROUP_PATTERN = getGuitarNoteGroupPattern();
     public static final String GUITAR_NOTE_CONNECTOR = "[hpbsHPBS\\/\\\\]";
 
-    public static final String DRUM_NOTE_PATTERN = "[xXoOdDfF]";
+    public static final String DRUM_NOTE_PATTERN = "[xXoOdDfF#]";
     public static final String DRUM_NOTE_GROUP_PATTERN = getDrumNoteGroupPattern();
     public static final String DRUM_NOTE_CONNECTOR = "$a";//there are no connectors, so this is a regex that never matches anything. an a after the end of the string
 
@@ -170,7 +170,7 @@ public class NoteFactory {
     private List<Note> createNote(String origin, int position, int distanceFromMeasureStart) {
         List<Note> noteList = new ArrayList<>();
         if (patternPackage.get("instrument").equalsIgnoreCase("drum")) {
-            if (origin.strip().equalsIgnoreCase("x")||origin.strip().equalsIgnoreCase("o"))
+            if (origin.strip().equalsIgnoreCase("x")||origin.strip().equalsIgnoreCase("o")||origin.strip().equalsIgnoreCase("#"))
                 noteList.add((Note) new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart));
             else if (origin.strip().equalsIgnoreCase("f"))
                 noteList.addAll(createFlam(origin, position, distanceFromMeasureStart));

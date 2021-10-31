@@ -172,7 +172,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
  	    if (this.startsWithPreviousNote) noteModel.setChord(new Chord());
  	    noteModel.setDuration(this.duration);
  	    noteModel.setVoice(this.voice);
- 	   System.out.println("asd");
+
  	    String noteType = this.getType();
  	    if (!noteType.isEmpty())
  	        noteModel.setType(noteType);
@@ -186,7 +186,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
  	    }
  	    if (!dots.isEmpty())
  	        noteModel.setDots(dots);
- 	   System.out.println("asd");
+
  	    for (NoteFactory.NoteDecor noteDecor : this.noteDecorMap.keySet()) {
  	        if (noteDecorMap.get(noteDecor).equals("success"))
  	            noteDecor.applyTo(noteModel);

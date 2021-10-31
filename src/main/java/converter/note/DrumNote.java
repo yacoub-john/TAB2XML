@@ -21,7 +21,7 @@ public class DrumNote extends Note{
     //String partID;
     private DrumPiece drumPiece;
     private DrumPieceInfo drumPieceInfo;
-    public static String COMPONENT_PATTERN = createComponentPattern();
+    //public static String COMPONENT_PATTERN = "[xoXOdDfF#]";
 
     public DrumNote (int stringNumber, String origin, int position, String lineName, int distanceFromMeasure){
         super(stringNumber, origin, position, lineName, distanceFromMeasure);
@@ -30,20 +30,19 @@ public class DrumNote extends Note{
         if (drumPiece != null)
             TabDrumString.USED_DRUM_PARTS.add(drumPiece);
         //TODO Debug voice 2 issues
-        //if ((drumPiece == DrumPiece.Bass_Drum_1) || (drumPiece == DrumPiece.Bass_Drum_1))
+        //if ((drumPiece == DrumPiece.Bass_Drum_1) || (drumPiece == DrumPiece.Bass_Drum_2))
         //    this.voice = 2;
         drumPieceInfo = DrumUtils.drumSet.get(drumPiece);
     }
 
     @Override
-    public void setDuration(int durationRatio) {
-            this.duration = durationRatio;
+    public void setDuration(int duration) {
+            this.duration = duration;
     }
 
     @Override
     public models.measure.note.Note getModel(){ 
     	models.measure.note.Note noteModel = super.getModel();
-    	System.out.println("123");
         noteModel.setUnpitched(new Unpitched(drumPieceInfo.getStep(), drumPieceInfo.getOctave()));
         noteModel.setInstrument(new models.measure.note.Instrument(this.drumPieceInfo.getMidiID()));
         //TODO Should test better for bass drum here
@@ -92,9 +91,4 @@ public class DrumNote extends Note{
         return result;
     }
 
-
-
-    private static String createComponentPattern() {
-        return "[xoXOdDfF]";
-    }
 }

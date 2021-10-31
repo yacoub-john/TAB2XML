@@ -16,7 +16,7 @@ import utility.ValidationError;
 
 public class TabDrumString extends TabString {
     public static Set<DrumPiece> USED_DRUM_PARTS = new HashSet<>();
-    public static String COMPONENT = "[xXoOdDfF]";
+    //public static String COMPONENT = "[xXoOdDfF#]";
     private DrumPiece drumPiece;
 
     public TabDrumString(int stringNumber, String line, String[] nameAndPosition, int position) {

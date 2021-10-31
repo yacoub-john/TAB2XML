@@ -32,12 +32,58 @@ public class TabSection implements ScoreComponent {
         this.position = position;
         this.endIndex = position+this.origin.length();
         this.isFirstCollection = isFirstCollection;
-        createMeasureGroupAndInstructionList(origin);
+        createTabRowAndInstructionList(origin);
         for (Instruction instruction : this.instructionList)
             instruction.applyTo(this);
     }
 
     /**
+	     * Separates the provided String representation of a TabSection into Instructions, and a TabRow collection (of one?)
+	     * @param origin the String representation of a MeasureCollection from which the instructions, comments, and the
+	     *              TabRow collection are extracted
+	     * Each String stored in instructionList and tabRowList begins with a tag
+	     * (i.e "[startIdx]stringContent" ) specifying the start index of the String in Score.tabText
+	     */
+	    private void createTabRowAndInstructionList(String origin) {
+	
+	        List<Range> identifiedComponents = new ArrayList<>();       //to prevent the same thing being identified as two different components (e.g being identified as both a comment and an instruction)
+	
+	        Range tabRowRange = null;
+	        // Extract the measure group collection and create the list of MeasureGroup objects with it
+	        Matcher matcher = Pattern.compile("((^|\\n)"+validLinePattern()+")+").matcher(origin);
+	        if (matcher.find()) { // we don't use while loop because we are guaranteed that there is going to be just one of this pattern
+	            this.tabRowList = createTabRowList("[" + (this.position + matcher.start()) + "]" + matcher.group());
+	            //identifiedComponents.add(new Range(matcher.start(), matcher.end()));
+	            tabRowRange = new Range(matcher.start(), matcher.end());
+	        }
+	
+	        // Extract instructions
+	        matcher = Pattern.compile("((^|\\n)"+ Instruction.LINE_PATTERN+")+").matcher(origin);
+	        while(matcher.find()) {
+	            //first make sure that what was identified as one thing is not being identified as a different thing.
+	            Range instructionLineRange = new Range(matcher.start(), matcher.end());
+	//            boolean continueWhileLoop = false;
+	//            boolean isTopInstruction = true;
+	//            for (Range range : identifiedComponents) {
+	//                if (range.overlaps(instructionLineRange)) {
+	//                    continueWhileLoop = true;
+	//                    break;
+	//                }
+	//                if (range.getEnd()<=instructionLineRange.getStart())
+	//                    isTopInstruction = false;
+	//            }
+	//            if (continueWhileLoop) continue;
+	            boolean isTopInstruction = false;
+	            if (instructionLineRange.compareTo(tabRowRange) < 0) isTopInstruction = true;
+	            if (isTopInstruction)
+	                this.instructionList.addAll(Instruction.from(matcher.group(), this.position+matcher.start(), Instruction.TOP));
+	            else
+	                this.instructionList.addAll(Instruction.from(matcher.group(), this.position+matcher.start(), Instruction.BOTTOM));
+	            identifiedComponents.add(new Range(matcher.start(), matcher.end()));
+	        }
+	    }
+
+	/**
      * Creates a List of MeasureGroup objects from the provided string representation of a measure group collection.
      * These MeasureGroup objects are not guaranteed to be valid. you can find out if all the MeasureGroup
      * objects in this MeasureCollection are actually valid by calling the MeasureCollection().validate() method.
@@ -47,7 +93,7 @@ public class TabSection implements ScoreComponent {
      * @return A List of MeasureGroup objects.
      */
     private List<TabRow> createTabRowList(String measureGroupCollectionString) {
-        List<TabRow> measureGroupList = new ArrayList<>();
+        List<TabRow> tabRowList = new ArrayList<>();
 
         // separating the start index from the input String
         Matcher tagMatcher = Pattern.compile("^\\[[0-9]+\\]").matcher(measureGroupCollectionString);
@@ -59,7 +105,7 @@ public class TabSection implements ScoreComponent {
         // but splitting by newlines will make us lose the information of what index each line is positioned at. We may be able
         // to figure the index out, but there will always be an uncertainty of +-1
 
-        List<List<String>> measureGroupStringList = new ArrayList<>();
+        List<List<String>> tabRowStringList = new ArrayList<>();
 
         //matches every line containing something
         Matcher lineContentMatcher = Pattern.compile("(?<=^|\\n)[^\\n]+(?=$|\\n)").matcher(measureGroupCollectionString);
@@ -69,70 +115,24 @@ public class TabSection implements ScoreComponent {
 
             if (!line.matches(validLinePattern())) continue;
 
-            Matcher measureGroupLineMatcher = Pattern.compile(LINE_PATTERN).matcher(line);
+            Matcher tabRowLineMatcher = Pattern.compile(LINE_PATTERN).matcher(line);
 
-            int measureGroupCount = 0;   //the number of measure groups on this line
-            while (measureGroupLineMatcher.find()) {
-                measureGroupCount++;
-                int measureGroupLineStartIdx = lineStartIdx + measureGroupLineMatcher.start();
-                String measureGroupLine = "["+measureGroupLineStartIdx+"]"+measureGroupLineMatcher.group();
-                if (measureGroupStringList.size()<measureGroupCount)
-                    measureGroupStringList.add(new ArrayList<>());
+            int tabRowCount = 0;   //the number of measure groups on this line
+            while (tabRowLineMatcher.find()) {
+                tabRowCount++;
+                int tabRowLineStartIdx = lineStartIdx + tabRowLineMatcher.start();
+                String tabRowLine = "["+tabRowLineStartIdx+"]"+tabRowLineMatcher.group();
+                if (tabRowStringList.size()<tabRowCount)
+                    tabRowStringList.add(new ArrayList<>());
 
-                List<String> measureGroupLines = measureGroupStringList.get(measureGroupCount-1);    //-1 cuz of zero indexing.
-                measureGroupLines.add(measureGroupLine);
+                List<String> tabRowLines = tabRowStringList.get(tabRowCount-1);    //-1 cuz of zero indexing.
+                tabRowLines.add(tabRowLine);
             }
         }
-        for (List<String> measureGroupString : measureGroupStringList) {
-            measureGroupList.add(new TabRow(measureGroupString));
+        for (List<String> tabRowString : tabRowStringList) {
+            tabRowList.add(new TabRow(tabRowString));
         }
-        return measureGroupList;
-    }
-
-    /**
-     * Separates the provided String representation of a TabSection into Instructions, and a TabRow collection (of one?)
-     * @param origin the String representation of a MeasureCollection from which the instructions, comments, and the
-     *              TabRow collection are extracted
-     * Each String stored in instructionList and tabRowList begins with a tag
-     * (i.e "[startIdx]stringContent" ) specifying the start index of the String in Score.tabText
-     */
-    private void createMeasureGroupAndInstructionList(String origin) {
-
-        List<Range> identifiedComponents = new ArrayList<>();       //to prevent the same thing being identified as two different components (e.g being identified as both a comment and an instruction)
-
-        Range tabRowRange = null;
-        // Extract the measure group collection and create the list of MeasureGroup objects with it
-        Matcher matcher = Pattern.compile("((^|\\n)"+validLinePattern()+")+").matcher(origin);
-        if (matcher.find()) { // we don't use while loop because we are guaranteed that there is going to be just one of this pattern
-            this.tabRowList = createTabRowList("[" + (this.position + matcher.start()) + "]" + matcher.group());
-            //identifiedComponents.add(new Range(matcher.start(), matcher.end()));
-            tabRowRange = new Range(matcher.start(), matcher.end());
-        }
-
-        // Extract instructions
-        matcher = Pattern.compile("((^|\\n)"+ Instruction.LINE_PATTERN+")+").matcher(origin);
-        while(matcher.find()) {
-            //first make sure that what was identified as one thing is not being identified as a different thing.
-            Range instructionLineRange = new Range(matcher.start(), matcher.end());
-//            boolean continueWhileLoop = false;
-//            boolean isTopInstruction = true;
-//            for (Range range : identifiedComponents) {
-//                if (range.overlaps(instructionLineRange)) {
-//                    continueWhileLoop = true;
-//                    break;
-//                }
-//                if (range.getEnd()<=instructionLineRange.getStart())
-//                    isTopInstruction = false;
-//            }
-//            if (continueWhileLoop) continue;
-            boolean isTopInstruction = false;
-            if (instructionLineRange.compareTo(tabRowRange) < 0) isTopInstruction = true;
-            if (isTopInstruction)
-                this.instructionList.addAll(Instruction.from(matcher.group(), this.position+matcher.start(), Instruction.TOP));
-            else
-                this.instructionList.addAll(Instruction.from(matcher.group(), this.position+matcher.start(), Instruction.BOTTOM));
-            identifiedComponents.add(new Range(matcher.start(), matcher.end()));
-        }
+        return tabRowList;
     }
 
     private static String validLinePattern() {

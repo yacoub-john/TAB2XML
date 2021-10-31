@@ -140,7 +140,7 @@ public abstract class TabMeasure implements ScoreComponent {
 			    int nextChordDistance = nextChord.get(0).distance;
 			
 			    int duration = nextChordDistance-currentChordDistance;
-			    duration = adjustDurationForDoubleCharacterNotes(duration, chord, nextChord);
+			    duration = adjustDurationForSpecialCases(duration, chord, nextChord);
 			    
 			
 			    for (Note note : chord) {
@@ -153,7 +153,7 @@ public abstract class TabMeasure implements ScoreComponent {
 			    int currentChordDistance = chord.get(0).distance;
 			
 			    int duration = maxMeasureLineLen-currentChordDistance;
-			    duration = adjustDurationForDoubleCharacterNotes(duration, chord, null);
+			    duration = adjustDurationForSpecialCases(duration, chord, null);
 			    
 			    for (Note note : chord) {
 			        note.setDuration(duration);
@@ -162,7 +162,7 @@ public abstract class TabMeasure implements ScoreComponent {
         }
     }
     
-    protected abstract int adjustDurationForDoubleCharacterNotes(int duration, List<Note> chord, List<Note> nextChord);
+    protected abstract int adjustDurationForSpecialCases(int duration, List<Note> chord, List<Note> nextChord);
     
 	protected boolean isDoubleDigit(List<Note> chord) {
     	boolean doubleDigit = false;
@@ -226,7 +226,7 @@ public abstract class TabMeasure implements ScoreComponent {
         usefulMeasureLength = adjustDivisionsForDoubleCharacterNotes(usefulMeasureLength); 
         int divisor = beatCount * 4 /beatType;
         divisions = (usefulMeasureLength - (usefulMeasureLength % divisor)) / divisor;
-        //System.out.println(divisions);
+
 //        double minDurationRatio = 0;
 //        for (List<Note> voice : this.voiceSortedNoteList) {
 //            for (Note note : voice) {

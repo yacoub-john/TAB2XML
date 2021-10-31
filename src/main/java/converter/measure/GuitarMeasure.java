@@ -46,7 +46,8 @@ public class GuitarMeasure extends TabMeasure{
 	}
 
 	@Override
-	protected int adjustDurationForDoubleCharacterNotes(int duration, List<Note> chord, List<Note> nextChord) {
+	protected int adjustDurationForSpecialCases(int duration, List<Note> chord, List<Note> nextChord) {
+		// Adjust duration due to double digit fret numbers
 		switch (Settings.getInstance().ddStyle) {
 		case NOTE_ON_FIRST_DIGIT_STRETCH: if (isDoubleDigit(chord)) duration --; break;
 		case NOTE_ON_FIRST_DIGIT_NO_STRETCH: 

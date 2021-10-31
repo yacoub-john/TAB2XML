@@ -1,20 +1,19 @@
 package converter.instruction;
 
-import GUI.Highlighter;
-import converter.TabSection;
-import converter.TabRow;
-import converter.ScoreComponent;
-import converter.measure.TabMeasure;
-import utility.Settings;
-import utility.Patterns;
-import utility.Range;
-import utility.ValidationError;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import converter.ScoreComponent;
+import converter.TabRow;
+import converter.TabSection;
+import converter.measure.TabMeasure;
+import utility.Patterns;
+import utility.Range;
+import utility.Settings;
+import utility.ValidationError;
 
 public class Repeat extends Instruction {
     public static String PATTERN = getPattern();
@@ -44,7 +43,7 @@ public class Repeat extends Instruction {
                 Range tabRowRange = tabRow.getRelativeRange();
                 if (tabRowRange == null) continue;
                 if (!this.getRelativeRange().overlaps(tabRowRange)) continue;
-                // Getting here means we are dealing with a repeat instruction above the tab row
+                // Getting here means we are dealing with at least one repeat instruction above the tab row
                 tabRow.removeRepeatInstruction();
                 for (TabMeasure measure : tabRow.getMeasureList()) {
                     Range measureRange = measure.getRelativeRange();
