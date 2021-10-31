@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 /**
  * A class to extract notes from single notes or combinations of notes
- * e.g. 6h8p6
+ * e.g. 6h8p6, or special types of notes like harmonics or grace notes
  */
 public class NoteFactory {
 	private int stringNumber;
@@ -26,6 +26,7 @@ public class NoteFactory {
     private int distanceFromMeasureStart, position;
     HashMap<String, String> patternPackage;
     Instrument instrument;
+    
     public NoteFactory(int stringNumber, String origin, int position, Instrument instrument, String lineName, int distanceFromMeasureStart) {
         this.origin = origin;
         this.lineName = lineName;
@@ -170,7 +171,7 @@ public class NoteFactory {
         List<Note> noteList = new ArrayList<>();
         if (patternPackage.get("instrument").equalsIgnoreCase("drum")) {
             if (origin.strip().equalsIgnoreCase("x")||origin.strip().equalsIgnoreCase("o"))
-                noteList.add(createDrumNote(origin, position, distanceFromMeasureStart));
+                noteList.add((Note) new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart));
             else if (origin.strip().equalsIgnoreCase("f"))
                 noteList.addAll(createFlam(origin, position, distanceFromMeasureStart));
             else if (origin.strip().equalsIgnoreCase("d"))
@@ -192,13 +193,13 @@ public class NoteFactory {
             noteList.add(fret);
             return noteList;
         }
-        noteList.add(createInvalidNote(origin, position, distanceFromMeasureStart));
+        noteList.add((Note) new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
         return noteList;
     }
 
     private List<Note> createFlam(String origin, int position, int distanceFromMeasureStart) {
-        Note graceNote = createDrumNote(origin, position, distanceFromMeasureStart);
-        Note gracePair = createDrumNote(origin, position, distanceFromMeasureStart);
+        Note graceNote = new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart);
+        Note gracePair = new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart);
         grace(graceNote, gracePair);
         List<Note> notes = new ArrayList<>();
         notes.add(graceNote);
@@ -206,6 +207,7 @@ public class NoteFactory {
         return notes;
     }
 
+    //TODO Implement the second grace note for Drag
     private List<Note> createDrag(String origin, int position, int distanceFromMeasureStart) {
 //        Note note1 = createDrumNote(origin, position, distanceFromMeasureStart);
 //        Note note2 = createDrumNote(origin, position, distanceFromMeasureStart);
@@ -221,14 +223,6 @@ public class NoteFactory {
     	return createFlam(origin, position, distanceFromMeasureStart);
     }
 
-    private Note createDrumNote(String origin, int position, int distanceFromMeasureStart) {
-        return new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart);
-    }
-
-    private Note createInvalidNote(String origin, int position, int distanceFromMeasureStart) {
-        return new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
-    }
-
     private Note createHarmonic(String origin, int position, int distanceFromMeasureStart) {
         Note note;
         if (!origin.matches(HARMONIC)) return null;
@@ -237,7 +231,7 @@ public class NoteFactory {
         fretMatcher.find();
         note = createFret(fretMatcher.group(), position+fretMatcher.start(), distanceFromMeasureStart);
         note.addDecor((noteModel) -> {
-            Technical technical = noteModel.getNotations().getTechnical();
+            Technical technical = getNonNullTechnical(noteModel);
             technical.setHarmonic(new Harmonic(new Natural()));
             return true;
         }, "success");
@@ -265,7 +259,7 @@ public class NoteFactory {
 
         AtomicInteger slideNum = new AtomicInteger();
         note1.addDecor((noteModel) -> {
-            Notations notations = noteModel.getNotations();
+            Notations notations = getNonNullNotations(noteModel);
             Slide slide = new Slide("start");
             slideNum.set(slide.getNumber());
             if (notations.getSlides()==null) notations.setSlides(new ArrayList<>());
@@ -273,7 +267,7 @@ public class NoteFactory {
             return true;
         }, message);
         note2.addDecor((noteModel) -> {
-            Notations notations = noteModel.getNotations();
+            Notations notations = getNonNullNotations(noteModel);
             Slide slide = new Slide("stop", slideNum.get());
             if (notations.getSlides()==null) notations.setSlides(new ArrayList<>());
             notations.getSlides().add(slide);
@@ -289,7 +283,7 @@ public class NoteFactory {
         note1.addDecor((noteModel) -> {
             if (noteModel.getNotations()==null)
                 noteModel.setNotations(new Notations());
-            Notations notations = noteModel.getNotations();
+            Notations notations = getNonNullNotations(noteModel);
             Slur slur = new Slur("start");
             slurNum.set(slur.getNumber());
             if (notations.getSlurs()==null) notations.setSlurs(new ArrayList<>());
@@ -299,7 +293,7 @@ public class NoteFactory {
         note2.addDecor((noteModel) -> {
             if (noteModel.getNotations()==null)
                 noteModel.setNotations(new Notations());
-            Notations notations = noteModel.getNotations();
+            Notations notations = getNonNullNotations(noteModel);
             Slur slur = new Slur("stop", slurNum.get());
             if (notations.getSlurs()==null) notations.setSlurs(new ArrayList<>());
             notations.getSlurs().add(slur);
@@ -326,7 +320,7 @@ public class NoteFactory {
 
         AtomicInteger hammerOnNum = new AtomicInteger();
         note1.addDecor((noteModel) -> {
-            Technical technical = noteModel.getNotations().getTechnical();
+            Technical technical = getNonNullTechnical(noteModel);
             HammerOn hammerOn = new HammerOn("start");
             hammerOnNum.set(hammerOn.getNumber());
             if (technical.getHammerOns()==null) technical.setHammerOns(new ArrayList<>());
@@ -334,7 +328,7 @@ public class NoteFactory {
             return true;
         }, message);
         note2.addDecor((noteModel) -> {
-            Technical technical = noteModel.getNotations().getTechnical();
+            Technical technical = getNonNullTechnical(noteModel);
             HammerOn hammerOn = new HammerOn("stop", hammerOnNum.get());
             if (technical.getHammerOns()==null) technical.setHammerOns(new ArrayList<>());
             technical.getHammerOns().add(hammerOn);
@@ -363,7 +357,7 @@ public class NoteFactory {
 
         AtomicInteger pullOffNum = new AtomicInteger();
         note1.addDecor((noteModel) -> {
-            Technical technical = noteModel.getNotations().getTechnical();
+            Technical technical = getNonNullTechnical(noteModel);
             PullOff pullOff = new PullOff("start");
             pullOffNum.set(pullOff.getNumber());
             if (technical.getPullOffs()==null) technical.setPullOffs(new ArrayList<>());
@@ -371,7 +365,7 @@ public class NoteFactory {
             return true;
         }, message);
         note2.addDecor((noteModel) -> {
-            Technical technical = noteModel.getNotations().getTechnical();
+            Technical technical = getNonNullTechnical(noteModel);
             PullOff pullOff = new PullOff("stop", pullOffNum.get());
             if (technical.getPullOffs()==null) technical.setPullOffs(new ArrayList<>());
             technical.getPullOffs().add(pullOff);
@@ -439,6 +433,20 @@ public class NoteFactory {
         return true;
     }
 
+    private Technical getNonNullTechnical(models.measure.note.Note noteModel) {
+    	if (noteModel.getNotations() == null) noteModel.setNotations(new Notations());
+	    Notations notations = noteModel.getNotations();
+	    if (notations.getTechnical() == null) notations.setTechnical(new Technical());
+	    Technical technical = notations.getTechnical();
+	    return technical;
+    }
+    
+    private Notations getNonNullNotations(models.measure.note.Note noteModel) {
+    	if (noteModel.getNotations() == null) noteModel.setNotations(new Notations());
+	    Notations notations = noteModel.getNotations();
+	    return notations;
+    }
+    
     public interface NoteDecor {
         boolean applyTo(models.measure.note.Note noteModel);
     }

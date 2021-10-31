@@ -131,7 +131,9 @@ public class GuitarNote extends Note {
 	    
 	    noteModel.setPitch(new Pitch(this.step, this.alter, this.octave));
 
+	    if (noteModel.getNotations() == null) noteModel.setNotations(new Notations());
 	    Notations notations = noteModel.getNotations();
+	    if (notations.getTechnical() == null) notations.setTechnical(new Technical());
 	    Technical technical = notations.getTechnical();
  	    
 	    technical.setString(this.stringNumber);

@@ -121,9 +121,7 @@ public class Note {
         return notehead;
     }
 
-    // Guaranteed to not return null
     public Notations getNotations() {
-    	if (notations == null) notations = new Notations();
         return notations;
     }
 

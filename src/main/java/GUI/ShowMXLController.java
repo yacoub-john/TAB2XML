@@ -91,9 +91,9 @@ public class ShowMXLController extends Application {
 		mvc.saveMXLButtonHandle();
 	}
 
+		//TODO add go to line button
 	@FXML
 	private void handleGotoMeasure() {
-		//TODO Must rewrite
 		int measureNumber = Integer.parseInt(gotoMeasureField.getText() );
 		if (!goToMeasure(measureNumber)) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);

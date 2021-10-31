@@ -59,6 +59,7 @@ public class TabRow implements ScoreComponent {
     public void removeRepeatInstruction() {
 		lines.remove(0);
 		positions.remove(0);
+		TabMeasure.MEASURE_INDEX -= tabMeasures.size();
 		tabMeasures = createTabMeasureList(lines, positions);
 	}
 

@@ -43,10 +43,11 @@ public class DrumNote extends Note{
     @Override
     public models.measure.note.Note getModel(){ 
     	models.measure.note.Note noteModel = super.getModel();
+    	System.out.println("123");
         noteModel.setUnpitched(new Unpitched(drumPieceInfo.getStep(), drumPieceInfo.getOctave()));
         noteModel.setInstrument(new models.measure.note.Instrument(this.drumPieceInfo.getMidiID()));
         //TODO Should test better for bass drum here
-        noteModel.setStem(this.lineName.strip().equalsIgnoreCase("BD") ? "down" : "up");
+        noteModel.setStem(drumPiece == DrumPiece.Bass_Drum_1 ? "down" : "up");
         String noteHead = this.origin.strip();
         if ((noteHead.equalsIgnoreCase("x")) || ((noteHead.equalsIgnoreCase("o") && drumPiece == DrumPiece.Open_Hi_Hat)))
             noteModel.setNotehead("x");

@@ -8,7 +8,12 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Technical {
-    int string;
+    
+	public Technical() {
+		
+	}
+
+	int string;
     int fret;
 
     @JacksonXmlElementWrapper(useWrapping = false)
