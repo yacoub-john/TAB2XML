@@ -120,8 +120,8 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     public String getType() {
     	int RESOLUTION = 192;
     	int factor = RESOLUTION / (divisions * 4);
-    	if (RESOLUTION % (divisions * 4) != 0)
-    		System.out.println("Assumption wrong about divisions: " + divisions);
+//    	if (RESOLUTION % (divisions * 4) != 0)
+//    		System.out.println("Assumption wrong about divisions: " + divisions);
     	int noteVal = factor * duration;
     	switch (noteVal) { 
     	case 0: return ""; // Grace note

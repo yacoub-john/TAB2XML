@@ -1,6 +1,7 @@
 package converter.measure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +40,10 @@ public abstract class TabMeasure implements ScoreComponent {
     public boolean changesTimeSignature = false;
     protected int divisions;
     protected boolean split1 = false;
+    protected boolean nonIntegerDivisions = false;
+    protected boolean unSupportedDivisions = false;
+    protected int[] supportedDivisions = {1,2,3,4,6,8,12,16,24,48};
+    
 
     public TabMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasureInGroup) {
         this.measureCount = ++MEASURE_INDEX;
@@ -100,6 +105,9 @@ public abstract class TabMeasure implements ScoreComponent {
 			    duration = adjustDurationForSpecialCases(duration, chord, nextChord);
 			    
 			    for (Note note : chord) {
+			    	// For beatType 2, we double duration and divisions to avoid
+			    	// having divisions be a .5
+			    	if (beatType == 2) duration = duration * 2;
 			        note.setDuration(duration);
 			    }
 			}
@@ -112,6 +120,9 @@ public abstract class TabMeasure implements ScoreComponent {
 			    duration = adjustDurationForSpecialCases(duration, chord, null);
 			    
 			    for (Note note : chord) {
+			    	// For beatType 2, we double duration and divisions to avoid
+			    	// having divisions be a .5
+			    	if (beatType == 2) duration = duration * 2;
 			        note.setDuration(duration);
 			    }
 			}
@@ -157,8 +168,22 @@ public abstract class TabMeasure implements ScoreComponent {
         int usefulMeasureLength = measureLength - firstNotePosition;
         // Must subtract for double digit numbers
         usefulMeasureLength = adjustDivisionsForDoubleCharacterNotes(usefulMeasureLength); 
-        int divisor = beatCount * 4 / beatType;
-        divisions = (usefulMeasureLength - (usefulMeasureLength % divisor)) / divisor;
+        // For beatType 2, we double duration and divisions to avoid
+    	// having divisions be a .5
+        int beatTypeFactor = beatType == 2 ? 2 : 1;
+        //int divisor = beatCount * 4 / beatType;
+        //divisions = (usefulMeasureLength - (usefulMeasureLength % divisor)) / divisor;
+        
+        divisions = usefulMeasureLength * beatType * beatTypeFactor / (beatCount * 4);
+        if (usefulMeasureLength * beatType * beatTypeFactor % (beatCount * 4) > 0) {
+        	System.out.println("Measure " + measureCount + ": Length of measure not good for divisions");
+        	nonIntegerDivisions = true;
+        }
+        if (!Arrays.stream(supportedDivisions).anyMatch(i -> i == divisions)) {
+        	System.out.println("Measure " + measureCount + ": Unsupported divisions: " + divisions);
+        	unSupportedDivisions = true;
+        }
+        //if (ArrayUtils.contains(supportedDivisions, divisions) )
         for (List<Note> voice : this.voiceSortedNoteList) {
             for (Note note : voice) {
                 note.setDivisions(this.divisions);
@@ -194,14 +219,14 @@ public abstract class TabMeasure implements ScoreComponent {
 						newVoice.add(n);
 					}
 					totalDuration += note1dur + note2dur;
-					System.out.println("T"+totalDuration);
+					//System.out.println("T"+totalDuration);
 				}
 				else {
 					if ((chord.get(0).mustSplit) && (chord.get(0).duration <= 1)){
 						split1 = true;
 					}
 				totalDuration += chord.get(0).duration;
-				System.out.println("T"+totalDuration);
+				//System.out.println("T"+totalDuration);
 				for (Note n : chord) {
 					n.mustSplit = false;
 					newVoice.add(n);
@@ -417,9 +442,27 @@ public abstract class TabMeasure implements ScoreComponent {
 	        lineSizeEqual &= (previousLineLength<0) || previousLineLength==currentLineLength;
 	        previousLineLength = currentLineLength;
 	    }
+	    if (nonIntegerDivisions) {
+	        ValidationError error = new ValidationError(
+	                "Could not determine timing correctly: Non integer divisions",
+	                1,
+	                this.getLinePositions()
+	        );
+	        if (ERROR_SENSITIVITY>=error.getPriority())
+	            result.add(error);
+	    }
 	    if (split1) {
 	        ValidationError error = new ValidationError(
-	                "Could not determine timing correctly",
+	                "Could not determine timing correctly: Had to split a duration of 1",
+	                1,
+	                this.getLinePositions()
+	        );
+	        if (ERROR_SENSITIVITY>=error.getPriority())
+	            result.add(error);
+	    }
+	    if (unSupportedDivisions) {
+	        ValidationError error = new ValidationError(
+	                "Could not determine timing correctly: Unsupported divisions",
 	                1,
 	                this.getLinePositions()
 	        );
