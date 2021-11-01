@@ -13,7 +13,17 @@ public class InvalidNote extends Note {
         super(stringNumber, origin, position, lineName, distanceFromMeasureStart);
     }
 
+    public InvalidNote(InvalidNote n) {
+        super(n);
+    }
+    
     @Override
+	public Note copy() {
+		// TODO Auto-generated method stub
+		return new InvalidNote(this);
+	}
+
+	@Override
     public models.measure.note.Note getModel() {
         return null;
     }
@@ -22,7 +32,7 @@ public class InvalidNote extends Note {
         List<ValidationError> result = new ArrayList<>();
 
         ValidationError error = new ValidationError(
-                "This annotation is either unsupported or invalid.",
+                "Unrecognized text, will be ignored.",
                 1,
                 new ArrayList<>(Collections.singleton(new Integer[]{
                         this.position,

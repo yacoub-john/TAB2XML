@@ -10,10 +10,7 @@ import converter.Instrument;
 import converter.ScoreComponent;
 import models.measure.note.Chord;
 import models.measure.note.Dot;
-import models.measure.note.Pitch;
 import models.measure.note.TimeModification;
-import models.measure.note.notations.Notations;
-import models.measure.note.notations.technical.Technical;
 import utility.Patterns;
 import utility.Settings;
 import utility.ValidationError;
@@ -33,11 +30,12 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     public int voice;
     public boolean isGrace;
     public static boolean SLASHED_GRACE = true;
-    protected Map<NoteFactory.NoteDecor, String> noteDecorMap = new LinkedHashMap<>();
-    int divisions;
+    protected Map<NoteDecorator, String> noteDecorMap = new LinkedHashMap<>();
+    int divisions = 0;
     int beatType;
     int beatCount;
     boolean isTriplet;
+    public boolean mustSplit;
     
 
 
@@ -59,7 +57,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         this.origin = origin;
         this.lineName = lineName;
         this.position = position;
-        this.stringNumber = stringNumber; //this.convertNameToNumber(this.lineName);
+        this.stringNumber = stringNumber;
         this.duration = 1;
         this.distance = distanceFromMeasureStart;
         this.voice = 1;
@@ -69,8 +67,32 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         this.voice = voice;
     }
     
+    public Note(Note n) {
+        this.startsWithPreviousNote = n.startsWithPreviousNote;
+        this.origin = n.origin;
+        this.lineName = n.lineName;
+        //public int dotCount;
+        this.instrument = n.instrument;
+        this.stringNumber = n.stringNumber;
+        //public int distance;
+        //int position;
+        //public int duration;
+        //public double durationRatio;
+        this.sign = n.sign;
+        this.voice = n.voice;
+        this.isGrace = n.isGrace;
+        //TODO Look into this, probably must copy decorations
+        noteDecorMap = new LinkedHashMap<>();
+        this.divisions = n.divisions;
+        this.beatType = n.beatType;
+        this.beatCount = n.beatCount;
+        //boolean isTriplet;
+        this.mustSplit = n.mustSplit;
+    }
+    
     public void setDivisions(int divisions) {
     	this.divisions = divisions;
+    	if (getType().equals("1024th")) this.mustSplit = true;
     }
     
     public void setBeatType(int bt) {
@@ -83,9 +105,14 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     
     public void setDuration(int duration) {
         this.duration = duration;
+        if (divisions > 0) 
+        	if (getType().equals("1024th")) 
+        		this.mustSplit = true;
+        	else
+        		this.mustSplit = false;
     }
 
-    public boolean addDecor(NoteFactory.NoteDecor noteDecor, String message) {
+    public boolean addDecorator(NoteDecorator noteDecor, String message) {
         this.noteDecorMap.put(noteDecor, message);
         return true;
     }
@@ -96,59 +123,43 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     	if (RESOLUTION % (divisions * 4) != 0)
     		System.out.println("Assumption wrong about divisions: " + divisions);
     	int noteVal = factor * duration;
-    	switch (noteVal) {
+    	switch (noteVal) { 
+    	case 0: return ""; // Grace note
     	case 3: return "64th";
     	case 4: isTriplet = true; return "32nd";
     	case 6: return "32nd";
     	case 8: isTriplet = true; return "16th";
+    	case 9: dotCount = 1; return "32nd";
     	case 12: return "16th";
     	case 16: isTriplet = true; return "eighth";
+    	case 18: dotCount = 1; return "16th";
+    	case 21: dotCount = 2; return "16th";
     	case 24: return "eighth";
     	case 32: isTriplet = true; return "quarter";
     	case 36: dotCount = 1; return "eighth";
+    	case 42: dotCount = 2; return "eighth";
+    	case 45: dotCount = 3; return "eighth";
     	case 48: return "quarter";
     	case 64: isTriplet = true; return "half";
     	case 72: dotCount = 1; return "quarter";
+    	case 84: dotCount = 2; return "quarter";
+    	case 90: dotCount = 3; return "quarter";
+    	case 93: dotCount = 4; return "quarter";
     	case 96: return "half";
     	case 128: isTriplet = true; return "whole";
     	case 144: dotCount = 1; return "half"; // 3 quarters
+    	case 168: dotCount = 2; return "half";
+    	case 180: dotCount = 3; return "half";
+    	case 186: dotCount = 4; return "half";
+    	case 189: dotCount = 5; return "half";
     	case 192: return "whole";
+    	case 288: dotCount = 1; return "whole"; 
+    	case 336: dotCount = 2; return "whole";
+    	case 360: dotCount = 3; return "whole";
+    	case 372: dotCount = 4; return "whole";
+    	case 378: dotCount = 6; return "whole";
+    	default: return "1024th";
     	}
-    	if (noteVal == 48)
-    		{
-    		dotCount = 1;
-    		return "half";
-    		}
-        
-        if (noteVal>=1024)
-            return "1024th";
-        else if (noteVal>=512)
-            return "512th";
-        else if (noteVal>=256)
-            return "256th";
-        else if (noteVal>=128)
-            return "128th";
-        else if (noteVal>=64)
-            return "64th";
-        else if (noteVal>=32)
-            return "32nd";
-        else if (noteVal>=16)
-            return "16th";
-        else if (noteVal>=8)
-            return "eighth";
-        else if (noteVal>=4)
-            return "quarter";
-        else if (noteVal>=2)
-            return "half";
-        else if (noteVal>=1)
-            return "whole";
-        else if (noteVal>=0.5)
-            return "breve";
-        else if (noteVal>=0.25)
-            return "long";
-        else if (noteVal>=0.125)
-            return "maxima";
-        return "";
     }
 
     public boolean isGuitar() {
@@ -187,7 +198,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
  	    if (!dots.isEmpty())
  	        noteModel.setDots(dots);
 
- 	    for (NoteFactory.NoteDecor noteDecor : this.noteDecorMap.keySet()) {
+ 	    for (NoteDecorator noteDecor : this.noteDecorMap.keySet()) {
  	        if (noteDecorMap.get(noteDecor).equals("success"))
  	            noteDecor.applyTo(noteModel);
  	    }
@@ -195,6 +206,8 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
  	    return noteModel;
     }
 	
+    public abstract Note copy();
+    
 	public List<ValidationError> validate() {
 	    List<ValidationError> result = new ArrayList<>();
 	    if (!this.origin.equals(this.origin.strip())) {

@@ -406,12 +406,6 @@ public class TabRow implements ScoreComponent {
         return divisions;
     }
 
-//    public void setDurations() {
-//        for (TabMeasure measure : this.tabMeasures) {
-//            measure.setDurations();
-//        }
-//    }
-
     public List<TabMeasure> getMeasureList() {
         return this.tabMeasures;
     }

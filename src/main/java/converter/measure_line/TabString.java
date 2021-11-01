@@ -54,6 +54,14 @@ public abstract class TabString implements ScoreComponent {
         return noteList;
     }
 
+    
+	/**
+	 * Generates a list of notes of any type (guitar, bass, drums)
+	 * @param stringNumber
+	 * @param line
+	 * @param position
+	 * @return the list of Note objects
+	 */
 	protected List<Note> createNoteList(int stringNumber, String line, int position) {
 		List<Note> noteList = new ArrayList<>();
 		Matcher noteMatcher = Pattern.compile(Note.PATTERN).matcher(line);
@@ -68,11 +76,6 @@ public abstract class TabString implements ScoreComponent {
 		}
 		return noteList;
 	}
-
-//    public List<Note> from(int stringNumber, String origin, int position, Instrument instrument, String lineName, int distanceFromMeasureStart) {
-//        NoteFactory nf = new NoteFactory(stringNumber, origin, position, instrument, lineName, distanceFromMeasureStart);
-//        return nf.getNotes();
-//    }
     
     public boolean isGuitar(boolean strictCheck) {
     	boolean x = GuitarUtils.getValidGuitarNames().contains(this.name.strip());

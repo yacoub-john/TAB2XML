@@ -29,13 +29,13 @@ public class GuitarNote extends Note {
     protected String step;
     protected int alter;
     protected int octave;
-    private String noteDetails;
+    protected int fret;
+	private String noteDetails;
 
     private static String getGracePattern() {
         return "(g"+ FRET_PATTERN +"[hp]"+ FRET_PATTERN +")";
     }
 
-    protected int fret;
     public GuitarNote(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart) {
         super(stringNumber, origin, position, lineName, distanceFromMeasureStart);
         this.instrument = Instrument.GUITAR;
@@ -49,6 +49,15 @@ public class GuitarNote extends Note {
         this.stringNumber = stringNumber;
     }
 
+    public GuitarNote(GuitarNote n) {
+    	super(n);
+        this.step = n.step;
+        this.alter = n.alter;
+        this.octave = n.octave;
+        this.fret = n.fret;
+    	this.noteDetails = n.noteDetails;
+    }
+    
     public int getFret() {
         return this.fret;
     }
@@ -124,6 +133,11 @@ public class GuitarNote extends Note {
         return Integer.parseInt(lineOctaveMatcher.group());
     }
 
+	@Override
+	public Note copy() {
+		return new GuitarNote(this);
+	}
+	
     @Override
 	public models.measure.note.Note getModel() {
     	
@@ -148,7 +162,7 @@ public class GuitarNote extends Note {
 	    List<ValidationError> result = new ArrayList<>(super.validate());
 	    int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 	
-	    for (NoteFactory.NoteDecor noteDecor : this.noteDecorMap.keySet()) {
+	    for (NoteDecorator noteDecor : this.noteDecorMap.keySet()) {
 	        String resp = noteDecorMap.get(noteDecor);
 	        if (resp.equals("success")) continue;
 	        Matcher matcher = Pattern.compile("(?<=^\\[)[0-9](?=\\])").matcher(resp);

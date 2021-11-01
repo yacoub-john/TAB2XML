@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import converter.measure.TabMeasure;
 import converter.measure_line.TabDrumString;
+import converter.note.Note;
 import custom_exceptions.InvalidScoreTypeException;
 import custom_exceptions.MixedScoreTypeException;
 import custom_exceptions.TXMLException;
@@ -32,6 +33,7 @@ public class Score implements ScoreComponent {
 	private Map<Integer, String> scoreTextFragments;
 	private List<TabSection> tabSectionList;
     public static int CRITICAL_ERROR_CUTOFF = 1;
+    private List<TabMeasure> measures;
 
     public Score(String textInput) {
     	TabMeasure.MEASURE_INDEX = 0;
@@ -41,11 +43,23 @@ public class Score implements ScoreComponent {
     	tabText = textInput;
         scoreTextFragments = getScoreTextFragments(tabText);
         tabSectionList = createTabSectionList(scoreTextFragments);
+        measures = getMeasureList();
         applyTimeSignatureUntilNextChange();
         setDivisions();
+        createTiedNotes();
     }
 
-    public String detectedInstrument() {
+    private void createTiedNotes() {
+    	boolean noSplit = false;
+    	while (!noSplit) {
+    		noSplit = true;
+			for (TabMeasure m: measures) {	
+				if (m.createTiedNotes()) noSplit = false;
+			}
+    	}
+	}
+
+	public String detectedInstrument() {
     	String inst = "None";
 		if (isGuitar(false)) inst = "Guitar";
 		if (isBass(false)) inst = "Bass";
@@ -108,6 +122,7 @@ public class Score implements ScoreComponent {
         return tabSectionList;
     }
 
+    //TODO Update to use the attribute measures
     private void applyTimeSignatureUntilNextChange() {
 	    int currBeatCount = Settings.getInstance().tsNum;
 	    int currBeatType = Settings.getInstance().tsDen;
@@ -125,13 +140,12 @@ public class Score implements ScoreComponent {
 	    }
 	}
 
-	public int setDivisions() {
+  //TODO Update to use the attribute measures
+	public void setDivisions() {
 	    int divisions = 0;
-	    for (TabSection msurCollection : this.tabSectionList) {
-	        divisions = Math.max(divisions,  msurCollection.setDivisions());
+	    for (TabSection tabSection : this.tabSectionList) {
+	        divisions = Math.max(divisions,  tabSection.setDivisions());
 	    }
-	
-	    return divisions;
 	}
 
     public TabMeasure getMeasure(int measureCount) {
@@ -151,9 +165,9 @@ public class Score implements ScoreComponent {
 
     public List<TabMeasure> getMeasureList() {
         List<TabMeasure> measureList = new ArrayList<>();
-        for (TabSection mCol : this.tabSectionList) {
-            for (TabRow mGroup : mCol.getTabRowList()) {
-                measureList.addAll(mGroup.getMeasureList());
+        for (TabSection tabSection : this.tabSectionList) {
+            for (TabRow tabRow : tabSection.getTabRowList()) {
+                measureList.addAll(tabRow.getMeasureList());
             }
         }
         return measureList;
@@ -206,7 +220,7 @@ public class Score implements ScoreComponent {
         scoreParts.add(new ScorePart("P1", "Bass"));
         return new PartList(scoreParts);
     }
-
+  //TODO Update to use the attribute measures
     public boolean isGuitar(boolean strictCheck) {
         if (!strictCheck && Settings.getInstance().instrument != Instrument.AUTO) {
             return Settings.getInstance().instrument == Instrument.GUITAR;

@@ -9,7 +9,7 @@ import models.measure.note.notations.technical.Technical;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder({"slur", "slide", "technical"})
+@JsonPropertyOrder({"tied", "slur", "slide", "technical"})
 public class Notations {
     Technical technical;
 
@@ -20,6 +20,8 @@ public class Notations {
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "slide")
     List<Slide> slides;
+    
+    private Tied tied;
 
     public List<Slur> getSlurs() {
         return slurs;
@@ -44,4 +46,12 @@ public class Notations {
     public void setTechnical(Technical technical) {
         this.technical = technical;
     }
+
+	public Tied getTied() {
+		return tied;
+	}
+
+	public void setTied(Tied tied) {
+		this.tied = tied;
+	}
 }

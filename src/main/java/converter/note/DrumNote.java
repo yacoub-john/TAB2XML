@@ -35,9 +35,11 @@ public class DrumNote extends Note{
         drumPieceInfo = DrumUtils.drumSet.get(drumPiece);
     }
 
-    @Override
-    public void setDuration(int duration) {
-            this.duration = duration;
+    public DrumNote(DrumNote n)
+    {
+    	super(n);
+    	this.drumPiece = n.drumPiece;
+    	this.drumPieceInfo = n.drumPieceInfo;
     }
 
     @Override
@@ -57,7 +59,7 @@ public class DrumNote extends Note{
         List<ValidationError> result = new ArrayList<>(super.validate());
         int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
-        for (NoteFactory.NoteDecor noteDecor : this.noteDecorMap.keySet()) {
+        for (NoteDecorator noteDecor : this.noteDecorMap.keySet()) {
             String resp = noteDecorMap.get(noteDecor);
             if (resp.equals("success")) continue;
             Matcher matcher = Pattern.compile("(?<=^\\[)[0-9](?=\\])").matcher(resp);
@@ -90,5 +92,10 @@ public class DrumNote extends Note{
 
         return result;
     }
+
+	@Override
+	public Note copy() {
+		return new DrumNote(this);
+	}
 
 }

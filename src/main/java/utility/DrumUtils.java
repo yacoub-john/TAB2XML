@@ -46,6 +46,12 @@ public static void createDrumSet() {
 		List<String> floorTomNames = new ArrayList<String>(Arrays.asList("F","FT"));
 		DrumPieceInfo floorTom = new DrumPieceInfo(floorTomNames, "P1-I44", "High Floor Tom", "A", 4);
 		
+		List<String> lowFloorTomNames = new ArrayList<String>(Arrays.asList("f","ft"));
+		DrumPieceInfo lowFloorTom = new DrumPieceInfo(lowFloorTomNames, "P1-I42", "Low Floor Tom", "G", 4);
+		
+		List<String> pedalHiHatNames = new ArrayList<String>(Arrays.asList("PH","Hf"));
+		DrumPieceInfo pedalHiHat = new DrumPieceInfo(pedalHiHatNames, "P1-I45", "Pedal Hi-Hat", "D", 4);
+		
 		drumSet.put(DrumPiece.Bass_Drum_1, kick);
 		drumSet.put(DrumPiece.Snare, snare);
 		drumSet.put(DrumPiece.Open_Hi_Hat, openHiHat);
@@ -55,7 +61,8 @@ public static void createDrumSet() {
 		drumSet.put(DrumPiece.Low_Mid_Tom, highTom);
 		drumSet.put(DrumPiece.Low_Tom, midTom);
 		drumSet.put(DrumPiece.High_Floor_Tom, floorTom);
-		
+		drumSet.put(DrumPiece.Low_Floor_Tom, lowFloorTom);
+		drumSet.put(DrumPiece.Pedal_Hi_Hat, pedalHiHat);
 	}
 
 	public static void createDrumNickNames() {
@@ -68,6 +75,8 @@ public static void createDrumSet() {
 		List<String> highTomNames = new ArrayList<String>(Arrays.asList("T","HT"));
 		List<String> midTomNames = new ArrayList<String>(Arrays.asList("t","MT"));
 		List<String> floorTomNames = new ArrayList<String>(Arrays.asList("F","FT"));
+		List<String> lowFloorTomNames = new ArrayList<String>(Arrays.asList("f","ft"));
+		List<String> pedalHiHatNames = new ArrayList<String>(Arrays.asList("PH","Hf"));
 
 		for (String s: kickNames) drumNickNames.put(s, DrumPiece.Bass_Drum_1);
 		for (String s: snareNames) drumNickNames.put(s, DrumPiece.Snare);
@@ -77,6 +86,8 @@ public static void createDrumSet() {
 		for (String s: highTomNames) drumNickNames.put(s, DrumPiece.Low_Mid_Tom);
 		for (String s: midTomNames) drumNickNames.put(s, DrumPiece.Low_Tom);
 		for (String s: floorTomNames) drumNickNames.put(s, DrumPiece.High_Floor_Tom);
+		for (String s: lowFloorTomNames) drumNickNames.put(s, DrumPiece.Low_Floor_Tom);
+		for (String s: pedalHiHatNames) drumNickNames.put(s, DrumPiece.Pedal_Hi_Hat);
 		
 	}
 	
