@@ -28,7 +28,7 @@ public class Patterns {
     }
 
     /**
-     * A very general, very vague "inside a measure line" pattern. We want to be as general and vague as possible so that
+     * A very general, very vague "inside a tab row line" pattern. We want to be as general and vague as possible so that
      * we delay catching erroneous user input until we are able to pinpoint where the error is exactly. e.g. if this
      * pattern directly detects a wrong note here, a Note object will never be created. It will just tell the user the
      * measure line where the error is, not the precise note which caused the error.
@@ -56,11 +56,9 @@ public class Patterns {
         pattern.append(Patterns.WHITESPACE+"*");
         pattern.append("(?:(?=-)|(?:"+Patterns.DIVIDER+"+))");
         pattern.append(")");
-
         return pattern.toString();
     }
-
-
+    
     public static String measureNameExtractPattern() {
         StringBuilder pattern = new StringBuilder();
         pattern.append("(?<=^"+Patterns.DIVIDER+"*"+")");
@@ -68,7 +66,6 @@ public class Patterns {
         pattern.append(genericMeasureNamePattern());
         pattern.append(Patterns.WHITESPACE+"*");
         pattern.append("(?="+"-" + "|" +Patterns.DIVIDER+")");  // what's ahead is a dash or a divider
-
         return pattern.toString();
     }
     

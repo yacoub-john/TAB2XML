@@ -7,7 +7,7 @@ import java.util.List;
 import converter.Score;
 import converter.measure_line.TabDrumString;
 import converter.measure_line.TabString;
-import converter.note.Note;
+import converter.note.TabNote;
 import models.measure.Backup;
 import models.measure.attributes.Attributes;
 import models.measure.attributes.Clef;
@@ -33,10 +33,10 @@ public class DrumMeasure extends TabMeasure {
 	}
     
 	@Override
-	protected int adjustDurationForSpecialCases(int duration, List<Note> chord, List<Note> nextChord) {
+	protected int adjustDurationForSpecialCases(int duration, List<TabNote> chord, List<TabNote> nextChord) {
 		// Duration should be 1 for choked cymbals
 		boolean choke = false;
-		for (Note note : chord) {
+		for (TabNote note : chord) {
 			if (note.origin.equals("#")) {
 				choke = true;
 				break;
@@ -76,10 +76,10 @@ public class DrumMeasure extends TabMeasure {
 	    List<models.measure.note.Note> noteBeforeBackupModels = new ArrayList<>();
 	    List<models.measure.note.Note> noteAfterBackupModels = new ArrayList<>();
 	    for (int i=0; i<this.voiceSortedNoteList.size(); i++) {
-	        List<Note> voice = this.voiceSortedNoteList.get(i);
+	        List<TabNote> voice = this.voiceSortedNoteList.get(i);
 	        double backupDuration = 0;
 	        double currentChordDuration = 0;
-	        for (Note note : voice) {
+	        for (TabNote note : voice) {
 	            if (note.voice==1)
 	                noteBeforeBackupModels.add(note.getModel());
 	            if (note.voice==2)
@@ -155,30 +155,26 @@ public class DrumMeasure extends TabMeasure {
 	public List<ValidationError> validate() {
 	
 	    //-----------------Validate yourself-------------------------
-	    List<ValidationError> result = new ArrayList<>(super.validate()); //this validates if all TabString objects in this measure are of the same type
-	    int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-	
+	    super.validate(); //this validates if all TabString objects in this measure are of the same type
+	    
 	    // If we are here, all TabString objects are of the same type. Now, all we need to do is check if they are actually drum measures
 	    if (!(this.tabStringList.get(0) instanceof TabDrumString)) {
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "All measure lines in this measure must be drum measure lines.",
 	                1,
-	                this.getLinePositions()
-	        );
-	        if (ERROR_SENSITIVITY>= error.getPriority())
-	            result.add(error);
+	                this.getRanges());
 	    }
 	    
-	    for (ValidationError error : result) {
+	    for (ValidationError error : errors) {
 	        if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
-	            return result;
+	            return errors;
 	        }
 	    }
 	    //-----------------Validate Aggregates (only if you don't have critical errors)------------------		
 	    for (TabString measureLine : this.tabStringList) {
-	        result.addAll(measureLine.validate());
+	        errors.addAll(measureLine.validate());
 	    }
 	
-	    return result;
+	    return errors;
 	}
 }

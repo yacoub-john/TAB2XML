@@ -77,7 +77,7 @@ public class BassMeasure extends GuitarMeasure {
             ValidationError error = new ValidationError(
                     "All measure lines in a measure must be of the same type (i.e. all guitar measure lines or all drum measure lines)",
                     1,
-                    this.getLinePositions()
+                    this.getRanges()
             );
             if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
@@ -87,8 +87,7 @@ public class BassMeasure extends GuitarMeasure {
             ValidationError error = new ValidationError(
                     "Unequal measure line lengths may lead to incorrect note durations.",
                     2,
-                    this.getLinePositions()
-            );
+                    this.getRanges());
             if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
         }
@@ -99,7 +98,7 @@ public class BassMeasure extends GuitarMeasure {
             ValidationError error = new ValidationError(
                     "All measure lines in this measure must be Bass measure lines.",
                     1,
-                    this.getLinePositions()
+                    this.getRanges()
             );
             if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);
@@ -115,7 +114,7 @@ public class BassMeasure extends GuitarMeasure {
             ValidationError error = new ValidationError(
                     "A Bass measure should have "+rangeMsg+" lines.",
                     2,
-                    this.getLinePositions()
+                    this.getRanges()
             );
             if (ERROR_SENSITIVITY>= error.getPriority())
                 result.add(error);

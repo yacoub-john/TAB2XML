@@ -1,7 +1,7 @@
 package converter.notes;
 
 import converter.Instrument;
-import converter.note.Note;
+import converter.note.TabNote;
 import converter.note.NoteFactory;
 import models.measure.note.notations.Notations;
 import models.measure.note.notations.Slide;

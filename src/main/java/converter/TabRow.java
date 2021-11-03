@@ -19,7 +19,7 @@ import utility.Range;
 import utility.Settings;
 import utility.ValidationError;
 
-public class TabRow implements ScoreComponent {
+public class TabRow extends ScoreComponent {
 
     public List<TabMeasure> tabMeasures;
 	public List<String> lines = new ArrayList<>();
@@ -53,17 +53,6 @@ public class TabRow implements ScoreComponent {
         tabMeasures = createTabMeasureList(lines, positions);
         
     }
-
-
-	public void removeRepeatInstruction() {
-		if (!removedRepeatInstruction) {
-			lines.remove(0);
-			positions.remove(0);
-			TabMeasure.MEASURE_INDEX -= tabMeasures.size();
-			tabMeasures = createTabMeasureList(lines, positions);
-			removedRepeatInstruction = true;
-		}
-	}
 
 
 	/**
@@ -153,7 +142,7 @@ public class TabRow implements ScoreComponent {
      * @return A Measure object which is either of type GuitarMeasure if the measure was understood to be a guitar
      * measure, or of type DrumMeasure if the measure was understood to be of type DrumMeasure
      */
-    public TabMeasure from(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {
+    private TabMeasure from(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {
         boolean repeatStart = checkRepeatStart(lineList);
         boolean repeatEnd = checkRepeatEnd(lineList);
         String repeatCountStr = extractRepeatCount(lineList);
@@ -218,7 +207,18 @@ public class TabRow implements ScoreComponent {
         return measure;
     }
     
-    private TabMeasure detectAndCreateMeasure(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {
+    public void removeRepeatInstruction() {
+		if (!removedRepeatInstruction) {  // Don't want to remove again if there are multiple repeats on the same line
+			lines.remove(0);
+			positions.remove(0);
+			TabMeasure.MEASURE_INDEX -= tabMeasures.size();
+			tabMeasures = createTabMeasureList(lines, positions);
+			removedRepeatInstruction = true;
+		}
+	}
+
+
+	private TabMeasure detectAndCreateMeasure(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {
     	double guitarLikelihood = GuitarUtils.isGuitarMeasureLikelihood(lineList, lineNameList);
         double drumLikelihood = DrumUtils.isDrumMeasureLikelihood(lineList, lineNameList);
         //double bassLikelihood = GuitarUtils.isBassMeasureLikelihood(lineList, lineNameList);
@@ -348,32 +348,29 @@ public class TabRow implements ScoreComponent {
             return null;
     }
 
-	/**
-     * Creates a string representation of the index position range of each line making up this MeasureGroup instance,
-     * where each index position range describes the location where the lines of this MeasureGroup can be found in the
-     * root string from which it was derived (i.e Score.ROOT_STRING)
-     * @return a String representing the index range of each line in this MeasureGroup, formatted as follows:
-     * "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
-     */
-    private List<Integer[]> getLinePositions() {
-        List<Integer[]> linePositions = new ArrayList<>();
-        for (int i=0; i<this.lines.size(); i++) {
-            int startIdx = this.positions.get(i);
-            int endIdx = startIdx+this.lines.get(i).length();
-            linePositions.add(new Integer[]{startIdx, endIdx});
-        }
-        return linePositions;
-    }
+//	public List<models.measure.Measure> getMeasureModels() {
+//        List<models.measure.Measure> measureModels = new ArrayList<>();
+//        for (TabMeasure measure : this.tabMeasures) {
+//            measureModels.add(measure.getModel());
+//        }
+//        return measureModels;
+//    }
 
-    public List<models.measure.Measure> getMeasureModels() {
-        List<models.measure.Measure> measureModels = new ArrayList<>();
-        for (TabMeasure measure : this.tabMeasures) {
-            measureModels.add(measure.getModel());
-        }
-        return measureModels;
-    }
+    //    public int setDivisions() {
+	//        int divisions = 0;
+	//        for (TabMeasure measure : this.tabMeasures) {
+	//            divisions = Math.max(divisions,  measure.setDivisions());
+	//        }
+	//
+	//        return divisions;
+	//    }
+	
+	    public List<TabMeasure> getMeasureList() {
+	        return this.tabMeasures;
+	    }
 
-    public boolean isGuitar(boolean strictCheck) {
+
+	public boolean isGuitar(boolean strictCheck) {
         for (TabMeasure measure : this.tabMeasures) {
             if (!measure.isGuitar(strictCheck))
                 return false;
@@ -397,20 +394,15 @@ public class TabRow implements ScoreComponent {
         return true;
     }
 
-    public int setDivisions() {
-        int divisions = 0;
-        for (TabMeasure measure : this.tabMeasures) {
-            divisions = Math.max(divisions,  measure.setDivisions());
-        }
+//    public int setDivisions() {
+//        int divisions = 0;
+//        for (TabMeasure measure : this.tabMeasures) {
+//            divisions = Math.max(divisions,  measure.setDivisions());
+//        }
+//
+//        return divisions;
+//    }
 
-        return divisions;
-    }
-
-    public List<TabMeasure> getMeasureList() {
-        return this.tabMeasures;
-    }
-
-    
     /**
      * @return the range of the first line of this TabRow, first character is at position 1
      */
@@ -423,6 +415,24 @@ public class TabRow implements ScoreComponent {
     }
 
     /**
+	 * Creates a string representation of the index position range of each line making up this MeasureGroup instance,
+	 * where each index position range describes the location where the lines of this MeasureGroup can be found in the
+	 * root string from which it was derived (i.e Score.ROOT_STRING)
+	 * @return a String representing the index range of each line in this MeasureGroup, formatted as follows:
+	 * "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
+	 */
+	 public List<Range> getRanges() {
+	    List<Range> linePositions = new ArrayList<>();
+	    for (int i=0; i<this.lines.size(); i++) {
+	        int startIdx = this.positions.get(i);
+	        int endIdx = startIdx+this.lines.get(i).length();
+	        linePositions.add(new Range(startIdx, endIdx));
+	    }
+	    return linePositions;
+	}
+
+
+	/**
 	 * Validates if all Measure objects aggregated in this MeasureGroup have the same number of measure lines. It also
 	 * validates that all its aggregate Measure objects are an instance of the same type of Measure class (i.e they're all
 	 * GuitarMeasure objects or all DrumMeasure objects). Finally, it validates all its aggregates i.e all Measure objects
@@ -438,31 +448,28 @@ public class TabRow implements ScoreComponent {
 	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
 	 */
 	public List<ValidationError> validate() {
-	    List<ValidationError> result = new ArrayList<>();
-	    int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-	
+	    
 	    //--------------Validating yourself--------------------------
 	    //making sure all measures in this measure group have the same number of lines
 	    boolean hasEqualMeasureLineCount = true;
-	    List<Integer[]> failPositions = new ArrayList<>();
+	    List<Range> failPositions = new ArrayList<>();
 	    int measureLineCount = 0;
 	    for (TabMeasure measure : this.tabMeasures) {
 	        if (measureLineCount==0)
 	            measureLineCount = measure.lineCount;
 	        else if(measure.lineCount!=measureLineCount) {
 	            hasEqualMeasureLineCount = false;
-	            failPositions.addAll(measure.getLinePositions());
+	            failPositions.addAll(measure.getRanges());
 	        }
 	    }
 	
 	    if (!hasEqualMeasureLineCount) {
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "All measures in a tablature row must have the same number of lines",
 	                2,
 	                failPositions
 	        );
-	        if (ERROR_SENSITIVITY>=error.getPriority())
-	            result.add(error);
+	        
 	    }
 	
 	    boolean hasGuitarMeasures = true;
@@ -472,26 +479,25 @@ public class TabRow implements ScoreComponent {
 	        hasDrumMeasures &= measure instanceof DrumMeasure;
 	    }
 	    if (!(hasGuitarMeasures || hasDrumMeasures)) {
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "All measures in a tablature row must be of the same type (i.e. all guitar measures or all drum measures)",
 	                2,
-	                this.getLinePositions()
+	                this.getRanges()
 	        );
-	        if (ERROR_SENSITIVITY>=error.getPriority())
-	            result.add(error);
+	        
 	    }
 	
 	    //--------------Validate your aggregates (only if you're valid)-------------------
-	    if (!result.isEmpty()) return result;
+	    if (!errors.isEmpty()) return errors;
 	
 	    for (TabMeasure measure : this.tabMeasures) {
-	        result.addAll(measure.validate());
+	        errors.addAll(measure.validate());
 	    }
 	    for (Instruction instruction : this.instructions) {
-	        result.addAll(instruction.validate());
+	        errors.addAll(instruction.validate());
 	    }
 	
-	    return result;
+	    return errors;
 	}
 
 

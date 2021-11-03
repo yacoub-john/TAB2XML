@@ -14,13 +14,13 @@ import converter.measure_line.TabDrumString;
 import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
 import converter.note.DrumNote;
-import converter.note.Note;
+import converter.note.TabNote;
 import converter.note.NoteFactory;
 import utility.Range;
 import utility.Settings;
 import utility.ValidationError;
 
-public abstract class TabMeasure implements ScoreComponent {
+public abstract class TabMeasure extends ScoreComponent {
     public static int MEASURE_INDEX;
     
     protected int measureCount;
@@ -32,7 +32,7 @@ public abstract class TabMeasure implements ScoreComponent {
     List<Integer> positions;
     public List<TabString> tabStringList;
     boolean isFirstMeasureInGroup;
-    List<List<Note>> voiceSortedNoteList;   // a list of voices where each voice is a sorted list of notes
+    List<List<TabNote>> voiceSortedNoteList;   // a list of voices where each voice is a sorted list of notes
 
     boolean repeatStart = false;
     boolean repeatEnd = false;
@@ -90,21 +90,33 @@ public abstract class TabMeasure implements ScoreComponent {
      */
     protected abstract TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position);
     
-    public void setDurations() {
-        for (List<List<Note>> chordList : getVoiceSortedChordList()) {
+    protected void setChords() {
+	    for (List<TabNote> voice : this.voiceSortedNoteList) {
+	        TabNote previousNote = null;
+	        for (TabNote currentNote : voice) {
+	            if (currentNote.isGrace) continue;
+	            if (previousNote != null && previousNote.distance == currentNote.distance)
+	                currentNote.startsWithPreviousNote = true;
+	            previousNote = currentNote;
+	        }
+	    }
+	}
+
+	protected void setDurations() {
+        for (List<List<TabNote>> chordList : getVoiceSortedChordList()) {
             int maxMeasureLineLen = getMaxMeasureLineLength();
 			
 			// Handle all but last chord
 			for (int i = 0; i < chordList.size() - 1; i++) {
-			    List<Note> chord = chordList.get(i);
-			    List<Note> nextChord = chordList.get(i+1);
+			    List<TabNote> chord = chordList.get(i);
+			    List<TabNote> nextChord = chordList.get(i+1);
 			    int currentChordDistance = chord.get(0).distance;
 			    int nextChordDistance = nextChord.get(0).distance;
 			
 			    int duration = nextChordDistance-currentChordDistance;
 			    duration = adjustDurationForSpecialCases(duration, chord, nextChord);
 			    
-			    for (Note note : chord) {
+			    for (TabNote note : chord) {
 			    	// For beatType 2, we double duration and divisions to avoid
 			    	// having divisions be a .5
 			    	if (beatType == 2) duration = duration * 2;
@@ -113,13 +125,13 @@ public abstract class TabMeasure implements ScoreComponent {
 			}
 			// Handle last chord, as it is a special case (it has no next chord)
 			if (!chordList.isEmpty()) {
-			    List<Note> chord = chordList.get(chordList.size()-1);
+			    List<TabNote> chord = chordList.get(chordList.size()-1);
 			    int currentChordDistance = chord.get(0).distance;
 			
 			    int duration = maxMeasureLineLen-currentChordDistance;
 			    duration = adjustDurationForSpecialCases(duration, chord, null);
 			    
-			    for (Note note : chord) {
+			    for (TabNote note : chord) {
 			    	// For beatType 2, we double duration and divisions to avoid
 			    	// having divisions be a .5
 			    	if (beatType == 2) duration = duration * 2;
@@ -129,22 +141,22 @@ public abstract class TabMeasure implements ScoreComponent {
         }
     }
     
-    protected abstract int adjustDurationForSpecialCases(int duration, List<Note> chord, List<Note> nextChord);
+    protected abstract int adjustDurationForSpecialCases(int duration, List<TabNote> chord, List<TabNote> nextChord);
     
-	protected boolean isDoubleDigit(List<Note> chord) {
+	protected boolean isDoubleDigit(List<TabNote> chord) {
     	boolean doubleDigit = false;
-    	for (Note note : chord) {
+    	for (TabNote note : chord) {
 	    	if (note.origin.length() == 2) doubleDigit = true;
 	    }
 		return doubleDigit;
 	}
     
-    public List<List<List<Note>>> getVoiceSortedChordList() {
-        List<List<List<Note>>> voiceSortedChordList = new ArrayList<>();
-        for (List<Note> voice : this.voiceSortedNoteList) {
-            List<List<Note>> voiceChordList = new ArrayList<>();
-            List<Note> currentChord = new ArrayList<>();
-            for (Note note : voice) {
+    public List<List<List<TabNote>>> getVoiceSortedChordList() {
+        List<List<List<TabNote>>> voiceSortedChordList = new ArrayList<>();
+        for (List<TabNote> voice : this.voiceSortedNoteList) {
+            List<List<TabNote>> voiceChordList = new ArrayList<>();
+            List<TabNote> currentChord = new ArrayList<>();
+            for (TabNote note : voice) {
                 if (note.startsWithPreviousNote)
                     currentChord.add(note);
                 else {
@@ -184,38 +196,40 @@ public abstract class TabMeasure implements ScoreComponent {
         	unSupportedDivisions = true;
         }
         //if (ArrayUtils.contains(supportedDivisions, divisions) )
-        for (List<Note> voice : this.voiceSortedNoteList) {
-            for (Note note : voice) {
+        for (List<TabNote> voice : this.voiceSortedNoteList) {
+            for (TabNote note : voice) {
                 note.setDivisions(this.divisions);
             }
         }
         return divisions;
     }
     
-    public boolean createTiedNotes() {
+    protected abstract int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureLength);
+
+	public boolean createTiedNotes() {
     	boolean somethingToSplit = false;
-    	List<List<Note>> newNoteList = new ArrayList<>();
-    	for (List<List<Note>> voice: getVoiceSortedChordList()) {
-    		List<Note> newVoice = new ArrayList<>();
+    	List<List<TabNote>> newNoteList = new ArrayList<>();
+    	for (List<List<TabNote>> voice: getVoiceSortedChordList()) {
+    		List<TabNote> newVoice = new ArrayList<>();
             newNoteList.add(newVoice);
 			int totalDuration = 0;
-			for (List<Note> chord: voice) {
+			for (List<TabNote> chord: voice) {
 				if ((chord.get(0).mustSplit) && (chord.get(0).duration > 1)){
 					somethingToSplit = true;
 					System.out.println(chord.get(0).duration);
 					int note1dur = firstNoteDuration(totalDuration, chord.get(0).duration, getDivisions(), getBeatType());
 					int note2dur = chord.get(0).duration - note1dur;
-					List<Note> newChord = new ArrayList<>();
-					for (Note n : chord) {
+					List<TabNote> newChord = new ArrayList<>();
+					for (TabNote n : chord) {
 						n.setDuration(note1dur);
 						//n.mustSplit = false;
 						newVoice.add(n);
-						Note newNote = n.copy();
+						TabNote newNote = n.copy();
 						newNote.setDuration(note2dur);
 						new NoteFactory().tie(n,newNote);
 						newChord.add(newNote);
 					}
-					for (Note n : newChord) {
+					for (TabNote n : newChord) {
 						newVoice.add(n);
 					}
 					totalDuration += note1dur + note2dur;
@@ -227,7 +241,7 @@ public abstract class TabMeasure implements ScoreComponent {
 					}
 				totalDuration += chord.get(0).duration;
 				//System.out.println("T"+totalDuration);
-				for (Note n : chord) {
+				for (TabNote n : chord) {
 					n.mustSplit = false;
 					newVoice.add(n);
 				}
@@ -256,8 +270,6 @@ public abstract class TabMeasure implements ScoreComponent {
 		return firstNote;
 	}
     
-    protected abstract int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureLength);
-
     public boolean setRepeat(int repeatCount, RepeatType repeatType) {
         if (repeatCount<0)
             return false;
@@ -284,8 +296,8 @@ public abstract class TabMeasure implements ScoreComponent {
             return false;
         this.beatCount = beatCount;
         this.beatType = beatType;
-        for (List<Note> voice : this.voiceSortedNoteList) {
-            for (Note note : voice) {
+        for (List<TabNote> voice : this.voiceSortedNoteList) {
+            for (TabNote note : voice) {
                 note.setBeatType(this.beatType);
                 note.setBeatCount(this.beatCount);
             }
@@ -303,53 +315,24 @@ public abstract class TabMeasure implements ScoreComponent {
 
 
 
-    /**
-     * Creates a string representation of the index position range of each line making up this Measure instance,
-     * where each index position range describes the location where the lines of this Measure can be found in the
-     * root string from which it was derived (i.e Score.ROOT_STRING)
-     * @return a String representing the index range of each line in this Measure, formatted as follows:
-     * "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
-     */
-    public List<Integer[]> getLinePositions() {
-        List<Integer[]> linePositions = new ArrayList<>();
-        for (int i=0; i<this.lines.size(); i++) {
-            int startIdx = this.positions.get(i);
-            int endIdx = startIdx+this.lines.get(i).length();
-            linePositions.add(new Integer[]{startIdx, endIdx});
-        }
-        return linePositions;
-    }
-
-    protected void setChords() {
-        for (List<Note> voice : this.voiceSortedNoteList) {
-            Note previousNote = null;
-            for (Note currentNote : voice) {
-                if (currentNote.isGrace) continue;
-                if (previousNote != null && previousNote.distance == currentNote.distance)
-                    currentNote.startsWithPreviousNote = true;
-                previousNote = currentNote;
-            }
-        }
-    }
-
-    public List<List<Note>> getVoiceSortedNoteList() {
-        List<List<Note>> voiceSortedNoteList = new ArrayList<>();
+    public List<List<TabNote>> getVoiceSortedNoteList() {
+        List<List<TabNote>> voiceSortedNoteList = new ArrayList<>();
         HashMap<Integer, Integer> voiceToIndexMap = new HashMap<>();
         int currentIdx = 0;
-        for (Note note : this.getSortedNoteList()) {
+        for (TabNote note : this.getSortedNoteList()) {
             if (!voiceToIndexMap.containsKey(note.voice)) {
                 voiceToIndexMap.put(note.voice, currentIdx++);
                 voiceSortedNoteList.add(new ArrayList<>());
             }
             int idx = voiceToIndexMap.get(note.voice);
-            List<Note> voice = voiceSortedNoteList.get(idx);
+            List<TabNote> voice = voiceSortedNoteList.get(idx);
             voice.add(note);
         }
         return voiceSortedNoteList;
     }
 
-    public List<Note> getSortedNoteList() {
-        List<Note> sortedNoteList = new ArrayList<>();
+    public List<TabNote> getSortedNoteList() {
+        List<TabNote> sortedNoteList = new ArrayList<>();
         for (TabString tabString : this.tabStringList) {
             sortedNoteList.addAll(tabString.getNoteList());
         }
@@ -412,6 +395,23 @@ public abstract class TabMeasure implements ScoreComponent {
 	    return this.beatType;
 	}
 
+	/**
+	 * Creates a string representation of the index position range of each line making up this Measure instance,
+	 * where each index position range describes the location where the lines of this Measure can be found in the
+	 * root string from which it was derived (i.e Score.ROOT_STRING)
+	 * @return a String representing the index range of each line in this Measure, formatted as follows:
+	 * "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
+	 */
+	public List<Range> getRanges() {
+	    List<Range> linePositions = new ArrayList<>();
+	    for (int i=0; i<this.lines.size(); i++) {
+	        int startIdx = this.positions.get(i);
+	        int endIdx = startIdx+this.lines.get(i).length();
+	        linePositions.add(new Range(startIdx, endIdx));
+	    }
+	    return linePositions;
+	}
+
 	//TODO the concrete methods are way too similar
 	public abstract models.measure.Measure getModel();
 
@@ -426,8 +426,6 @@ public abstract class TabMeasure implements ScoreComponent {
 	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
 	 */
 	public List<ValidationError> validate() {
-	    List<ValidationError> result = new ArrayList<>();
-	    int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 	
 	    boolean hasGuitarMeasureLines = true;
 	    boolean hasDrumMeasureLines = true;
@@ -442,54 +440,35 @@ public abstract class TabMeasure implements ScoreComponent {
 	        lineSizeEqual &= (previousLineLength<0) || previousLineLength==currentLineLength;
 	        previousLineLength = currentLineLength;
 	    }
+	    if (unSupportedDivisions) {
+	        addError(
+	                "Could not determine timing correctly: Unsupported divisions",
+	                1, getRanges());
+	    }
 	    if (nonIntegerDivisions) {
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "Could not determine timing correctly: Non integer divisions",
-	                1,
-	                this.getLinePositions()
-	        );
-	        if (ERROR_SENSITIVITY>=error.getPriority())
-	            result.add(error);
+	                1, getRanges());
 	    }
 	    if (split1) {
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "Could not determine timing correctly: Had to split a duration of 1",
-	                1,
-	                this.getLinePositions()
-	        );
-	        if (ERROR_SENSITIVITY>=error.getPriority())
-	            result.add(error);
+	                1, getRanges());
 	    }
-	    if (unSupportedDivisions) {
-	        ValidationError error = new ValidationError(
-	                "Could not determine timing correctly: Unsupported divisions",
-	                1,
-	                this.getLinePositions()
-	        );
-	        if (ERROR_SENSITIVITY>=error.getPriority())
-	            result.add(error);
-	    }
+	    
 	
 	    if (!(hasGuitarMeasureLines || hasDrumMeasureLines)) {
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "All measure lines in a measure must be of the same type (i.e. all guitar measure lines or all drum measure lines)",
-	                1,
-	                this.getLinePositions()
-	        );
-	        if (ERROR_SENSITIVITY>=error.getPriority())
-	            result.add(error);
+	                1, getRanges());
 	    }
 	
 	    if (!lineSizeEqual) {
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "Unequal measure line lengths may lead to incorrect note durations.",
-	                2,
-	                this.getLinePositions()
-	        );
-	        if (ERROR_SENSITIVITY>=error.getPriority())
-	            result.add(error);
+	                2, getRanges());
 	    }
-	    return result;
+	    return errors;
 	}
 
 	@Override

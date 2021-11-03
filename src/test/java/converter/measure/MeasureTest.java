@@ -1,6 +1,6 @@
 package converter.measure;
 
-import converter.note.Note;
+import converter.note.TabNote;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,10 +37,10 @@ public class MeasureTest {
     @Test
     void getNoteQueueTest() {
         String[] expected = {"35", "2", "34", "6", "85", "7", "9", "6", "5", "0"};
-        List<Note> noteList = this.measureInstance.getSortedNoteList();
+        List<TabNote> noteList = this.measureInstance.getSortedNoteList();
         for (int i=1; i<noteList.size(); i++) {
-            Note previousNote = noteList.get(i-1);
-            Note currentNote = noteList.get(i);
+            TabNote previousNote = noteList.get(i-1);
+            TabNote currentNote = noteList.get(i);
             //if (previousNote.distance==currentNote.distance)
 
                 //assertTrue();

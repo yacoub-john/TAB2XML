@@ -65,7 +65,7 @@ public class NotePlayer {
             DISPLAY_TEXT = "Select a measure to play it.";
         else if (scoreTmp.getTabSectionList().isEmpty())
             DISPLAY_TEXT = "No measure detected in selection.";
-        else if (scoreTmp.isDrum(false) && !(scoreTmp.isGuitar(false)||scoreTmp.isBass(false)))
+        else if (scoreTmp.detectedInstrument().equals("drums"))
             DISPLAY_TEXT = "Only guitar and bass measures can be played.";
         else {
             DISPLAY_TEXT = scoreTmp.toString();
@@ -101,7 +101,7 @@ public class NotePlayer {
     }
 
     public static boolean play(Score score) throws ParserConfigurationException, MidiUnavailableException, URISyntaxException, ParsingException, IOException, InvalidMidiDataException {
-        if (SCORE.isDrum(false) && !(SCORE.isGuitar(false)||SCORE.isBass(false))) return false;
+        if (SCORE.detectedInstrument().equals("drums")) return false;
         MusicXmlParser parser = new MusicXmlParser();
         StaccatoParserListener listener = new StaccatoParserListener();
         parser.addParserListener(listener);

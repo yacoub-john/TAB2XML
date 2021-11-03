@@ -1,7 +1,7 @@
 package converter;
 
 import converter.measure.TabMeasure;
-import converter.note.Note;
+import converter.note.TabNote;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -91,7 +91,7 @@ public class ScoreTest {
             TabMeasure measure = score.getMeasure(1);
             assertTrue(measure.isRepeatEnd());
             assertTrue(measure.isRepeatStart());
-            List<Note> noteList = measure.getSortedNoteList();
+            List<TabNote> noteList = measure.getSortedNoteList();
             assertEquals(3, noteList.size(), "three notes were expected in the following measure, but found " + noteList.size() + "."
                     + "\nMeasure:\n" + inlineRepeatMeasure);
            // Matcher matcher = Pattern.compile("<words[^>]*>[^<0-9]*" + expectedRepeatCount + "[^<0-9]*</words>").matcher(MusicXMLCreator.generateMusicXML(score));
@@ -173,7 +173,7 @@ public class ScoreTest {
                 TabMeasure measure = score.getMeasure(1);
                 assertTrue(measure.isRepeatEnd());
                 assertTrue(measure.isRepeatStart());
-                List<Note> noteList = measure.getSortedNoteList();
+                List<TabNote> noteList = measure.getSortedNoteList();
                 assertEquals(3, noteList.size(), "three notes were expected in the following measure, but found "+noteList.size()+".");
                 //Matcher matcher = Pattern.compile("<words[^>]*>[^<0-9]*"+5+"[^<0-9]*</words>").matcher(MusicXMLCreator.generateMusicXML(score));
                 //assertTrue(matcher.find(), "repeat count not properly detected and applied");

@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import converter.measure.TabMeasure;
 import converter.measure_line.TabDrumString;
-import converter.note.Note;
+import converter.note.TabNote;
 import custom_exceptions.InvalidScoreTypeException;
 import custom_exceptions.MixedScoreTypeException;
 import custom_exceptions.TXMLException;
@@ -24,16 +24,17 @@ import models.part_list.ScorePart;
 import utility.DrumPiece;
 import utility.DrumPieceInfo;
 import utility.DrumUtils;
+import utility.Range;
 import utility.Settings;
 import utility.ValidationError;
 
-public class Score implements ScoreComponent {
+public class Score extends ScoreComponent {
 
 	public static String tabText;
 	private Map<Integer, String> scoreTextFragments;
 	private List<TabSection> tabSectionList;
     public static int CRITICAL_ERROR_CUTOFF = 1;
-    private List<TabMeasure> measures;
+    private List<TabMeasure> tabMeasureList;
 
     public Score(String textInput) {
     	TabMeasure.MEASURE_INDEX = 0;
@@ -43,31 +44,13 @@ public class Score implements ScoreComponent {
     	tabText = textInput;
         scoreTextFragments = getScoreTextFragments(tabText);
         tabSectionList = createTabSectionList(scoreTextFragments);
-        measures = getMeasureList();
+        tabMeasureList = createMeasureList();
         applyTimeSignatureUntilNextChange();
         setDivisions();
         createTiedNotes();
     }
 
-    private void createTiedNotes() {
-    	boolean noSplit = false;
-    	while (!noSplit) {
-    		noSplit = true;
-			for (TabMeasure m: measures) {	
-				if (m.createTiedNotes()) noSplit = false;
-			}
-    	}
-	}
-
-	public String detectedInstrument() {
-    	String inst = "None";
-		if (isGuitar(false)) inst = "Guitar";
-		if (isBass(false)) inst = "Bass";
-		if (isDrum(false)) inst = "Drums";
-		return inst;
-	}
-
-	/**
+    /**
      * Breaks input text (at wherever it finds blank lines) up into smaller pieces to make further analysis of each
      * piece of text with regex more efficient
      * @param input the string which is to be broken up into its fragments
@@ -140,30 +123,65 @@ public class Score implements ScoreComponent {
 	    }
 	}
 
-  //TODO Update to use the attribute measures
-	public void setDivisions() {
-	    int divisions = 0;
-	    for (TabSection tabSection : this.tabSectionList) {
-	        divisions = Math.max(divisions,  tabSection.setDivisions());
+  
+	private void setDivisions() {
+//	    int divisions = 0;
+//	    for (TabSection tabSection : this.tabSectionList) {
+//	        divisions = Math.max(divisions,  tabSection.setDivisions());
+//	    }
+	    for (TabMeasure tabMeasure : this.tabMeasureList) {
+	        tabMeasure.setDivisions();
 	    }
 	}
 
+    private void createTiedNotes() {
+	boolean noSplit = false;
+	while (!noSplit) {
+		noSplit = true;
+		for (TabMeasure m: tabMeasureList) {	
+			if (m.createTiedNotes()) noSplit = false;
+		}
+	}
+}
+
+	public String detectedInstrument() {
+		String inst = "None";
+		if (isGuitar(false)) inst = "Guitar";
+		if (isBass(false)) inst = "Bass";
+		if (isDrum(false)) inst = "Drums";
+		return inst;
+	}
+
+	public List<TabSection> getTabSectionList() {
+        return this.tabSectionList;
+    }
+    
+    public List<TabMeasure> getMeasureList() {
+        return this.tabMeasureList;
+    }
+    
     public TabMeasure getMeasure(int measureCount) {
-        for (TabSection mCol : this.getTabSectionList()) {
-            for (TabRow mGroup : mCol.getTabRowList()) {
-                for (TabMeasure measure : mGroup.getMeasureList()) {
-                    int count = measure.getCount();
-                    if (count==measureCount)
-                        return measure;
-                    if (count > measureCount)
-                        return null;
-                }
-            }
-        }
-        return null;
+//        for (TabSection mCol : this.getTabSectionList()) {
+//            for (TabRow mGroup : mCol.getTabRowList()) {
+//                for (TabMeasure measure : mGroup.getMeasureList()) {
+//                    int count = measure.getCount();
+//                    if (count==measureCount)
+//                        return measure;
+//                    if (count > measureCount)
+//                        return null;
+//                }
+//            }
+//        }
+//        return null;
+    	
+        try {
+			return tabMeasureList.get(measureCount);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
     }
 
-    public List<TabMeasure> getMeasureList() {
+    private List<TabMeasure> createMeasureList() {
         List<TabMeasure> measureList = new ArrayList<>();
         for (TabSection tabSection : this.tabSectionList) {
             for (TabRow tabRow : tabSection.getTabRowList()) {
@@ -173,20 +191,18 @@ public class Score implements ScoreComponent {
         return measureList;
     }
 
-    public int getErrorLevel() {
-        List<ValidationError> errors = this.validate();
-        if (errors.isEmpty()) return 0;
-        int errorLevel = 10;    //random large number (larger than any error priority)
-        for (ValidationError error : errors) {
-            int priority = error.getPriority();
-            errorLevel = Math.min(errorLevel, priority);
-        }
-        return errorLevel;
-    }
+//    private int getErrorLevel() {
+//        List<ValidationError> errors = this.validate();
+//        if (errors.isEmpty()) return 0;
+//        int errorLevel = 10;    //random large number (larger than any error priority)
+//        for (ValidationError error : errors) {
+//            int priority = error.getPriority();
+//            errorLevel = Math.min(errorLevel, priority);
+//        }
+//        return errorLevel;
+//    }
 
-    public List<TabSection> getTabSectionList() {
-        return this.tabSectionList;
-    }
+
 
     private PartList getDrumPartList() {
         List<ScorePart> scoreParts = new ArrayList<>();
@@ -220,8 +236,10 @@ public class Score implements ScoreComponent {
         scoreParts.add(new ScorePart("P1", "Bass"));
         return new PartList(scoreParts);
     }
+    
+    
   //TODO Update to use the attribute measures
-    public boolean isGuitar(boolean strictCheck) {
+    private boolean isGuitar(boolean strictCheck) {
         if (!strictCheck && Settings.getInstance().instrument != Instrument.AUTO) {
             return Settings.getInstance().instrument == Instrument.GUITAR;
         }
@@ -232,18 +250,18 @@ public class Score implements ScoreComponent {
         return true;
     }
 
-    public boolean isDrum(boolean strictCheck) {
+    private boolean isDrum(boolean strictCheck) {
         if (!strictCheck && Settings.getInstance().instrument != Instrument.AUTO) {
             return Settings.getInstance().instrument == Instrument.DRUMS;
         }
-        for (TabSection msurCollection : this.tabSectionList) {
-            if (!msurCollection.isDrum(strictCheck))
+        for (TabSection tabSection : this.tabSectionList) {
+            if (!tabSection.isDrum(strictCheck))
                 return false;
         }
         return true;
     }
 
-    public boolean isBass(boolean strictCheck) {
+    private boolean isBass(boolean strictCheck) {
         if (!strictCheck && Settings.getInstance().instrument != Instrument.AUTO) {
             return Settings.getInstance().instrument == Instrument.BASS;
         }
@@ -254,9 +272,9 @@ public class Score implements ScoreComponent {
         return true;
     }
 
-    public int lastReturn(int position) {
-    	return tabText.substring(0,position).lastIndexOf("\n");
-    }
+//    private int lastReturn(int position) {
+//    	return tabText.substring(0,position).lastIndexOf("\n");
+//    }
     
     // TODO synchronized because the ScorePartwise model has an instance counter which has to remain the same for all
 	// which has to remain the same for all the sub-elements it has as they use that counter. this may turn out to be
@@ -287,8 +305,11 @@ public class Score implements ScoreComponent {
 	    }
 	
 	    List<models.measure.Measure> measures = new ArrayList<>();
-	    for (TabSection measureCollection : this.tabSectionList) {
-	        measures.addAll(measureCollection.getMeasureModels());
+//	    for (TabSection tabSection : this.tabSectionList) {
+//	        measures.addAll(tabSection.getMeasureModels());
+//	    }
+	    for (TabMeasure tabMeasure : this.tabMeasureList) {
+	        measures.add(tabMeasure.getModel());
 	    }
 	    Part part = new Part("P1", measures);
 	    List<Part> parts = new ArrayList<>();
@@ -310,6 +331,12 @@ public class Score implements ScoreComponent {
 	    return scorePartwise;
 	}
 
+	@Override
+	public List<Range> getRanges() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/** TODO modify this javadoc to reflect the new validation paradigm
 	 * Ensures that all the lines of the root string (the whole tablature file) is understood as multiple measure collections,
 	 * and if so, it validates all MeasureCollection objects it aggregates. It stops evaluation at the first aggregated object which fails validation.
@@ -322,40 +349,33 @@ public class Score implements ScoreComponent {
 	 */
 	
 	public List<ValidationError> validate() {
-	    List<ValidationError> result = new ArrayList<>();
-	
+	    
 	    int prevEndIdx = 0;
-	    ArrayList<Integer[]> positions = new ArrayList<>();
+	    ArrayList<Range> positions = new ArrayList<>();
 	    for (TabSection msurCollction : this.tabSectionList) {
 	    	String uninterpretedFragment = tabText.substring(prevEndIdx,msurCollction.position);
 	    	if (!uninterpretedFragment.isBlank()) {
-	    		positions.add(new Integer[]{prevEndIdx, prevEndIdx+uninterpretedFragment.length()});
+	    		positions.add(new Range(prevEndIdx, prevEndIdx+uninterpretedFragment.length()));
 	    	}
 	    	prevEndIdx = msurCollction.endIndex;
 	    }
 	
 	    String restOfDocument = tabText.substring(prevEndIdx);
 	    if (!restOfDocument.isBlank()) {
-	        positions.add(new Integer[]{prevEndIdx, prevEndIdx+restOfDocument.length()});
+	        positions.add(new Range(prevEndIdx, prevEndIdx+restOfDocument.length()));
 	    }
 	
 	    if (!positions.isEmpty()) {
-	        ValidationError error = new ValidationError(
-	                "This text can't be understood.",
-	                4,
-	                positions
-	        );
-	        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-	        if (ERROR_SENSITIVITY>=error.getPriority())
-	            result.add(error);
+	        addError("This text can't be understood.", 4, positions);
+	        
 	    }
 	
 	    //--------------Validate your aggregates (regardless of if you're valid, as there is no significant validation performed upon yourself that preclude your aggregates from being valid)-------------------
 	    for (TabSection colctn : this.tabSectionList) {
-	        result.addAll(colctn.validate());
+	        errors.addAll(colctn.validate());
 	    }
 	
-	    return result;
+	    return errors;
 	}
 
 	@Override

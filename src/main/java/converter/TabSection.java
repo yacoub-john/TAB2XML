@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TabSection implements ScoreComponent {
+public class TabSection extends ScoreComponent {
 
 	//                           a measure line at start of line(with name)          zero or more middle measure lines       (optional |'s and spaces then what's ahead is end of line)
     private static String LINE_PATTERN = "("+Patterns.START_OF_LINE          +          Patterns.MIDDLE_OF_LINE+"*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.WHITESPACE+"*)"     +  ")";
@@ -22,7 +22,7 @@ public class TabSection implements ScoreComponent {
     int position;   //the index in Score.rootString at which the String "MeasureCollection().origin" is located
     int endIndex;
     List<TabRow> tabRowList;
-    public static String PATTERN = tabSectionPattern();
+    public static String PATTERN = getRegexPattern();
     boolean isFirstCollection;
     private List<Instruction> instructionList = new ArrayList<>();
 
@@ -37,51 +37,48 @@ public class TabSection implements ScoreComponent {
             instruction.applyTo(this);
     }
 
-    /**
-	     * Separates the provided String representation of a TabSection into Instructions, and a TabRow collection (of one?)
-	     * @param origin the String representation of a MeasureCollection from which the instructions, comments, and the
-	     *              TabRow collection are extracted
-	     * Each String stored in instructionList and tabRowList begins with a tag
-	     * (i.e "[startIdx]stringContent" ) specifying the start index of the String in Score.tabText
-	     */
-	    private void createTabRowAndInstructionList(String origin) {
-	
-	        List<Range> identifiedComponents = new ArrayList<>();       //to prevent the same thing being identified as two different components (e.g being identified as both a comment and an instruction)
-	
-	        Range tabRowRange = null;
-	        // Extract the measure group collection and create the list of MeasureGroup objects with it
-	        Matcher matcher = Pattern.compile("((^|\\n)"+validLinePattern()+")+").matcher(origin);
-	        if (matcher.find()) { // we don't use while loop because we are guaranteed that there is going to be just one of this pattern
-	            this.tabRowList = createTabRowList("[" + (this.position + matcher.start()) + "]" + matcher.group());
-	            //identifiedComponents.add(new Range(matcher.start(), matcher.end()));
-	            tabRowRange = new Range(matcher.start(), matcher.end());
-	        }
-	
-	        // Extract instructions
-	        matcher = Pattern.compile("((^|\\n)"+ Instruction.LINE_PATTERN+")+").matcher(origin);
-	        while(matcher.find()) {
-	            //first make sure that what was identified as one thing is not being identified as a different thing.
-	            Range instructionLineRange = new Range(matcher.start(), matcher.end());
-	//            boolean continueWhileLoop = false;
-	//            boolean isTopInstruction = true;
-	//            for (Range range : identifiedComponents) {
-	//                if (range.overlaps(instructionLineRange)) {
-	//                    continueWhileLoop = true;
-	//                    break;
-	//                }
-	//                if (range.getEnd()<=instructionLineRange.getStart())
-	//                    isTopInstruction = false;
-	//            }
-	//            if (continueWhileLoop) continue;
-	            boolean isTopInstruction = false;
-	            if (instructionLineRange.compareTo(tabRowRange) < 0) isTopInstruction = true;
-	            if (isTopInstruction)
-	                this.instructionList.addAll(Instruction.from(matcher.group(), this.position+matcher.start(), Instruction.TOP));
-	            else
-	                this.instructionList.addAll(Instruction.from(matcher.group(), this.position+matcher.start(), Instruction.BOTTOM));
-	            identifiedComponents.add(new Range(matcher.start(), matcher.end()));
-	        }
-	    }
+	/**
+	 * Separates the provided String representation of a TabSection into
+	 * Instructions, and a TabRow collection (of one?)
+	 * 
+	 * @param origin the String representation of a TabSection from which the
+	 *               instructions, and the TabRow collection are extracted. Each
+	 *               String stored in instructionList and tabRowList begins with a
+	 *               tag (i.e "[startIdx]stringContent" ) specifying the start index
+	 *               of the String in Score.tabText
+	 */
+	private void createTabRowAndInstructionList(String origin) {
+
+		Range tabRowRange = null;
+		// Match one or more tablature lines 
+		Matcher matcher = Pattern.compile("((^|\\n)" + tabRowLinePattern() + ")+").matcher(origin);
+		if (matcher.find()) { // we don't use while loop because we are guaranteed that there is going to be
+								// just one of this pattern
+			this.tabRowList = createTabRowList("[" + (this.position + matcher.start()) + "]" + matcher.group());
+			// identifiedComponents.add(new Range(matcher.start(), matcher.end()));
+			tabRowRange = new Range(matcher.start(), matcher.end());
+		}
+		else addError ("No tablature detected", 1, getRanges());
+
+		// Extract instructions
+		matcher = Pattern.compile("((^|\\n)" + Instruction.LINE_PATTERN + ")+").matcher(origin);
+		while (matcher.find()) {
+			// first make sure that what was identified as one thing is not being identified
+			// as a different thing.
+			String d = matcher.group();
+			//Create a list of newline positions and pass it to from
+			Range instructionLineRange = new Range(matcher.start(), matcher.end());
+			boolean isTopInstruction = false;
+			if (instructionLineRange.compareTo(tabRowRange) < 0)
+				isTopInstruction = true;
+			if (isTopInstruction)
+				this.instructionList
+						.addAll(Instruction.from(matcher.group(), this.position + matcher.start(), Instruction.TOP));
+			else
+				this.instructionList
+						.addAll(Instruction.from(matcher.group(), this.position + matcher.start(), Instruction.BOTTOM));
+		}
+	}
 
 	/**
      * Creates a List of MeasureGroup objects from the provided string representation of a measure group collection.
@@ -113,7 +110,7 @@ public class TabSection implements ScoreComponent {
             String line = lineContentMatcher.group();
             int lineStartIdx = startIdx+lineContentMatcher.start();
 
-            if (!line.matches(validLinePattern())) continue;
+            if (!line.matches(tabRowLinePattern())) continue;
 
             Matcher tabRowLineMatcher = Pattern.compile(LINE_PATTERN).matcher(line);
 
@@ -135,31 +132,44 @@ public class TabSection implements ScoreComponent {
         return tabRowList;
     }
 
-    private static String validLinePattern() {
+    private static String tabRowLinePattern() {
         return "("+ Patterns.WHITESPACE + "*(" + LINE_PATTERN + Patterns.WHITESPACE + "*)+)";
     }
 
     /**
-     * Creates the regex pattern for detecting a tab section (i.e a collection of tab rows and their corresponding instructions  and comments)
-     * @return a String regex pattern enclosed in brackets that identifies a measure collection pattern (the pattern also captures the newline right before the measure group collection)
+     * Creates the regex pattern for detecting a tab section (i.e a collection of tab rows (really one tab row and their corresponding instructions)
+     * @return a String regex pattern enclosed in brackets that identifies a tab section pattern (the pattern also captures the newline right before the tab row collection)
      */
-    private static String tabSectionPattern() {
-        // zero or more instructions, followed by one or more measure group lines, followed by zero or more instructions
-        return "((^|\\n)"+ Instruction.LINE_PATTERN+")*"          // 0 or more lines separated by newlines, each containing a group of instructions or comments
-                + "("                                                                   // then the measure collection line, which is made of...
+    private static String getRegexPattern() {
+        // Zero or more instructions, followed by one or more tab rows, followed by zero or more instructions
+        return "((^|\\n)"+ Instruction.LINE_PATTERN+")*"          // 0 or more lines separated by newlines, each containing a group of instructions
+                + "("                                                                   // then the tab row, which is made of...
                 +       "(^|\\n)"                                                           // a start of line or a new line
-                +       TabSection.validLinePattern()                               // a measure group line followed by whitespace, all repeated one or more times
-                + ")+"                                                                  // the measure collection line I just described is repeated one or more times.
+                +       TabSection.tabRowLinePattern()                               // a tab row followed by whitespace, all repeated one or more times
+                + ")+"                                                                  // the tab row I just described is repeated one or more times.
                 + "(\\n"+ Instruction.LINE_PATTERN+")*";
     }
 
-    public List<models.measure.Measure> getMeasureModels() {
-        List<models.measure.Measure> measureModels = new ArrayList<>();
-        for (TabRow measureGroup : this.tabRowList) {
-            measureModels.addAll(measureGroup.getMeasureModels());
-        }
-        return measureModels;
-    }
+    //    public int setDivisions() {
+	//        int divisions = 0;
+	//        for (TabRow tabRow : this.tabRowList) {
+	//            divisions = Math.max(divisions,  tabRow.setDivisions());
+	//        }
+	//
+	//        return divisions;
+	//    }
+	
+	    public List<TabRow> getTabRowList() {
+	        return this.tabRowList;
+	    }
+
+//	public List<models.measure.Measure> getMeasureModels() {
+//        List<models.measure.Measure> measureModels = new ArrayList<>();
+//        for (TabRow measureGroup : this.tabRowList) {
+//            measureModels.addAll(measureGroup.getMeasureModels());
+//        }
+//        return measureModels;
+//    }
 
     public boolean isGuitar(boolean strictCheck) {
         for (TabRow measureGroup : this.tabRowList) {
@@ -170,8 +180,8 @@ public class TabSection implements ScoreComponent {
     }
 
     public boolean isDrum(boolean strictCheck) {
-        for (TabRow measureGroup : this.tabRowList) {
-            if (!measureGroup.isDrum(strictCheck))
+        for (TabRow tabRow : this.tabRowList) {
+            if (!tabRow.isDrum(strictCheck))
                 return false;
         }
         return true;
@@ -185,20 +195,14 @@ public class TabSection implements ScoreComponent {
         return true;
     }
 
-    public int setDivisions() {
-        int divisions = 0;
-        for (TabRow tabRow : this.tabRowList) {
-            divisions = Math.max(divisions,  tabRow.setDivisions());
-        }
+@Override
+	public List<Range> getRanges() {
+		List<Range> ranges = new ArrayList<>();
+		ranges.add(new Range(position,position+origin.length()));
+		return null;
+	}
 
-        return divisions;
-    }
-
-    public List<TabRow> getTabRowList() {
-        return this.tabRowList;
-    }
-
-    /**
+/**
 	 * Validates the aggregated TabRow objects of this class. It stops evaluation at the first aggregated object
 	 * which fails validation.
 	 * TODO it might be better to not have it stop when one aggregated object fails validation, but instead have it
@@ -212,18 +216,18 @@ public class TabSection implements ScoreComponent {
 	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
 	 */
 	public List<ValidationError> validate() {
-	    List<ValidationError> result = new ArrayList<>();
+	    //List<ValidationError> result = new ArrayList<>();
 	
 	    //--------------Validate your aggregates (only if you are valid)-------------------
 	
 	    for (TabRow mGroup : this.tabRowList) {
-	        result.addAll(mGroup.validate());
+	        errors.addAll(mGroup.validate());
 	    }
 	    for (Instruction instruction : this.instructionList) {
-	        result.addAll(instruction.validate());
+	        errors.addAll(instruction.validate());
 	    }
 	
-	    return result;
+	    return errors;
 	}
 
 	@Override

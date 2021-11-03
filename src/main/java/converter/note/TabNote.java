@@ -12,10 +12,11 @@ import models.measure.note.Chord;
 import models.measure.note.Dot;
 import models.measure.note.TimeModification;
 import utility.Patterns;
+import utility.Range;
 import utility.Settings;
 import utility.ValidationError;
 
-public abstract class Note implements Comparable<Note>, ScoreComponent {
+public abstract class TabNote extends ScoreComponent implements Comparable<TabNote> {
     public boolean startsWithPreviousNote;
     public String origin;
     public String lineName;
@@ -30,7 +31,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
     public int voice;
     public boolean isGrace;
     public static boolean SLASHED_GRACE = true;
-    protected Map<NoteDecorator, String> noteDecorMap = new LinkedHashMap<>();
+    protected Map<NoteModelDecorator, String> noteDecorMap = new LinkedHashMap<>();
     int divisions = 0;
     int beatType;
     int beatCount;
@@ -53,7 +54,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         return "(" + NoteFactory.GUITAR_NOTE_GROUP_PATTERN + "|" + NoteFactory.DRUM_NOTE_GROUP_PATTERN + "|" + COMPONENT_PATTERN+"+" + ")";
     }
 
-    public Note(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart) {
+    public TabNote(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart) {
         this.origin = origin;
         this.lineName = lineName;
         this.position = position;
@@ -62,12 +63,12 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         this.distance = distanceFromMeasureStart;
         this.voice = 1;
     }
-    public Note(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart, int voice) {
+    public TabNote(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart, int voice) {
         this(stringNumber, origin, position, lineName, distanceFromMeasureStart);
         this.voice = voice;
     }
     
-    public Note(Note n) {
+    public TabNote(TabNote n) {
         this.startsWithPreviousNote = n.startsWithPreviousNote;
         this.origin = n.origin;
         this.lineName = n.lineName;
@@ -112,7 +113,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         		this.mustSplit = false;
     }
 
-    public boolean addDecorator(NoteDecorator noteDecor, String message) {
+    public boolean addDecorator(NoteModelDecorator noteDecor, String message) {
         this.noteDecorMap.put(noteDecor, message);
         return true;
     }
@@ -172,7 +173,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
         return this.origin.strip().matches(NoteFactory.DRUM_NOTE_PATTERN);
     }
 
-    public int compareTo(Note other) {
+    public int compareTo(TabNote other) {
         return this.distance-other.distance;
     }
 	
@@ -198,7 +199,7 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
  	    if (!dots.isEmpty())
  	        noteModel.setDots(dots);
 
- 	    for (NoteDecorator noteDecor : this.noteDecorMap.keySet()) {
+ 	    for (NoteModelDecorator noteDecor : this.noteDecorMap.keySet()) {
  	        if (noteDecorMap.get(noteDecor).equals("success"))
  	            noteDecor.applyTo(noteModel);
  	    }
@@ -206,23 +207,24 @@ public abstract class Note implements Comparable<Note>, ScoreComponent {
  	    return noteModel;
     }
 	
-    public abstract Note copy();
+    public abstract TabNote copy();
     
+	@Override
+	public List<Range> getRanges() {
+		List<Range> ranges = new ArrayList<>();
+		ranges.add(new Range(position,position+origin.length()));
+		return null;
+	}
+	
 	public List<ValidationError> validate() {
-	    List<ValidationError> result = new ArrayList<>();
+	    //List<ValidationError> result = new ArrayList<>();
 	    if (!this.origin.equals(this.origin.strip())) {
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "Adding whitespace might result in different timing than you expect.",
 	                3,
-	                new ArrayList<>(Collections.singleton(new Integer[]{
-	                        this.position,
-	                        this.position+this.origin.length()
-	                }))
-	        );
-	        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-	        if (ERROR_SENSITIVITY>= error.getPriority())
-	            result.add(error);
+	                getRanges());
+	        
 	    }
-	    return result;
+	    return errors;
 	}
 }

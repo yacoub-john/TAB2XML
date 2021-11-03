@@ -44,6 +44,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import utility.Range;
 import utility.Settings;
 
 public class MainViewController extends Application {
@@ -355,8 +356,8 @@ public class MainViewController extends Application {
     private boolean goToMeasure(int measureCount) {
         TabMeasure measure = converter.getScore().getMeasure(measureCount);
         if (measure == null) return false;
-        List<Integer[]> linePositions = measure.getLinePositions();
-        int pos = linePositions.get(0)[0];
+        List<Range> linePositions = measure.getRanges();
+        int pos = linePositions.get(0).getStart();
     	mainText.moveTo(pos);
         mainText.requestFollowCaret();
 //        Pattern newLinePattern = Pattern.compile("\\R");

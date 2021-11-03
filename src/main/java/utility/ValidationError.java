@@ -6,24 +6,25 @@ import java.util.List;
 
 public class ValidationError {
     int priority;
-    List<Integer[]> positions = new ArrayList<>();
+    List<Range> positions = new ArrayList<>();
     String message;
 
-    public ValidationError(String message, int priority, List<Integer[]> positions) {
+    public ValidationError(String message, int priority, List<Range> positions) {
         this.message = message;
         this.priority = priority;
-        for (Integer[] position : positions)
-            this.positions.add(Arrays.copyOf(position, position.length));
+        this.positions = positions;
+//        for (Integer[] position : positions)
+//            this.positions.add(Arrays.copyOf(position, position.length));
     }
     
     public int getPriority() {
     	return this.priority;
     }
     
-    public List<Integer[]> getPositions() {
-    	List<Integer[]> positions= new ArrayList<>();
-    	for (Integer[] position : this.positions)
-            positions.add(Arrays.copyOf(position, position.length));
+    public List<Range> getPositions() {
+//    	List<Integer[]> positions= new ArrayList<>();
+//    	for (Integer[] position : this.positions)
+//            positions.add(Arrays.copyOf(position, position.length));
     	return positions;
     }
     

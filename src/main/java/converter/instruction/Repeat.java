@@ -17,8 +17,6 @@ import utility.ValidationError;
 
 public class Repeat extends Instruction {
     public static String PATTERN = getPattern();
-    public static int MAX_REPEATS = 20;
-
     private int repeatCount;
     private boolean startApplied = false;
     private boolean endApplied = false;
@@ -30,7 +28,7 @@ public class Repeat extends Instruction {
     }
 
     public <E extends ScoreComponent> void applyTo(E scoreComponent) {
-        if (!validateSelf().isEmpty() || this.getHasBeenApplied() || this.repeatCount==0) {
+        if ((this.getRelativeRange() instanceof Bottom) || this.getHasBeenApplied() || this.repeatCount==0) {
             this.setHasBeenApplied(true);
             return;
         }
@@ -44,7 +42,9 @@ public class Repeat extends Instruction {
                 if (tabRowRange == null) continue;
                 if (!this.getRelativeRange().overlaps(tabRowRange)) continue;
                 // Getting here means we are dealing with at least one repeat instruction above the tab row
-                tabRow.removeRepeatInstruction();
+                tabRow.removeRepeatInstruction();  // Only removes the first time
+                //TODO Figure out if there's nested repeats and remove as many lines above
+                //TODO Nested repeats don't get applied below but create an error (take from Invalid Repeat, and then delete that class)
                 for (TabMeasure measure : tabRow.getMeasureList()) {
                     Range measureRange = measure.getRelativeRange();
                     if (measureRange==null || !this.getRelativeRange().overlaps(measureRange)) continue;
@@ -62,61 +62,29 @@ public class Repeat extends Instruction {
         this.setHasBeenApplied(this.startApplied && this.endApplied);
     }
 
-    public List<ValidationError> validate() {
-        List<ValidationError> result = new ArrayList<>(super.validate());
-        result.addAll(validateSelf());
-        if ((!this.startApplied && this.endApplied)) {
-            ValidationError error = new ValidationError(
-                    "This repeat was not fully applied.",
-                    1,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.getPosition(),
-                            this.getPosition()+this.getContent().length()
-                    }))
-            );
-            int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
-        }
-        return result;
-    }
-
-    private List<ValidationError> validateSelf() {
-        List<ValidationError> result = new ArrayList<>();
-        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-        if (!(this.getRelativeRange() instanceof Top)) {
-            ValidationError error = new ValidationError(
-                    "Repeats should only be applied to the top of measures.",
-                    3,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.getPosition(),
-                            this.getPosition()+this.getContent().length()
-                    }))
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
-        }
-        if (this.repeatCount>MAX_REPEATS) {
-            ValidationError error = new ValidationError(
-                    "only up to "+MAX_REPEATS+" repeats recommended.",
-                    3,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.getPosition(),
-                            this.getPosition()+this.getContent().length()
-                    }))
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
-        }
-        return result;
-    }
-
     private static String getPattern() {
         String times = "[xX]";
         String timesLong = "[Tt][Ii][Mm][Ee][Ss]";
         String count = "[0-9]{1,2}";
         String repeatTextPattern = "[Rr][Ee][Pp][Ee][Aa][Tt]" + "([ -]{0,7}|[ \t]{0,2})"  +  "(" +"("+times+count+")|("+ count+times +")|("+ count + "([ -]{0,7}|[ \t]{0,3})"  + timesLong + ")" + ")";
         //     | or sol or whitespace   optional space or -                     optional space or -     | or eol or whitespace
-        return "("+"(((?<=\\|)|\\||^|"+ Patterns.WHITESPACE+")|(?<=\n))"  +        "[ -]*"       +   repeatTextPattern   +   "[ -]*"     +     "(($|\\s)|\\|)" + ")";
+        return "("+"(((?<=\\|)|\\||^|"+ Patterns.WHITESPACE + ")|(?<=\n))"  +        "[ -]*"       +   repeatTextPattern   +   "[ -]*"     +     "(($|\\s)|\\|)" + ")";
     }
+
+	public List<ValidationError> validate() {
+	    super.validate();
+	    if (!(this.getRelativeRange() instanceof Top)) {
+	        addError(
+	                "Repeats should only be applied to the top of measures.",
+	                3,
+	                getRanges());
+	    }
+	    if ((!this.startApplied && this.endApplied)) {
+	        addError(
+	                "This repeat was not fully applied.",
+	                1,
+	                getRanges());
+	    }
+	    return errors;
+	}
 }

@@ -110,8 +110,9 @@ public class Highlighter {
     private TreeMap<Range, ValidationError> createErrorRangeMap(List<ValidationError> errors) {
         TreeMap<Range, ValidationError> errorMap = new TreeMap<>();
         for (ValidationError error : errors) {
-            for (Integer[] range : error.getPositions())
-                errorMap.put(new Range(range[0], range[1]), error);
+        	System.out.println(error.getMessage());
+            for (Range range : error.getPositions())
+                errorMap.put(range, error);
         }
         return errorMap;
     }

@@ -73,8 +73,8 @@ public class NoteFactory {
         return "("+GRACE+"|"+HARMONIC+"|"+ FRET +")";
     }
 
-    public List<Note> getNotes() {
-        List<Note> noteList = new ArrayList<>();
+    public List<TabNote> getNotes() {
+        List<TabNote> noteList = new ArrayList<>();
         if (patternPackage==null) {
             noteList.add(new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
             return noteList;
@@ -100,18 +100,18 @@ public class NoteFactory {
         return noteList;
     }
 
-    private List<Note> getNotes(String origin, int idx, int endIdx) {
-        List<Note> noteList = new ArrayList<>();
+    private List<TabNote> getNotes(String origin, int idx, int endIdx) {
+        List<TabNote> noteList = new ArrayList<>();
 
         if (idx>=endIdx)
             return noteList;
         Matcher noteMatcher = Pattern.compile(patternPackage.get("note-pattern")).matcher(origin.substring(idx, endIdx));
-        Note note1;
+        TabNote note1;
         if (!noteMatcher.find()) {
             noteList.add(new InvalidNote(stringNumber, origin.substring(idx, endIdx), position+idx, lineName, distanceFromMeasureStart+idx));
             return noteList;
         }else {
-            List<Note> notes = createNote(noteMatcher.group(), position+idx+noteMatcher.start(), distanceFromMeasureStart+idx+noteMatcher.start());
+            List<TabNote> notes = createNote(noteMatcher.group(), position+idx+noteMatcher.start(), distanceFromMeasureStart+idx+noteMatcher.start());
             noteList.addAll(notes);
             note1 = notes.get(notes.size()-1);  //It is always the last note that builds a relationship. e.g you dont wanna get the grace note. you wanna get the grace pair because it is what will be creating a relationship with other notes
         }
@@ -131,10 +131,10 @@ public class NoteFactory {
             connector = connectorMatcher.group();
             connectorMatcherEnd = connectorMatcher.end();
         }
-        List<Note> remainingNotes = getNotes(origin, idx+noteMatcher.end()+connectorMatcherEnd, endIdx);
+        List<TabNote> remainingNotes = getNotes(origin, idx+noteMatcher.end()+connectorMatcherEnd, endIdx);
         if (remainingNotes.isEmpty())
             return noteList;
-        Note note2 = remainingNotes.get(0);
+        TabNote note2 = remainingNotes.get(0);
         noteList.addAll(remainingNotes);
 
         if (!connector.isBlank())
@@ -162,7 +162,7 @@ public class NoteFactory {
         return null;
     }
 
-    private void addRelationship(Note note1, Note note2, String relationship) {
+    private void addRelationship(TabNote note1, TabNote note2, String relationship) {
         switch (relationship.toLowerCase()) {
             case "h" -> hammerOn((GuitarNote) note1, (GuitarNote) note2, false);
             case "p" -> pullOff((GuitarNote) note1, (GuitarNote) note2, false);
@@ -170,11 +170,11 @@ public class NoteFactory {
         }
     }
 
-    private List<Note> createNote(String origin, int position, int distanceFromMeasureStart) {
-        List<Note> noteList = new ArrayList<>();
+    private List<TabNote> createNote(String origin, int position, int distanceFromMeasureStart) {
+        List<TabNote> noteList = new ArrayList<>();
         if (patternPackage.get("instrument").equalsIgnoreCase("drum")) {
             if (origin.strip().equalsIgnoreCase("x")||origin.strip().equalsIgnoreCase("o")||origin.strip().equalsIgnoreCase("#"))
-                noteList.add((Note) new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart));
+                noteList.add((TabNote) new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart));
             else if (origin.strip().equalsIgnoreCase("f"))
                 noteList.addAll(createFlam(origin, position, distanceFromMeasureStart));
             else if (origin.strip().equalsIgnoreCase("d"))
@@ -185,33 +185,33 @@ public class NoteFactory {
         }
         noteList.addAll(createGrace(origin, position, distanceFromMeasureStart));
         if (!noteList.isEmpty()) return noteList;
-        Note harmonic = createHarmonic(origin, position, distanceFromMeasureStart);
+        TabNote harmonic = createHarmonic(origin, position, distanceFromMeasureStart);
         if (harmonic!=null) {
         	harmonic.distance ++; //So the distance is to the fret number, not the square bracket
             noteList.add(harmonic);
             return noteList;
         }
-        Note fret = createFret(origin, position, distanceFromMeasureStart);
+        TabNote fret = createFret(origin, position, distanceFromMeasureStart);
         if (fret!=null) {
             noteList.add(fret);
             return noteList;
         }
-        noteList.add((Note) new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
+        noteList.add((TabNote) new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
         return noteList;
     }
 
-    private List<Note> createFlam(String origin, int position, int distanceFromMeasureStart) {
-        Note graceNote = new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart);
-        Note gracePair = new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart);
+    private List<TabNote> createFlam(String origin, int position, int distanceFromMeasureStart) {
+        TabNote graceNote = new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart);
+        TabNote gracePair = new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart);
         grace(graceNote, gracePair);
-        List<Note> notes = new ArrayList<>();
+        List<TabNote> notes = new ArrayList<>();
         notes.add(graceNote);
         notes.add(gracePair);
         return notes;
     }
 
     //TODO Implement the second grace note for Drag
-    private List<Note> createDrag(String origin, int position, int distanceFromMeasureStart) {
+    private List<TabNote> createDrag(String origin, int position, int distanceFromMeasureStart) {
 //        Note note1 = createDrumNote(origin, position, distanceFromMeasureStart);
 //        Note note2 = createDrumNote(origin, position, distanceFromMeasureStart);
 //        note2.addDecor((noteModel) -> {
@@ -226,8 +226,8 @@ public class NoteFactory {
     	return createFlam(origin, position, distanceFromMeasureStart);
     }
 
-    private Note createHarmonic(String origin, int position, int distanceFromMeasureStart) {
-        Note note;
+    private TabNote createHarmonic(String origin, int position, int distanceFromMeasureStart) {
+        TabNote note;
         if (!origin.matches(HARMONIC)) return null;
 
         Matcher fretMatcher = Pattern.compile("(?<=\\[)[0-9]+(?=\\])").matcher(origin);
@@ -279,7 +279,7 @@ public class NoteFactory {
         return true;
     }
 
-    private boolean slur(Note note1, Note note2) {
+    private boolean slur(TabNote note1, TabNote note2) {
         String message = "success";
 
         AtomicInteger slurNum = new AtomicInteger();
@@ -305,7 +305,7 @@ public class NoteFactory {
         return true;
     }
     
-    public boolean tie(Note note1, Note note2) {
+    public boolean tie(TabNote note1, TabNote note2) {
         String message = "success";
 
         
@@ -403,8 +403,8 @@ public class NoteFactory {
         return success;
     }
 
-    private List<Note> createGrace(String origin, int position, int distanceFromMeasureStart) {
-        List<Note> noteList = new ArrayList<>();
+    private List<TabNote> createGrace(String origin, int position, int distanceFromMeasureStart) {
+        List<TabNote> noteList = new ArrayList<>();
         if (!origin.matches(GRACE)) return noteList;
         Matcher graceNoteMatcher = Pattern.compile("(?<=g)"+FRET+"(?![0-9])").matcher(origin);
         Matcher gracePairMatcher = Pattern.compile("(?<!g])"+FRET+"$").matcher(origin);
@@ -440,7 +440,7 @@ public class NoteFactory {
 			return null;
 	}
 
-    private boolean grace(Note graceNote, Note gracePair) {
+    private boolean grace(TabNote graceNote, TabNote gracePair) {
         boolean success;
         success = slur(graceNote, gracePair);
         if (success) {
@@ -450,9 +450,9 @@ public class NoteFactory {
         return success;
     }
 
-    private boolean grace(Note note) {
+    private boolean grace(TabNote note) {
         note.addDecorator((noteModel) -> {
-            noteModel.setGrace(Note.SLASHED_GRACE ? new Grace("yes") : new Grace());
+            noteModel.setGrace(TabNote.SLASHED_GRACE ? new Grace("yes") : new Grace());
             noteModel.setDuration(null);
             noteModel.setChord(null);
             return true;

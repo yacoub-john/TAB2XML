@@ -30,7 +30,7 @@ public class TimeSignature extends Instruction {
 
     @Override
     public <E extends ScoreComponent> void applyTo(E scoreComponent) {
-        if (!validateSelf().isEmpty() || this.getHasBeenApplied()) {
+        if (!validate().isEmpty() || this.getHasBeenApplied()) {
             this.setHasBeenApplied(true);
             return;
         }
@@ -53,51 +53,25 @@ public class TimeSignature extends Instruction {
     }
 
     public List<ValidationError> validate() {
-        List<ValidationError> result = new ArrayList<>(super.validate());
-        result.addAll(validateSelf());
-        return result;
-    }
-
-    private List<ValidationError> validateSelf() {
-        List<ValidationError> result = new ArrayList<>();
-        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
         if (!(this.getRelativeRange() instanceof Top)) {
-            ValidationError error = new ValidationError(
+            addError(
                     "Time signatures should only be applied to the top of measures.",
                     3,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.getPosition(),
-                            this.getPosition()+this.getContent().length()
-                    }))
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
-            return result;
+                    getRanges());
         }
+        else
         if (beatCount<=0 || beatType<=0) {
-            ValidationError error = new ValidationError(
+            addError(
                     "Invalid beat " + (this.beatCount<=0?"count" : "type") + " value.",
                     2,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.getPosition(),
-                            this.getPosition()+this.getContent().length()
-                    }))
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
+                    getRanges());
         }else if (!isValid(this.beatCount, this.beatType)) {
-            ValidationError error = new ValidationError(
+            addError(
                     "Unsupported time signature.",
                     2,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.getPosition(),
-                            this.getPosition()+this.getContent().length()
-                    }))
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
+                    getRanges());
         }
-        return result;
+        return errors;
     }
 
     public static boolean isValid(int beatCount, int beatType) {

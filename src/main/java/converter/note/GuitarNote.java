@@ -13,10 +13,11 @@ import models.measure.note.Pitch;
 import models.measure.note.notations.Notations;
 import models.measure.note.notations.technical.Technical;
 import utility.GuitarUtils;
+import utility.Range;
 import utility.Settings;
 import utility.ValidationError;
 
-public class GuitarNote extends Note {
+public class GuitarNote extends TabNote {
     public static String FRET_PATTERN = "([0-9]{1,2})";
     public static String GRACE_PATTERN = getGracePattern();
     public static String PATTERN = getPattern();
@@ -134,7 +135,7 @@ public class GuitarNote extends Note {
     }
 
 	@Override
-	public Note copy() {
+	public TabNote copy() {
 		return new GuitarNote(this);
 	}
 	
@@ -159,10 +160,9 @@ public class GuitarNote extends Note {
 	}
 
 	public List<ValidationError> validate() {
-	    List<ValidationError> result = new ArrayList<>(super.validate());
-	    int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-	
-	    for (NoteDecorator noteDecor : this.noteDecorMap.keySet()) {
+	    super.validate();
+	    
+	    for (NoteModelDecorator noteDecor : this.noteDecorMap.keySet()) {
 	        String resp = noteDecorMap.get(noteDecor);
 	        if (resp.equals("success")) continue;
 	        Matcher matcher = Pattern.compile("(?<=^\\[)[0-9](?=\\])").matcher(resp);
@@ -182,30 +182,17 @@ public class GuitarNote extends Note {
 	            message = message.substring(matcher.end()+2);
 	        }
 	
-	        ValidationError error = new ValidationError(
-	                message,
-	                priority,
-	                new ArrayList<>(Collections.singleton(new Integer[]{
-	                        startIdx,
-	                        endIdx
-	                }))
-	        );
-	        if (ERROR_SENSITIVITY>= error.getPriority())
-	            result.add(error);
+	        addError(message, priority,  new ArrayList<>(Collections.singleton(new Range(startIdx, endIdx))));
+	        
 	    }
 	
 	    if (this.noteDetails==null) {
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "this note could not be identified",
 	                1,
-	                new ArrayList<>(Collections.singleton(new Integer[]{
-	                        this.position,
-	                        this.position+this.origin.length()
-	                }))
-	        );
-	        if (ERROR_SENSITIVITY>= error.getPriority())
-	            result.add(error);
+	                getRanges());
+	       
 	    }
-	    return result;
+	    return errors;
 	}
 }

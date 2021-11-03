@@ -8,7 +8,7 @@ import java.util.Set;
 
 import converter.Instrument;
 import converter.Score;
-import converter.note.Note;
+import converter.note.TabNote;
 import utility.DrumPiece;
 import utility.DrumUtils;
 import utility.Settings;
@@ -40,31 +40,23 @@ public class TabDrumString extends TabString {
      * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
      */
     public List<ValidationError> validate() {
-        List<ValidationError> result = new ArrayList<>(super.validate());
-        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-
+        
         if (!DrumUtils.getNickNameSet().contains(this.name.strip())) {
-            ValidationError error = new ValidationError(
+            addError(
                     "This drum piece is not recognized. Update Settings -> Current Song Settings to include it",
                     1,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.namePosition,
-                            this.position+this.line.length()
-                    }))
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
+                    getRanges());
         }
 
-        for (ValidationError error : result) {
+        for (ValidationError error : errors) {
             if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
-                return result;
+                return errors;
             }
         }
 
-        for (Note note : this.noteList)
-            result.addAll(note.validate());
+        for (TabNote note : this.noteList)
+            errors.addAll(note.validate());
 
-        return result;
+        return errors;
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class Instruction {
+public abstract class Instruction extends ScoreComponent{
     public static Top TOP = new Top();
     public static Bottom BOTTOM = new Bottom();
     public static String LINE_PATTERN = getLinePattern();
@@ -20,7 +20,7 @@ public abstract class Instruction {
     protected String content;
     protected int position;
     private RelativePosition relativePosition;
-    private boolean hasBeenApplied;
+    protected boolean hasBeenApplied;
 
     Instruction(String content, int position, RelativePosition topOrBottom) {
         this.content = content;
@@ -43,7 +43,9 @@ public abstract class Instruction {
 
     public static List<Instruction> from(String line, int position, RelativePosition topOrBottom) {
         List<Instruction> instructionList = new ArrayList<>();
+        // Matches the repeat text including any barlines
         Matcher repeatMatcher = Pattern.compile(Repeat.PATTERN).matcher(line);
+        
         while(repeatMatcher.find()) {
             instructionList.add(new Repeat(repeatMatcher.group(), position+repeatMatcher.start(), topOrBottom));
         }
@@ -69,19 +71,22 @@ public abstract class Instruction {
         return this.hasBeenApplied;
     }
 
-
+	@Override
+	public List<Range> getRanges() {
+		List<Range> ranges = new ArrayList<>();
+		ranges.add(new Range(position,position+content.length()));
+		return ranges;
+	}
+	
     public List<ValidationError> validate() {
-        List<ValidationError> result = new ArrayList<>();
+        
         if (!this.hasBeenApplied) {
-            result.add(new ValidationError(
+            addError(
                     "This instruction could not be applied to any measure or note.",
                     3,
-                    new ArrayList<>(Collections.singleton(
-                            new Integer[]{this.position, this.position + this.content.length()}
-                            ))
-            ));
+                    getRanges());
         }
-        return result;
+        return errors;
     }
 
     private static String getLinePattern() {

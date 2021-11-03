@@ -4,7 +4,7 @@ import converter.Score;
 import converter.measure_line.TabDrumString;
 import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
-import converter.note.Note;
+import converter.note.TabNote;
 import models.measure.Backup;
 import models.measure.attributes.*;
 import models.measure.barline.BarLine;
@@ -29,7 +29,7 @@ public class GuitarMeasure extends TabMeasure{
 
     @Override
 	protected int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureLength) {
-		for (List<List<Note>> chordList : getVoiceSortedChordList()) {
+		for (List<List<TabNote>> chordList : getVoiceSortedChordList()) {
 			int start = 0;
 			//Start at 1 to ignore first chord
 			//If it is double digit, it has not been counted in usefulMeasureLength
@@ -37,7 +37,7 @@ public class GuitarMeasure extends TabMeasure{
 			if (Settings.getInstance().ddStyle == DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_STRETCH) 
 				start = 1;
 			for (int i = start; i < chordList.size(); i++) {
-				List<Note> chord = chordList.get(i);
+				List<TabNote> chord = chordList.get(i);
 				if (isDoubleDigit(chord))
 					usefulMeasureLength--;
 			}
@@ -46,7 +46,7 @@ public class GuitarMeasure extends TabMeasure{
 	}
 
 	@Override
-	protected int adjustDurationForSpecialCases(int duration, List<Note> chord, List<Note> nextChord) {
+	protected int adjustDurationForSpecialCases(int duration, List<TabNote> chord, List<TabNote> nextChord) {
 		// Adjust duration due to double digit fret numbers
 		switch (Settings.getInstance().ddStyle) {
 		case NOTE_ON_FIRST_DIGIT_STRETCH: if (isDoubleDigit(chord)) duration --; break;
@@ -99,10 +99,10 @@ public class GuitarMeasure extends TabMeasure{
         List<models.measure.note.Note> noteBeforeBackupModels = new ArrayList<>();
         List<models.measure.note.Note> noteAfterBackupModels = new ArrayList<>();
         for (int i=0; i<this.voiceSortedNoteList.size(); i++) {
-            List<Note> voice = this.voiceSortedNoteList.get(i);
+            List<TabNote> voice = this.voiceSortedNoteList.get(i);
             double backupDuration = 0;
             double currentChordDuration = 0;
-            for (Note note : voice) {
+            for (TabNote note : voice) {
                 if (note.voice==1)
                     noteBeforeBackupModels.add(note.getModel());
                 if (note.voice==2)
@@ -180,18 +180,16 @@ public class GuitarMeasure extends TabMeasure{
 	     */
 	    public List<ValidationError> validate() {
 	        //-----------------Validate yourself-------------------------
-	        List<ValidationError> result = new ArrayList<>(super.validate());
-	        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-	
+	        super.validate();
+	        
 	        // Now, all we need to do is check if they are actually guitar measures
 	        if (!(this.tabStringList.get(0) instanceof TabGuitarString)) {
-	            ValidationError error = new ValidationError(
+	            addError(
 	                    "All measure lines in this measure must be Guitar measure lines.",
 	                    1,
-	                    this.getLinePositions()
+	                    this.getRanges()
 	            );
-	            if (ERROR_SENSITIVITY>= error.getPriority())
-	                result.add(error);
+	            
 	        }else if (this.tabStringList.size()<MIN_LINE_COUNT || this.tabStringList.size()>MAX_LINE_COUNT) {
 	            String rangeMsg;
 	            if (MIN_LINE_COUNT==MAX_LINE_COUNT)
@@ -199,29 +197,28 @@ public class GuitarMeasure extends TabMeasure{
 	            else
 	                rangeMsg = "between "+MIN_LINE_COUNT+" and "+MAX_LINE_COUNT;
 	
-	            ValidationError error = new ValidationError(
+	            addError(
 	                    "A Guitar measure should have "+rangeMsg+" lines.",
 	                    2,
-	                    this.getLinePositions()
+	                    this.getRanges()
 	            );
-	            if (ERROR_SENSITIVITY>= error.getPriority())
-	                result.add(error);
+	            
 	        }
 	
 	
 	        //-----------------Validate Aggregates (only if you don't have critical errors)------------------
 	
-	        for (ValidationError error : result) {
+	        for (ValidationError error : errors) {
 	            if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
-	                return result;
+	                return errors;
 	            }
 	        }
 	
 	        for (TabString measureLine : this.tabStringList) {
-	            result.addAll(measureLine.validate());
+	            errors.addAll(measureLine.validate());
 	        }
 	
-	        return result;
+	        return errors;
 	    }
 
 

@@ -1,5 +1,5 @@
 package converter.note;
 
-public interface NoteDecorator {
+public interface NoteModelDecorator {
     boolean applyTo(models.measure.note.Note noteModel);
 }

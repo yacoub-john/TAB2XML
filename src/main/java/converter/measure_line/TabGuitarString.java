@@ -7,7 +7,7 @@ import java.util.List;
 
 import converter.Instrument;
 import converter.Score;
-import converter.note.Note;
+import converter.note.TabNote;
 import utility.DrumUtils;
 import utility.GuitarUtils;
 import utility.Settings;
@@ -24,35 +24,26 @@ public class TabGuitarString extends TabString {
     }
 
     public List<ValidationError> validate() {
-        List<ValidationError> result = new ArrayList<>(super.validate());
-
         
         if (!GuitarUtils.isValidName(this.name)) {
             String message = DrumUtils.getNickNameSet().contains(this.name.strip())
                     ? "A Guitar measure line is expected here."
                     : "Invalid measure line.";
 
-            ValidationError error = new ValidationError(
+            addError(
                     message,
                     1,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            this.namePosition,
-                            this.position+this.line.length()
-                    }))
-            );
-            int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
+                    getRanges());
         }
 
-        for (ValidationError error : result) {
+        for (ValidationError error : errors) {
             if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
-                return result;
+                return errors;
             }
         }
-        for (Note note : this.noteList)
-            result.addAll(note.validate());
+        for (TabNote note : this.noteList)
+            errors.addAll(note.validate());
 
-        return result;
+        return errors;
     }
 }

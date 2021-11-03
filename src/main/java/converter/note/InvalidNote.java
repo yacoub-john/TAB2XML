@@ -7,7 +7,7 @@ import java.util.List;
 import utility.Settings;
 import utility.ValidationError;
 
-public class InvalidNote extends Note {
+public class InvalidNote extends TabNote {
 
     public InvalidNote(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart) {
         super(stringNumber, origin, position, lineName, distanceFromMeasureStart);
@@ -18,7 +18,7 @@ public class InvalidNote extends Note {
     }
     
     @Override
-	public Note copy() {
+	public TabNote copy() {
 		// TODO Auto-generated method stub
 		return new InvalidNote(this);
 	}
@@ -29,19 +29,12 @@ public class InvalidNote extends Note {
     }
 
     public List<ValidationError> validate() {
-        List<ValidationError> result = new ArrayList<>();
+        
 
-        ValidationError error = new ValidationError(
+        addError(
                 "Unrecognized text, will be ignored.",
                 1,
-                new ArrayList<>(Collections.singleton(new Integer[]{
-                        this.position,
-                        this.position+this.origin.length()
-                }))
-        );
-        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
-        if (ERROR_SENSITIVITY>= error.getPriority())
-            result.add(error);
-        return result;
+                getRanges());
+        return errors;
     }
 }

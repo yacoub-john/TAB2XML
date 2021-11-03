@@ -16,7 +16,7 @@ import utility.DrumUtils;
 import utility.Settings;
 import utility.ValidationError;
 
-public class DrumNote extends Note{
+public class DrumNote extends TabNote{
 
     //String partID;
     private DrumPiece drumPiece;
@@ -56,10 +56,10 @@ public class DrumNote extends Note{
     }
 
     public List<ValidationError> validate() {
-        List<ValidationError> result = new ArrayList<>(super.validate());
+        super.validate();
         int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
-        for (NoteDecorator noteDecor : this.noteDecorMap.keySet()) {
+        for (NoteModelDecorator noteDecor : this.noteDecorMap.keySet()) {
             String resp = noteDecorMap.get(noteDecor);
             if (resp.equals("success")) continue;
             Matcher matcher = Pattern.compile("(?<=^\\[)[0-9](?=\\])").matcher(resp);
@@ -78,23 +78,17 @@ public class DrumNote extends Note{
                 endIdx = Integer.parseInt(matcher.group());
                 message = message.substring(matcher.end()+2);
             }
-            ValidationError error = new ValidationError(
+            addError(
                     message,
                     priority,
-                    new ArrayList<>(Collections.singleton(new Integer[]{
-                            startIdx,
-                            endIdx
-                    }))
-            );
-            if (ERROR_SENSITIVITY>= error.getPriority())
-                result.add(error);
+                    getRanges());
         }
 
-        return result;
+        return errors;
     }
 
 	@Override
-	public Note copy() {
+	public TabNote copy() {
 		return new DrumNote(this);
 	}
 

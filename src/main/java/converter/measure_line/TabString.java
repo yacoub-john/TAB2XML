@@ -9,20 +9,21 @@ import java.util.regex.Pattern;
 import converter.Instrument;
 import converter.Score;
 import converter.ScoreComponent;
-import converter.note.Note;
+import converter.note.TabNote;
 import converter.note.NoteFactory;
 import utility.DrumUtils;
 import utility.GuitarUtils;
 import utility.Patterns;
+import utility.Range;
 import utility.Settings;
 import utility.ValidationError;
 
-public abstract class TabString implements ScoreComponent {
+public abstract class TabString extends ScoreComponent {
     public String line;
     public String name;
     int namePosition;
     int position;
-    public List<Note> noteList;
+    public List<TabNote> noteList;
     public Instrument instrument;
 
     protected TabString(int stringNumber, String line, String[] namesAndPosition, int position) {
@@ -32,14 +33,14 @@ public abstract class TabString implements ScoreComponent {
         this.position = position;
     }
 
-    public List<Note> getNoteList() {
-        List<Note> noteList = new ArrayList<>();
+    public List<TabNote> getNoteList() {
+        List<TabNote> noteList = new ArrayList<>();
         for (ValidationError error : this.validate()) {
             if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
                 return noteList;
             }
         }
-        for (Note note : this.noteList) {
+        for (TabNote note : this.noteList) {
             List<ValidationError> errors = note.validate();
             boolean criticalError = false;
             for (ValidationError error : errors) {
@@ -62,9 +63,9 @@ public abstract class TabString implements ScoreComponent {
 	 * @param position
 	 * @return the list of Note objects
 	 */
-	protected List<Note> createNoteList(int stringNumber, String line, int position) {
-		List<Note> noteList = new ArrayList<>();
-		Matcher noteMatcher = Pattern.compile(Note.PATTERN).matcher(line);
+	protected List<TabNote> createNoteList(int stringNumber, String line, int position) {
+		List<TabNote> noteList = new ArrayList<>();
+		Matcher noteMatcher = Pattern.compile(TabNote.PATTERN).matcher(line);
 		while (noteMatcher.find()) {
 			String match = noteMatcher.group();
 			String leadingStr = line.substring(0, noteMatcher.start()).replaceAll("\s", "");
@@ -81,7 +82,7 @@ public abstract class TabString implements ScoreComponent {
     	boolean x = GuitarUtils.getValidGuitarNames().contains(this.name.strip());
         if (!x) return false;
         if (!strictCheck) return true;
-        for (Note note : this.noteList) {
+        for (TabNote note : this.noteList) {
             if (!note.isGuitar())
                 return false;
         }
@@ -92,7 +93,7 @@ public abstract class TabString implements ScoreComponent {
     	boolean x = DrumUtils.getNickNameSet().contains(this.name.strip());
         if (!x) return false;
         if (!strictCheck) return true;
-        for (Note note : this.noteList) {
+        for (TabNote note : this.noteList) {
             if (!note.isDrum())
                 return false;
         }
@@ -112,14 +113,14 @@ public abstract class TabString implements ScoreComponent {
 	    }
 	
 	    double maxRatio = 0;
-	    for (Note note : this.noteList) {
+	    for (TabNote note : this.noteList) {
 	        maxRatio = Math.max(maxRatio, note.durationRatio);
 	    }
 	    int actualLineDistance = maxMeasureLineLength;
 	
 	
 	    int prevNoteEndDist = 0;
-	    for (Note note : this.noteList) {
+	    for (TabNote note : this.noteList) {
 	        if (!note.validate().isEmpty()) continue;
 	        int dashCount = note.distance-prevNoteEndDist;
 	        outStr.append("-".repeat(Math.max(0, dashCount)));
@@ -131,6 +132,13 @@ public abstract class TabString implements ScoreComponent {
 	    return outStr.toString();
 	}
 
+	@Override
+	public List<Range> getRanges() {
+		List<Range> ranges = new ArrayList<>();
+		ranges.add(new Range(position,position+line.length()));
+		return null;
+	}
+	
 	/**
 	 * TODO Validates this MeasureLine object by ensuring if the amount of whitespace contained in this measureline is not
 	 * above a certain percentage of the total length of the line, as this can lead to the program interpreting chords
@@ -143,48 +151,32 @@ public abstract class TabString implements ScoreComponent {
 	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
 	 */
 	public List<ValidationError> validate() {
-	    List<ValidationError> result = new ArrayList<>();
+	    
 	    int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 	    if (name==null) {
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "invalid measure line name.",
 	                1,
-	                new ArrayList<>(Collections.singleton(new Integer[]{
-	                        this.position,
-	                        this.position+this.line.length()
-	                }))
-	        );
-	        if (ERROR_SENSITIVITY>= error.getPriority())
-	            result.add(error);
+	                getRanges());
 	    }
 	    Matcher matcher = Pattern.compile(Patterns.INSIDES_PATTERN).matcher("|"+line+"|");
 	    if (!matcher.find() || !matcher.group().equals(this.line.strip())) {     // "|"+name because the MeasureLine.INSIDES_PATTERN expects a newline, space, or | to come before
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "invalid measure line.",
 	                1,
-	                new ArrayList<>(Collections.singleton(new Integer[]{
-	                        this.position,
-	                        this.position+this.line.length()
-	                }))
-	        );
-	        if (ERROR_SENSITIVITY>= error.getPriority())
-	            result.add(error);
+	                getRanges());
+	        
 	    }
 	
 	    if (this.line.length()-this.line.replaceAll("\s", "").length() != 0) {
-	        ValidationError error = new ValidationError(
+	        addError(
 	                "Adding whitespace might result in different timing than you expect.",
 	                3,
-	                new ArrayList<>(Collections.singleton(new Integer[]{
-	                        this.position,
-	                        this.position+this.line.length()
-	                }))
-	        );
-	        if (ERROR_SENSITIVITY>= error.getPriority())
-	            result.add(error);
+	                getRanges());
+	        
 	    }
 	
-	    return result;
+	    return errors;
 	}
 
 	@Override
