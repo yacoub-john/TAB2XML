@@ -13,9 +13,8 @@ import converter.instruction.TimeSignature;
 import converter.measure_line.TabDrumString;
 import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
-import converter.note.DrumNote;
-import converter.note.TabNote;
 import converter.note.NoteFactory;
+import converter.note.TabNote;
 import utility.Range;
 import utility.Settings;
 import utility.ValidationError;
@@ -183,10 +182,9 @@ public abstract class TabMeasure extends ScoreComponent {
         // For beatType 2, we double duration and divisions to avoid
     	// having divisions be a .5
         int beatTypeFactor = beatType == 2 ? 2 : 1;
-        //int divisor = beatCount * 4 / beatType;
-        //divisions = (usefulMeasureLength - (usefulMeasureLength % divisor)) / divisor;
         
         divisions = usefulMeasureLength * beatType * beatTypeFactor / (beatCount * 4);
+        
         if (usefulMeasureLength * beatType * beatTypeFactor % (beatCount * 4) > 0) {
         	System.out.println("Measure " + measureCount + ": Length of measure not good for divisions");
         	nonIntegerDivisions = true;
@@ -222,7 +220,6 @@ public abstract class TabMeasure extends ScoreComponent {
 					List<TabNote> newChord = new ArrayList<>();
 					for (TabNote n : chord) {
 						n.setDuration(note1dur);
-						//n.mustSplit = false;
 						newVoice.add(n);
 						TabNote newNote = n.copy();
 						newNote.setDuration(note2dur);
@@ -233,14 +230,12 @@ public abstract class TabMeasure extends ScoreComponent {
 						newVoice.add(n);
 					}
 					totalDuration += note1dur + note2dur;
-					//System.out.println("T"+totalDuration);
 				}
 				else {
 					if ((chord.get(0).mustSplit) && (chord.get(0).duration <= 1)){
 						split1 = true;
 					}
 				totalDuration += chord.get(0).duration;
-				//System.out.println("T"+totalDuration);
 				for (TabNote n : chord) {
 					n.mustSplit = false;
 					newVoice.add(n);
@@ -373,7 +368,7 @@ public abstract class TabMeasure extends ScoreComponent {
             position = Integer.parseInt(lineNamesAndPositions.get(0)[1]);   // use the starting position of the name instead.
         else
             position = this.positions.get(0);       // Took that -1 away: use the starting position of the inside of the measure minus one, so that it also captures the starting line of that measure "|"
-        int relStartPos = position-Score.tabText.substring(0,position).lastIndexOf("\n");
+        int relStartPos = position - Score.tabText.substring(0,position).lastIndexOf("\n");
         String line = this.lines.get(0);
         int lineLength = 0;
         if (line.matches("[^|]*\\|\\s*"))   //if it ends with a |

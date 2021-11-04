@@ -1,6 +1,7 @@
 package GUI;
 
 import converter.Score;
+import converter.Instrument;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,6 +20,8 @@ import org.jfugue.player.ManagedPlayer;
 import org.jfugue.player.Player;
 import org.staccato.StaccatoParserListener;
 import utility.MusicXMLCreator;
+import utility.Settings;
+
 //import org.jfugue.integration.MusicXmlParser;
 //import org.jfugue.pattern.Pattern;
 //import org.jfugue.player.ManagedPlayer;
@@ -65,7 +68,7 @@ public class NotePlayer {
             DISPLAY_TEXT = "Select a measure to play it.";
         else if (scoreTmp.getTabSectionList().isEmpty())
             DISPLAY_TEXT = "No measure detected in selection.";
-        else if (scoreTmp.detectedInstrument().equals("drums"))
+        else if (Settings.getInstance().getInstrument() == Instrument.DRUMS)
             DISPLAY_TEXT = "Only guitar and bass measures can be played.";
         else {
             DISPLAY_TEXT = scoreTmp.toString();
@@ -101,7 +104,7 @@ public class NotePlayer {
     }
 
     public static boolean play(Score score) throws ParserConfigurationException, MidiUnavailableException, URISyntaxException, ParsingException, IOException, InvalidMidiDataException {
-        if (SCORE.detectedInstrument().equals("drums")) return false;
+        if (Settings.getInstance().getInstrument() == Instrument.DRUMS) return false;
         MusicXmlParser parser = new MusicXmlParser();
         StaccatoParserListener listener = new StaccatoParserListener();
         parser.addParserListener(listener);

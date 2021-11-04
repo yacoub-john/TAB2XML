@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import converter.Instrument;
 import converter.note.NoteFactory;
 
 public class DrumUtils {
@@ -103,14 +102,13 @@ public static void createDrumSet() {
         return drumNickNames.keySet();
     }
     
-    public static double isDrumLineLikelihood(String name, String line, Instrument instrumentBias) {
-	    double instrumentBiasWeight = 0.2;  // weight attached when we are told to have a bias for drum notes
+    public static double isDrumLineLikelihood(String name, String line) {
 	    double lineNameWeight = 0.5;  // weight attached when the line name is a drum line name
-	    double noteGroupWeight = 0.3;   // ratio of notes that are drum notes vs {all other notes, both valid and invalid}
+	    double noteGroupWeight = 0.5;   // ratio of notes that are drum notes vs {all other notes, both valid and invalid}
 	
 	    if (!getNickNameSet().contains(name.strip()))
 	        return 0;
-	    double score = lineNameWeight + (instrumentBias==Instrument.DRUMS ? instrumentBiasWeight : 0);
+	    double score = lineNameWeight;
 	    line = line.replaceAll("\s", "");
 	
 	    int charGroups = 0;
@@ -134,24 +132,11 @@ public static void createDrumSet() {
 	    return score;
 	}
 
-
-//	private static double adjustRawConfidenceScore(double confidence) {
-//	    //Exponential Decay (increasing form)
-//	    //https://people.richland.edu/james/lecture/m116/logs/models.html
-//	    double lowerLimit = 0.5;
-//	    double size = 0.5;
-//	    return lowerLimit + 0.5*(1-Math.exp(-5*confidence));
-//	}
-
-
-	
-
-
 	public static double isDrumMeasureLikelihood(List<String> lineList, List<String[]> lineNameList) {
 	    double score = 0;
 	    int lineCount = lineList.size();
 	    for (int i=0; i<lineCount; i++) {
-	        score += isDrumLineLikelihood(lineNameList.get(i)[0], lineList.get(i), Instrument.AUTO);
+	        score += isDrumLineLikelihood(lineNameList.get(i)[0], lineList.get(i));
 	    }
 	    if (lineCount==0)
 	        score += 1; //if there is risk of zero division error, assign the full weight

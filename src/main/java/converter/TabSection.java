@@ -1,20 +1,17 @@
 package converter;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import converter.instruction.Instruction;
 import converter.instruction.InvalidRepeat;
 import converter.instruction.Repeat;
 import converter.instruction.TimeSignature;
-import converter.measure_line.TabString;
 import utility.Patterns;
 import utility.Range;
 import utility.ValidationError;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TabSection extends ScoreComponent {
 
@@ -24,13 +21,11 @@ public class TabSection extends ScoreComponent {
     String origin;  //the string that was passed to the constructor upon the instantiation of this class
     int position;   //the index in Score.rootString at which the String "MeasureCollection().origin" is located
     int endIndex;
-    //List<TabRow> tabRowList;
     private TabRow tabRow;
     public static String PATTERN = getRegexPattern();
     boolean isFirstCollection;
     private List<Instruction> instructionList = new ArrayList<>();
     private boolean repeatsFound = false;
-
 
     public TabSection(String origin, int position, boolean isFirstCollection) {
         this.origin = origin;
@@ -86,82 +81,23 @@ public class TabSection extends ScoreComponent {
 				tabRowStarts.add(start);
 				tabRowLines.add(line);
 			}
-			//this.tabRowList = createTabRowList("[" + (this.position + lineMatcher.start()) + "]" + lineMatcher.group());
-			// identifiedComponents.add(new Range(matcher.start(), matcher.end()));
-			//tabRowRange = new Range(lineMatcher.start(), lineMatcher.end());
 		}
 		//TODO redo this error
 		//else addError ("No tablature detected", 1, getRanges()); Also assert tabRowStart is not -1
 
 		createTabRow(tabRowStarts, tabRowLines);
-		// Extract instructions
-//		lineMatcher = Pattern.compile("((^|\\n)" + Instruction.LINE_PATTERN + ")+").matcher(origin);
-//		while (lineMatcher.find()) {
-//			// first make sure that what was identified as one thing is not being identified
-//			// as a different thing.
-//			String d = lineMatcher.group();
-//			//Create a list of newline positions and pass it to from
-//			Range instructionLineRange = new Range(lineMatcher.start(), lineMatcher.end());
-//			boolean isTopInstruction = false;
-//			if (instructionLineRange.compareTo(tabRowRange) < 0)
-//				isTopInstruction = true;
-//			if (isTopInstruction)
-//				this.instructionList
-//						.addAll(extractInstructions(lineMatcher.group(), this.position + lineMatcher.start(), true));
-//			else
-//				this.instructionList
-//						.addAll(extractInstructions(lineMatcher.group(), this.position + lineMatcher.start(), false));
 		}
 	
 	private void createTabRow(List<Integer> tabRowStarts, List<String> tabRowLines) {
-		
-        //List<TabRow> tabRowList = new ArrayList<>();
-
-        // separating the start index from the input String
-//        Matcher tagMatcher = Pattern.compile("^\\[[0-9]+\\]").matcher(measureGroupCollectionString);
-//        tagMatcher.find();
-//        int startIdx = Integer.parseInt(tagMatcher.group().replaceAll("[\\[\\]]",""));
-//        measureGroupCollectionString = measureGroupCollectionString.substring(tagMatcher.end());
-//        
-        
-
-        // I can split measureGroupCollectionString by newlines and then go through each line and create the measure groups,
-        // but splitting by newlines will make us lose the information of what index each line is positioned at. We may be able
-        // to figure the index out, but there will always be an uncertainty of +-1
-
-        List<String> tabRowString = new ArrayList<>();
-
-        //matches every line containing something
-        //Matcher lineContentMatcher = Pattern.compile("(?<=^|\\n)[^\\n]+(?=$|\\n)").matcher(measureGroupCollectionString);
-        //while (lineContentMatcher.find()) { // go through each line
-        for (int i=0; i < tabRowLines.size() ; i++)	{
-            String line = tabRowLines.get(i);
-            int lineStartIdx = tabRowStarts.get(i);
-            String tabRowLine = "[" + (this.position + lineStartIdx) + "]" + line;
-            tabRowString.add(tabRowLine);
-//            if (!line.matches(tabRowLinePattern())) continue;
-//
-//            Matcher tabRowLineMatcher = Pattern.compile(LINE_PATTERN).matcher(line);
-//
-//            int tabRowCount = 0;   //the number of measure groups on this line
-//            while (tabRowLineMatcher.find()) {
-//                tabRowCount++;
-//                int tabRowLineStartIdx = lineStartIdx + tabRowLineMatcher.start();
-//                String tabRowLine = "["+tabRowLineStartIdx+"]"+tabRowLineMatcher.group();
-//                if (tabRowStringList.size()<tabRowCount)
-//                    tabRowStringList.add(new ArrayList<>());
-
-                //List<String> tabRowLines = tabRowStringList.get(tabRowCount-1);    //-1 cuz of zero indexing.
-                //tabRowLines.add(tabRowLine);
-            //}
-        }
-//        for (List<String> tabRowString : tabRowStringList) {
-//            tabRowList.add(new TabRow(tabRowString));
-        this.tabRow = new TabRow(tabRowString);
-        }
-        //return tabRowList;
-	
-	
+		List<String> tabRowString = new ArrayList<>();
+		for (int i=0; i < tabRowLines.size() ; i++)	{
+			String line = tabRowLines.get(i);
+			int lineStartIdx = tabRowStarts.get(i);
+			String tabRowLine = "[" + (this.position + lineStartIdx) + "]" + line;
+			tabRowString.add(tabRowLine);
+		}
+		this.tabRow = new TabRow(tabRowString);
+	}
 	
     private List<Instruction> extractInstructions(String line, int position, boolean isTop) {
         List<Instruction> instructionList = new ArrayList<>();
@@ -187,59 +123,7 @@ public class TabSection extends ScoreComponent {
         return instructionList;
     }
 
-	/**
-     * Creates a List of MeasureGroup objects from the provided string representation of a measure group collection.
-     * These MeasureGroup objects are not guaranteed to be valid. you can find out if all the MeasureGroup
-     * objects in this MeasureCollection are actually valid by calling the MeasureCollection().validate() method.
-     * @param measureGroupCollectionString The String representation of the MeasureGroup objects to be created, beginning with
-     *                             a String tag indicating the index at which the provided String begins in Score.rootString
-     *                             (i.e "[startIdx]stringContent")
-     * @return A List of MeasureGroup objects.
-     */
-    private List<TabRow> createTabRowList(String measureGroupCollectionString) {
-        List<TabRow> tabRowList = new ArrayList<>();
-
-        // separating the start index from the input String
-        Matcher tagMatcher = Pattern.compile("^\\[[0-9]+\\]").matcher(measureGroupCollectionString);
-        tagMatcher.find();
-        int startIdx = Integer.parseInt(tagMatcher.group().replaceAll("[\\[\\]]",""));
-        measureGroupCollectionString = measureGroupCollectionString.substring(tagMatcher.end());
-
-        // I can split measureGroupCollectionString by newlines and then go through each line and create the measure groups,
-        // but splitting by newlines will make us lose the information of what index each line is positioned at. We may be able
-        // to figure the index out, but there will always be an uncertainty of +-1
-
-        List<List<String>> tabRowStringList = new ArrayList<>();
-
-        //matches every line containing something
-        Matcher lineContentMatcher = Pattern.compile("(?<=^|\\n)[^\\n]+(?=$|\\n)").matcher(measureGroupCollectionString);
-        while (lineContentMatcher.find()) { // go through each line
-            String line = lineContentMatcher.group();
-            int lineStartIdx = startIdx+lineContentMatcher.start();
-
-            if (!line.matches(tabRowLinePattern())) continue;
-
-            Matcher tabRowLineMatcher = Pattern.compile(LINE_PATTERN).matcher(line);
-
-            int tabRowCount = 0;   //the number of measure groups on this line
-            while (tabRowLineMatcher.find()) {
-                tabRowCount++;
-                int tabRowLineStartIdx = lineStartIdx + tabRowLineMatcher.start();
-                String tabRowLine = "["+tabRowLineStartIdx+"]"+tabRowLineMatcher.group();
-                if (tabRowStringList.size()<tabRowCount)
-                    tabRowStringList.add(new ArrayList<>());
-
-                List<String> tabRowLines = tabRowStringList.get(tabRowCount-1);    //-1 cuz of zero indexing.
-                tabRowLines.add(tabRowLine);
-            }
-        }
-        for (List<String> tabRowString : tabRowStringList) {
-            tabRowList.add(new TabRow(tabRowString));
-        }
-        return tabRowList;
-    }
-
-    private static String tabRowLinePattern() {
+    public static String tabRowLinePattern() {
         return "("+ Patterns.WHITESPACE + "*(" + LINE_PATTERN + Patterns.WHITESPACE + "*)+)";
     }
 
@@ -256,58 +140,10 @@ public class TabSection extends ScoreComponent {
                 + ")+"                                                                  // the tab row I just described is repeated one or more times.
                 + "(\\n"+ Instruction.LINE_PATTERN+")*";
     }
-
-    //    public int setDivisions() {
-	//        int divisions = 0;
-	//        for (TabRow tabRow : this.tabRowList) {
-	//            divisions = Math.max(divisions,  tabRow.setDivisions());
-	//        }
-	//
-	//        return divisions;
-	//    }
-	
-//	    public List<TabRow> getTabRowList() {
-//	        return this.tabRowList;
-//	    }
 	    
 	    public TabRow getTabRow() {
 	        return this.tabRow;
 	    }
-
-
-//	public List<models.measure.Measure> getMeasureModels() {
-//        List<models.measure.Measure> measureModels = new ArrayList<>();
-//        for (TabRow measureGroup : this.tabRowList) {
-//            measureModels.addAll(measureGroup.getMeasureModels());
-//        }
-//        return measureModels;
-//    }
-
-    public boolean isGuitar(boolean strictCheck) {
-//        for (TabRow measureGroup : this.tabRowList) {
-//            if (!measureGroup.isGuitar(strictCheck))
-//                return false;
-//        }
-//        return true;
-    	return tabRow.isGuitar(strictCheck);    }
-
-    public boolean isDrum(boolean strictCheck) {
-//        for (TabRow tabRow : this.tabRowList) {
-//            if (!tabRow.isDrum(strictCheck))
-//                return false;
-//        }
-//        return true;
-    	return tabRow.isDrum(strictCheck);
-    }
-
-    public boolean isBass(boolean strictCheck) {
-//        for (TabRow measureGroup : this.tabRowList) {
-//            if (!measureGroup.isBass(strictCheck))
-//                return false;
-//        }
-//        return true;
-    	return tabRow.isBass(strictCheck);
-    }
 
 @Override
 	public List<Range> getRanges() {
@@ -330,30 +166,18 @@ public class TabSection extends ScoreComponent {
 	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
 	 */
 	public List<ValidationError> validate() {
-	    //List<ValidationError> result = new ArrayList<>();
-	
-	    //--------------Validate your aggregates (only if you are valid)-------------------
-	
-	   // for (TabRow mGroup : this.tabRowList) {
-	        errors.addAll(tabRow.validate());
-	   // }
-	    for (Instruction instruction : this.instructionList) {
-	        errors.addAll(instruction.validate());
-	    }
-	
-	    return errors;
+		errors.addAll(tabRow.validate());
+		for (Instruction instruction : this.instructionList) {
+			errors.addAll(instruction.validate());
+		}
+		return errors;
 	}
 
 	@Override
     public String toString() {
-        StringBuilder outStr = new StringBuilder();
-        //for (int i=0; i<this.tabRowList.size()-1; i++) {
-            outStr.append(this.tabRow.toString());
-//            outStr.append("\n\n");
-//        //}
-//
-//        if (!this.tabRowList.isEmpty())
-//            outStr.append(this.tabRowList.get(this.tabRowList.size()-1).toString());
+		//TODO Needs to be updated to include instructions?
+        StringBuilder outStr = new StringBuilder();    
+        outStr.append(this.tabRow.toString());
         return outStr.toString();
     }
 

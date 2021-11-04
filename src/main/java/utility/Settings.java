@@ -1,6 +1,7 @@
 package utility;
 
 import converter.Instrument;
+import converter.InstrumentSetting;
 
 public class Settings {
 
@@ -21,5 +22,16 @@ public class Settings {
     
     public DoubleDigitStyle ddStyle = DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_STRETCH;
     
-    public Instrument instrument = Instrument.AUTO;
+    public InstrumentSetting instrumentSetting = InstrumentSetting.AUTO;
+    public Instrument detectedInstrument = Instrument.NONE;
+    
+    public Instrument getInstrument() {
+    	switch (instrumentSetting) {
+    	case AUTO: return detectedInstrument;
+    	case GUITAR: return Instrument.GUITAR;
+    	case BASS: return Instrument.BASS;
+    	case DRUMS: return Instrument.DRUMS;
+    	default: return Instrument.GUITAR;
+    	}
+    }
 }

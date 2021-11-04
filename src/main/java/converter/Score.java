@@ -9,9 +9,6 @@ import java.util.regex.Pattern;
 
 import converter.measure.TabMeasure;
 import converter.measure_line.TabDrumString;
-import converter.note.TabNote;
-import custom_exceptions.InvalidScoreTypeException;
-import custom_exceptions.MixedScoreTypeException;
 import custom_exceptions.TXMLException;
 import models.Creator;
 import models.Identification;
@@ -24,6 +21,7 @@ import models.part_list.ScorePart;
 import utility.DrumPiece;
 import utility.DrumPieceInfo;
 import utility.DrumUtils;
+import utility.GuitarUtils;
 import utility.Range;
 import utility.Settings;
 import utility.ValidationError;
@@ -38,10 +36,8 @@ public class Score extends ScoreComponent {
 
     public Score(String textInput) {
     	TabMeasure.MEASURE_INDEX = 0;
-    	DrumUtils.createDrumSet();
-    	DrumUtils.createDrumNickNames();
-        
     	tabText = textInput;
+    	detectInstrument();
         scoreTextFragments = getScoreTextFragments(tabText);
         tabSectionList = createTabSectionList(scoreTextFragments);
         tabMeasureList = createMeasureList();
@@ -50,6 +46,42 @@ public class Score extends ScoreComponent {
         createTiedNotes();
     }
 
+	/**
+	 * Updates the value of instrument in Settings if it was set to auto-detect
+	 */
+	public void detectInstrument() {
+		if (Settings.getInstance().instrumentSetting == InstrumentSetting.AUTO) {
+			double guitarScore = 0;
+			double drumScore = 0;
+			Matcher lineMatcher = Pattern.compile("(?<=^|\\n)[^\\n]+(?=$|\\n)").matcher(tabText);
+			int lineCount = 0;
+			while (lineMatcher.find()) { // go through each line
+				String x = lineMatcher.group();
+				Matcher tabRowLineMatcher = Pattern.compile(TabSection.tabRowLinePattern()).matcher(x);
+				if (tabRowLineMatcher.find()) {
+					lineCount ++;
+					if (lineCount > 12) break; // Should know the instrument by then
+					String line = tabRowLineMatcher.group();
+					if (line.charAt(0) == '\n') {
+						line = line.substring(1);
+					}
+					String[] nameAnd = new TabRow().nameOf(line, 0);
+					String name = nameAnd[0];
+					String tab = line.substring(Integer.parseInt(nameAnd[1]) + name.length());
+					guitarScore += GuitarUtils.isGuitarLineLikelihood(name, tab);
+					drumScore += DrumUtils.isDrumLineLikelihood(name, tab);
+				}
+			}
+			if (guitarScore > drumScore) {
+				Settings.getInstance().detectedInstrument = Instrument.GUITAR;
+				System.out.println("guitar");
+			}
+			else {
+				Settings.getInstance().detectedInstrument = Instrument.DRUMS;
+				System.out.println("drums");
+			}
+		}
+	}
     /**
      * Breaks input text (at wherever it finds blank lines) up into smaller pieces to make further analysis of each
      * piece of text with regex more efficient
@@ -123,33 +155,21 @@ public class Score extends ScoreComponent {
 	    }
 	}
 
-  
 	private void setDivisions() {
-//	    int divisions = 0;
-//	    for (TabSection tabSection : this.tabSectionList) {
-//	        divisions = Math.max(divisions,  tabSection.setDivisions());
-//	    }
 	    for (TabMeasure tabMeasure : this.tabMeasureList) {
 	        tabMeasure.setDivisions();
 	    }
 	}
 
-    private void createTiedNotes() {
-	boolean noSplit = false;
-	while (!noSplit) {
-		noSplit = true;
-		for (TabMeasure m: tabMeasureList) {	
-			if (m.createTiedNotes()) noSplit = false;
+	private void createTiedNotes() {
+		boolean noSplit = false;
+		while (!noSplit) {
+			noSplit = true;
+			for (TabMeasure m : tabMeasureList) {
+				if (m.createTiedNotes())
+					noSplit = false;
+			}
 		}
-	}
-}
-
-	public String detectedInstrument() {
-		String inst = "None";
-		if (isGuitar(false)) inst = "Guitar";
-		if (isBass(false)) inst = "Bass";
-		if (isDrum(false)) inst = "Drums";
-		return inst;
 	}
 
 	public List<TabSection> getTabSectionList() {
@@ -161,21 +181,8 @@ public class Score extends ScoreComponent {
     }
     
     public TabMeasure getMeasure(int measureCount) {
-//        for (TabSection mCol : this.getTabSectionList()) {
-//            for (TabRow mGroup : mCol.getTabRowList()) {
-//                for (TabMeasure measure : mGroup.getMeasureList()) {
-//                    int count = measure.getCount();
-//                    if (count==measureCount)
-//                        return measure;
-//                    if (count > measureCount)
-//                        return null;
-//                }
-//            }
-//        }
-//        return null;
-    	
         try {
-			return tabMeasureList.get(measureCount);
+			return tabMeasureList.get(measureCount - 1); // -1 due to 0 indexing
 		} catch (IndexOutOfBoundsException e) {
 			return null;
 		}
@@ -190,19 +197,6 @@ public class Score extends ScoreComponent {
         }
         return measureList;
     }
-
-//    private int getErrorLevel() {
-//        List<ValidationError> errors = this.validate();
-//        if (errors.isEmpty()) return 0;
-//        int errorLevel = 10;    //random large number (larger than any error priority)
-//        for (ValidationError error : errors) {
-//            int priority = error.getPriority();
-//            errorLevel = Math.min(errorLevel, priority);
-//        }
-//        return errorLevel;
-//    }
-
-
 
     private PartList getDrumPartList() {
         List<ScorePart> scoreParts = new ArrayList<>();
@@ -227,7 +221,7 @@ public class Score extends ScoreComponent {
 
     private PartList getGuitarPartList() {
         List<ScorePart> scoreParts = new ArrayList<>();
-        scoreParts.add(new ScorePart("P1", "Classical Guitar"));
+        scoreParts.add(new ScorePart("P1", "Guitar"));
         return new PartList(scoreParts);
     }
 
@@ -237,41 +231,6 @@ public class Score extends ScoreComponent {
         return new PartList(scoreParts);
     }
     
-    
-  //TODO Update to use the attribute measures
-    private boolean isGuitar(boolean strictCheck) {
-        if (!strictCheck && Settings.getInstance().instrument != Instrument.AUTO) {
-            return Settings.getInstance().instrument == Instrument.GUITAR;
-        }
-        for (TabSection msurCollection : this.tabSectionList) {
-            if (!msurCollection.isGuitar(strictCheck))
-                return false;
-        }
-        return true;
-    }
-
-    private boolean isDrum(boolean strictCheck) {
-        if (!strictCheck && Settings.getInstance().instrument != Instrument.AUTO) {
-            return Settings.getInstance().instrument == Instrument.DRUMS;
-        }
-        for (TabSection tabSection : this.tabSectionList) {
-            if (!tabSection.isDrum(strictCheck))
-                return false;
-        }
-        return true;
-    }
-
-    private boolean isBass(boolean strictCheck) {
-        if (!strictCheck && Settings.getInstance().instrument != Instrument.AUTO) {
-            return Settings.getInstance().instrument == Instrument.BASS;
-        }
-        for (TabSection msurCollection : this.tabSectionList) {
-            if (!msurCollection.isBass(strictCheck))
-                return false;
-        }
-        return true;
-    }
-
 //    private int lastReturn(int position) {
 //    	return tabText.substring(0,position).lastIndexOf("\n");
 //    }
@@ -280,34 +239,8 @@ public class Score extends ScoreComponent {
 	// which has to remain the same for all the sub-elements it has as they use that counter. this may turn out to be
 	// a bad idea cuz it might clash with the NotePlayer class
 	synchronized public ScorePartwise getModel() throws TXMLException {
-	    boolean isGuitar = false;
-	    boolean isDrum = false;
-	    boolean isBass = false;
-	
-	    if (Settings.getInstance().instrument ==Instrument.GUITAR)
-	        isGuitar = true;
-	    else if (Settings.getInstance().instrument ==Instrument.DRUMS)
-	        isDrum = true;
-	    else if (Settings.getInstance().instrument ==Instrument.BASS)
-	        isBass = true;
-	    else {
-	        isGuitar = this.isGuitar(false);
-	        isDrum = this.isDrum(false);
-	        isBass = this.isBass(false);
-	        if (isDrum && isGuitar) {
-	            isDrum = this.isDrum(true);
-	            isGuitar = this.isGuitar(true);
-	        }
-	        if (Settings.getInstance().instrument == Instrument.AUTO && ((isDrum && isGuitar)||(isDrum && isBass)))
-	            throw new MixedScoreTypeException("Multi-instrument tablatures are not supported at this time.");
-	        if (!isDrum && !isGuitar && !isBass)
-	            throw new InvalidScoreTypeException("The instrument for this tablature could not be detected. Please specify in Settings -> Current Song Settings.");
-	    }
 	
 	    List<models.measure.Measure> measures = new ArrayList<>();
-//	    for (TabSection tabSection : this.tabSectionList) {
-//	        measures.addAll(tabSection.getMeasureModels());
-//	    }
 	    for (TabMeasure tabMeasure : this.tabMeasureList) {
 	        measures.add(tabMeasure.getModel());
 	    }
@@ -316,9 +249,9 @@ public class Score extends ScoreComponent {
 	    parts.add(part);
 	
 	    PartList partList;
-	    if (isDrum)
+	    if (Settings.getInstance().getInstrument() == Instrument.DRUMS)
 	        partList = this.getDrumPartList();
-	    else if (isGuitar)
+	    else if (Settings.getInstance().getInstrument() == Instrument.GUITAR)
 	        partList = this.getGuitarPartList();
 	    else
 	        partList = this.getBassPartList();

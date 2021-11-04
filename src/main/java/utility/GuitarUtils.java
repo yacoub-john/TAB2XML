@@ -7,8 +7,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import converter.Instrument;
-import converter.measure.BassMeasure;
 import converter.note.NoteFactory;
 
 public class GuitarUtils {
@@ -16,9 +14,6 @@ public class GuitarUtils {
 
 
     public static boolean isValidName(String name) {
-    	 
-    	char c = name.charAt(name.length()-1);
-    	
         return getValidGuitarNames().contains(name.strip());
     }
 
@@ -81,7 +76,7 @@ public class GuitarUtils {
 //	    return bassScore;
 //	}
 	
-	private static double isGuitarLineLikelihood(String name, String line) {
+	public static double isGuitarLineLikelihood(String name, String line) {
 	    double lineNameWeight = 0.5;  // weight attached when the line name is a guitar line name
 	    double noteGroupWeight = 0.5;   // ratio of notes that are guitar notes vs {all other notes, both valid and invalid}
 	

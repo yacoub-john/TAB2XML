@@ -41,16 +41,16 @@ public class MusicXMLCreator {
         return xmlString;
     }
     
-    public static Instrument getInstrumentEnum(String instrument) {
-        if (instrument.equalsIgnoreCase("guitar"))
-            return Instrument.GUITAR;
-        else if (instrument.equalsIgnoreCase("drum"))
-            return Instrument.DRUMS;
-        else if (instrument.equalsIgnoreCase("bass"))
-            return Instrument.BASS;
-        else
-            return Instrument.AUTO;
-    }
+//    public static Instrument getInstrumentEnum(String instrument) {
+//        if (instrument.equalsIgnoreCase("guitar"))
+//            return Instrument.GUITAR;
+//        else if (instrument.equalsIgnoreCase("drum"))
+//            return Instrument.DRUMS;
+//        else if (instrument.equalsIgnoreCase("bass"))
+//            return Instrument.BASS;
+//        else
+//            return Instrument.AUTO;
+//    }
 
 //    public static void setTitle(String title) {
 //        if (SCORE==null || title.isBlank()) return;
