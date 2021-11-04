@@ -207,15 +207,15 @@ public class TabRow extends ScoreComponent {
         return measure;
     }
     
-    public void removeRepeatInstruction() {
-		if (!removedRepeatInstruction) {  // Don't want to remove again if there are multiple repeats on the same line
-			lines.remove(0);
-			positions.remove(0);
-			TabMeasure.MEASURE_INDEX -= tabMeasures.size();
-			tabMeasures = createTabMeasureList(lines, positions);
-			removedRepeatInstruction = true;
-		}
-	}
+//    public void removeRepeatInstruction() {
+//		if (!removedRepeatInstruction) {  // Don't want to remove again if there are multiple repeats on the same line
+//			lines.remove(0);
+//			positions.remove(0);
+//			TabMeasure.MEASURE_INDEX -= tabMeasures.size();
+//			tabMeasures = createTabMeasureList(lines, positions);
+//			removedRepeatInstruction = true;
+//		}
+//	}
 
 
 	private TabMeasure detectAndCreateMeasure(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {

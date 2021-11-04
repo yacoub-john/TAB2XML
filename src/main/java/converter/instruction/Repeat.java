@@ -20,15 +20,15 @@ public class Repeat extends Instruction {
     private int repeatCount;
     private boolean startApplied = false;
     private boolean endApplied = false;
-    Repeat(String content, int position, RelativePosition relativePosition) {
-        super(content, position, relativePosition);
+    public Repeat(String content, int position, boolean isTop) {
+        super(content, position, isTop);
         Matcher matcher = Pattern.compile("[0-9]+").matcher(content);
         if (matcher.find())
             this.repeatCount = Integer.parseInt(matcher.group());
     }
 
     public <E extends ScoreComponent> void applyTo(E scoreComponent) {
-        if ((this.getRelativeRange() instanceof Bottom) || this.getHasBeenApplied() || this.repeatCount==0) {
+        if ((!isTop) || this.getHasBeenApplied() || this.repeatCount==0) {
             this.setHasBeenApplied(true);
             return;
         }
@@ -37,23 +37,24 @@ public class Repeat extends Instruction {
             TabSection tabSection = (TabSection) scoreComponent;
             TabMeasure firstMeasure = null;
             TabMeasure lastMeasure = null;
-            for (TabRow tabRow : tabSection.getTabRowList()) {
-                Range tabRowRange = tabRow.getRelativeRange();
-                if (tabRowRange == null) continue;
-                if (!this.getRelativeRange().overlaps(tabRowRange)) continue;
+            TabRow tabRow = tabSection.getTabRow();
+            //for (TabRow tabRow : tabSection.getTabRowList()) {
+                //Range tabRowRange = tabRow.getRelativeRange();
+                //if (tabRowRange == null) continue;
+                //if (!this.getRange().overlaps(tabRowRange)) continue;
                 // Getting here means we are dealing with at least one repeat instruction above the tab row
-                tabRow.removeRepeatInstruction();  // Only removes the first time
+                //tabRow.removeRepeatInstruction();  // Only removes the first time
                 //TODO Figure out if there's nested repeats and remove as many lines above
                 //TODO Nested repeats don't get applied below but create an error (take from Invalid Repeat, and then delete that class)
                 for (TabMeasure measure : tabRow.getMeasureList()) {
                     Range measureRange = measure.getRelativeRange();
-                    if (measureRange==null || !this.getRelativeRange().overlaps(measureRange)) continue;
+                    if (measureRange==null || !this.getRange().overlaps(measureRange)) continue;
                     if (firstMeasure==null && !this.startApplied)
                         firstMeasure = measure;
                     if (!this.endApplied)
                         lastMeasure = measure;
                 }
-            }
+            //}
             if (firstMeasure!=null)
                 this.startApplied = firstMeasure.setRepeat(this.repeatCount, RepeatType.START);
             if (lastMeasure!=null)
@@ -73,7 +74,7 @@ public class Repeat extends Instruction {
 
 	public List<ValidationError> validate() {
 	    super.validate();
-	    if (!(this.getRelativeRange() instanceof Top)) {
+	    if (!(isTop)) {
 	        addError(
 	                "Repeats should only be applied to the top of measures.",
 	                3,

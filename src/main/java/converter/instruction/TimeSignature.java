@@ -18,8 +18,8 @@ public class TimeSignature extends Instruction {
     public static String PATTERN = "(?<=\\s|\n|\r|^)[0-9][0-9]?\\/[0-9][0-9]?(?=\\s|\n|\r|$)";
     private int beatType;
     private int beatCount;
-    TimeSignature(String content, int position, RelativePosition relativePosition) {
-        super(content, position, relativePosition);
+    public TimeSignature(String content, int position, boolean isTop) {
+        super(content, position, isTop);
         Matcher beatCountMatcher = Pattern.compile("[0-9]+(?=[/\\\\])").matcher(content);
         Matcher beatTypeMatcher = Pattern.compile("(?<=[/\\\\])[0-9]+").matcher(content);
         if (beatCountMatcher.find())
@@ -36,24 +36,24 @@ public class TimeSignature extends Instruction {
         }
 
         if (scoreComponent instanceof TabSection) {
-            TabSection measureCollection = (TabSection) scoreComponent;
-            for (TabRow measureGroup : measureCollection.getTabRowList()) {
-                Range measureGroupRange = measureGroup.getRelativeRange();
-                if (measureGroupRange==null) continue;
-                if (!measureGroupRange.contains(this.getRelativeRange())) continue;
-                for (TabMeasure measure : measureGroup.getMeasureList()) {
+            TabSection tabSection = (TabSection) scoreComponent;
+                TabRow tabRow = tabSection.getTabRow();
+                //Range tabRowRange = tabRow.getRelativeRange();
+//                if (measureGroupRange==null) continue;
+//                if (!measureGroupRange.contains(this.getRange())) continue;
+                for (TabMeasure measure : tabRow.getMeasureList()) {
                     Range measureRange = measure.getRelativeRange();
-                    if (measureRange==null || !measureRange.contains(this.getRelativeRange())) continue;
+                    if (measureRange==null || !measureRange.contains(this.getRange())) continue;
                     boolean itWorked = measure.setTimeSignature(this.beatCount, this.beatType);
                     this.setHasBeenApplied(itWorked);
                     if (itWorked) measure.changesTimeSignature = true;
                 }
-            }
+            
         }
     }
 
     public List<ValidationError> validate() {
-        if (!(this.getRelativeRange() instanceof Top)) {
+        if (!(isTop)) {
             addError(
                     "Time signatures should only be applied to the top of measures.",
                     3,

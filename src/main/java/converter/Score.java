@@ -110,7 +110,7 @@ public class Score extends ScoreComponent {
 	    int currBeatCount = Settings.getInstance().tsNum;
 	    int currBeatType = Settings.getInstance().tsDen;
 	    for (TabSection tabSection : tabSectionList) {
-	        for (TabRow tabRow : tabSection.getTabRowList()) {
+	        TabRow tabRow = tabSection.getTabRow();
 	            for (TabMeasure measure : tabRow.getMeasureList()) {
 	                if (measure.changesTimeSignature) {
 	                    currBeatCount = measure.getBeatCount();
@@ -119,7 +119,7 @@ public class Score extends ScoreComponent {
 	                }
 	                measure.setTimeSignature(currBeatCount, currBeatType);
 	            }
-	        }
+	        
 	    }
 	}
 
@@ -184,9 +184,9 @@ public class Score extends ScoreComponent {
     private List<TabMeasure> createMeasureList() {
         List<TabMeasure> measureList = new ArrayList<>();
         for (TabSection tabSection : this.tabSectionList) {
-            for (TabRow tabRow : tabSection.getTabRowList()) {
-                measureList.addAll(tabRow.getMeasureList());
-            }
+            TabRow tabRow = tabSection.getTabRow();
+            measureList.addAll(tabRow.getMeasureList());
+            
         }
         return measureList;
     }

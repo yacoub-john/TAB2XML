@@ -13,50 +13,28 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class Instruction extends ScoreComponent{
-    public static Top TOP = new Top();
-    public static Bottom BOTTOM = new Bottom();
+	protected boolean isTop;
+    
     public static String LINE_PATTERN = getLinePattern();
 
     protected String content;
     protected int position;
-    private RelativePosition relativePosition;
+    protected Range range;
     protected boolean hasBeenApplied;
 
-    Instruction(String content, int position, RelativePosition topOrBottom) {
+    Instruction(String content, int position, boolean isTop) {
         this.content = content;
         this.position = position;
-
+        this.isTop = isTop;
         int relStartPos = position - Score.tabText.substring(0,position).lastIndexOf("\n");
         int relEndPos = relStartPos + content.length() - 1;
-
-        if (topOrBottom instanceof Top)
-            this.relativePosition = new Top(relStartPos, relEndPos);
-        else
-            this.relativePosition = new Bottom(relStartPos, relEndPos);
+        setRange(new Range(relStartPos, relEndPos));
+        
     }
 
     public abstract <E extends ScoreComponent> void applyTo(E scoreComponent);
 
-    RelativePosition getRelativeRange() {
-        return this.relativePosition;
-    }
-
-    public static List<Instruction> from(String line, int position, RelativePosition topOrBottom) {
-        List<Instruction> instructionList = new ArrayList<>();
-        // Matches the repeat text including any barlines
-        Matcher repeatMatcher = Pattern.compile(Repeat.PATTERN).matcher(line);
-        
-        while(repeatMatcher.find()) {
-            instructionList.add(new Repeat(repeatMatcher.group(), position+repeatMatcher.start(), topOrBottom));
-        }
-
-        Matcher timeSigMatcher = Pattern.compile(TimeSignature.PATTERN).matcher(line);
-        while(timeSigMatcher.find()) {
-            instructionList.add(new TimeSignature(timeSigMatcher.group(), position+timeSigMatcher.start(), topOrBottom));
-        }
-
-        return instructionList;
-    }
+    
 
     String getContent() {
         return this.content;
@@ -93,26 +71,22 @@ public abstract class Instruction extends ScoreComponent{
         String instruction = "(("+TimeSignature.PATTERN+")|("+Repeat.PATTERN+"))";
         return "("+Patterns.WHITESPACE+"*" + instruction + Patterns.WHITESPACE+"*" + ")+";
     }
+
+	public boolean isTop() {
+		return isTop;
+	}
+
+	public void setTop(boolean isTop) {
+		this.isTop = isTop;
+	}
+
+	public Range getRange() {
+		return range;
+	}
+
+	public void setRange(Range range) {
+		this.range = range;
+	}
 }
 
-abstract class RelativePosition extends Range {
-    RelativePosition(int relStart, int relEnd) {
-        super(relStart, relEnd);
-    }
-}
-class Top extends RelativePosition {
-    Top() {
-        super(0,0);
-    }
-    Top(int relStart, int relEnd) {
-        super(relStart, relEnd);
-    }
-}
-class Bottom extends RelativePosition {
-    Bottom() {
-        super(0,0);
-    }
-    Bottom(int relStart, int relEnd) {
-        super(relStart, relEnd);
-    }
-}
+

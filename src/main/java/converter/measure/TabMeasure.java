@@ -195,7 +195,7 @@ public abstract class TabMeasure extends ScoreComponent {
         	System.out.println("Measure " + measureCount + ": Unsupported divisions: " + divisions);
         	unSupportedDivisions = true;
         }
-        //if (ArrayUtils.contains(supportedDivisions, divisions) )
+        
         for (List<TabNote> voice : this.voiceSortedNoteList) {
             for (TabNote note : voice) {
                 note.setDivisions(this.divisions);
