@@ -11,12 +11,13 @@ import converter.instruction.Repeat;
 import converter.instruction.TimeSignature;
 import utility.Patterns;
 import utility.Range;
+import utility.Settings;
 import utility.ValidationError;
 
 public class TabSection extends ScoreComponent {
 
 	//                           a measure line at start of line(with name)          zero or more middle measure lines       (optional |'s and spaces then what's ahead is end of line)
-    private static String LINE_PATTERN = "("+Patterns.START_OF_LINE          +          Patterns.MIDDLE_OF_LINE+"*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.WHITESPACE+"*)"     +  ")";
+    private static String LINE_PATTERN = "(" + Patterns.START_OF_LINE          +          Patterns.MIDDLE_OF_LINE + "*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.WHITESPACE+"*)"     +  ")";
 
     String origin;  //the string that was passed to the constructor upon the instantiation of this class
     int position;   //the index in Score.rootString at which the String "MeasureCollection().origin" is located
@@ -96,6 +97,8 @@ public class TabSection extends ScoreComponent {
 			String tabRowLine = "[" + (this.position + lineStartIdx) + "]" + line;
 			tabRowString.add(tabRowLine);
 		}
+		if (isFirstCollection && Settings.getInstance().getInstrument() == Instrument.GUITAR && tabRowString.size() < 6)
+			Settings.getInstance().detectedInstrument = Instrument.BASS;
 		this.tabRow = new TabRow(tabRowString);
 	}
 	

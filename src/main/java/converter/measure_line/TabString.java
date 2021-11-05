@@ -24,13 +24,14 @@ public abstract class TabString extends ScoreComponent {
     int namePosition;
     int position;
     public List<TabNote> noteList;
-    public Instrument instrument;
+    
 
     protected TabString(int stringNumber, String line, String[] namesAndPosition, int position) {
         this.line = line;
         this.name = namesAndPosition[0];
         this.namePosition = Integer.parseInt(namesAndPosition[1]);
         this.position = position;
+        this.noteList = this.createNoteList(stringNumber, this.line, position);
     }
 
     public List<TabNote> getNoteList() {
@@ -71,7 +72,7 @@ public abstract class TabString extends ScoreComponent {
 			String leadingStr = line.substring(0, noteMatcher.start()).replaceAll("\s", "");
 			int distanceFromMeasureStart = leadingStr.length();
 			if (!match.isBlank()) {
-				NoteFactory nf = new NoteFactory(stringNumber, match, position + noteMatcher.start(), this.instrument, this.name, distanceFromMeasureStart);
+				NoteFactory nf = new NoteFactory(stringNumber, match, position + noteMatcher.start(), this.name, distanceFromMeasureStart);
 				noteList.addAll(nf.getNotes());
 			}
 		}

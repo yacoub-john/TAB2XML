@@ -33,7 +33,7 @@ public class InvalidNote extends TabNote {
 
         addError(
                 "Unrecognized text, will be ignored.",
-                1,
+                3,
                 getRanges());
         return errors;
     }

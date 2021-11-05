@@ -27,11 +27,11 @@ public class NoteFactory {
     private int distanceFromMeasureStart, position;
     HashMap<String, String> patternPackage;
     Instrument instrument;
-    
-    public NoteFactory(int stringNumber, String origin, int position, Instrument instrument, String lineName, int distanceFromMeasureStart) {
+	
+    public NoteFactory(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart) {
         this.origin = origin;
         this.lineName = lineName;
-        this.instrument = instrument;
+        this.instrument = Settings.getInstance().getInstrument();
         this.distanceFromMeasureStart = distanceFromMeasureStart;
         this.position = position;
         this.patternPackage = getPatternPackage(origin);
@@ -59,11 +59,11 @@ public class NoteFactory {
     public static final String GUITAR_NOTE_CONNECTOR = "[hpbsHPBS\\/\\\\]";
 
     public static final String DRUM_NOTE_PATTERN = "[xXoOdDfF#]";
-    public static final String DRUM_NOTE_GROUP_PATTERN = getDrumNoteGroupPattern();
+	public static final String DRUM_NOTE_GROUP_PATTERN = getDrumNoteGroupPattern();
     public static final String DRUM_NOTE_CONNECTOR = "$a";//there are no connectors, so this is a regex that never matches anything. an a after the end of the string
 
     private static String getDrumNoteGroupPattern() {
-        return DRUM_NOTE_PATTERN +"+";
+        return NoteFactory.DRUM_NOTE_PATTERN +"+";
     }
 
     private static String getGuitarNoteGroupPattern() {
@@ -155,7 +155,7 @@ public class NoteFactory {
         }else if (this.instrument == Instrument.DRUMS) {
             patternPackage.put("instrument", "drum");
             patternPackage.put("note-group-pattern", DRUM_NOTE_GROUP_PATTERN);
-            patternPackage.put("note-pattern", DRUM_NOTE_PATTERN);
+            patternPackage.put("note-pattern", NoteFactory.DRUM_NOTE_PATTERN);
             patternPackage.put("connector-pattern", DRUM_NOTE_CONNECTOR);
             return patternPackage;
         }

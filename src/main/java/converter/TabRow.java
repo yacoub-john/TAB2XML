@@ -293,7 +293,7 @@ public class TabRow extends ScoreComponent {
         Pattern measureLineNamePttrn = Pattern.compile(Patterns.measureNameExtractPattern());
         Matcher measureLineNameMatcher = measureLineNamePttrn.matcher(measureLineStr);
         if (measureLineNameMatcher.find())
-            return new String[] {measureLineNameMatcher.group(), ""+(lineStartIdx+measureLineNameMatcher.start())};
+            return new String[] {measureLineNameMatcher.group(), "" + (lineStartIdx + measureLineNameMatcher.start())};
         else
             return null;
     }

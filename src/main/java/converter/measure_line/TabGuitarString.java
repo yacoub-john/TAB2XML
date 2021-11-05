@@ -19,8 +19,7 @@ public class TabGuitarString extends TabString {
 
     public TabGuitarString(int stringNumber, String line, String[] nameAndPosition, int position) {
         super(stringNumber, line, nameAndPosition, position);
-        this.instrument = Instrument.GUITAR;
-        this.noteList = this.createNoteList(stringNumber, this.line, position);
+        
     }
 
     public List<ValidationError> validate() {

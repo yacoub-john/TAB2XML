@@ -68,6 +68,7 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
         this.voice = voice;
     }
     
+    // Copy constructor used for tied notes
     public TabNote(TabNote n) {
         this.startsWithPreviousNote = n.startsWithPreviousNote;
         this.origin = n.origin;
@@ -213,7 +214,7 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
 	public List<Range> getRanges() {
 		List<Range> ranges = new ArrayList<>();
 		ranges.add(new Range(position,position+origin.length()));
-		return null;
+		return ranges;
 	}
 	
 	public List<ValidationError> validate() {

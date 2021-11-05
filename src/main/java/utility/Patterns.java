@@ -4,17 +4,16 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import converter.note.NoteFactory;
+
 public class Patterns {
     public static final String WHITESPACE = "[^\\S\\n\\r]";
-    public static final String COMMENT = "^[^\\S\\n\\r]*#.+(?=\\n)";
-    public static final String DIVIDER = getDivider();
+    //public static final String COMMENT = "^[^\\S\\n\\r]*#.+(?=\\n)";
     public static final String DIVIDER_COMPONENTS = "|{}";
-    private static String getDivider() {
-        return "["+DIVIDER_COMPONENTS+"]";
-    }
+    public static final String DIVIDER = "["+DIVIDER_COMPONENTS+"]";
 
     // e------------ or |e---------------- or |e|-------------------- when it is the first measure of the measure group (start of line, SOL)
-    public static String START_OF_LINE = "(" + measureNameSOLPattern() + insidesPattern() + ")";
+    public static String START_OF_LINE = "(" + startOfLinePattern() + insidesPattern() + ")";
 
     //|--------------------- when it is in between other measures
     public static String MIDDLE_OF_LINE = "("+Patterns.DIVIDER+"+" + insidesPattern()+")";
@@ -23,7 +22,8 @@ public class Patterns {
 
     public static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; // doesn't match anything
     
-    private static String componentPattern() {
+    private static String tabData() {
+    	//return "(?:" + NoteFactory.GUITAR_NOTE_PATTERN + "|" + NoteFactory.GUITAR_NOTE_CONNECTOR + "|" + NoteFactory.DRUM_NOTE_PATTERN = ")";
         return "[^-\\n"+Patterns.DIVIDER_COMPONENTS+"]";
     }
 
@@ -40,43 +40,57 @@ public class Patterns {
     	StringBuilder pattern = new StringBuilder();
     	pattern.append("("+INSIDES_PATTERN_SPECIAL_CASE);
     	pattern.append("|"+INSIDES_PATTERN_SPECIAL_CASE);
-    	pattern.append("|(?<=(?:[ \\r\\n]"+genericMeasureNamePattern()+")(?=[ -][^");
-    	pattern.append(Patterns.DIVIDER_COMPONENTS+"])|"+Patterns.DIVIDER+")"+Patterns.DIVIDER);
-    	pattern.append("?(?:(?: *[-*]+)|(?: *"+componentPattern()+"+ *-+))(?:"+componentPattern());
-        pattern.append("+-+)*(?:"+componentPattern()+"+ *)?(?:"+Patterns.DIVIDER+"?(?="+Patterns.DIVIDER+")))");
+    	
+    	// Positive lookbehind
+    	pattern.append("|(?<=(?:[ \\r\\n]" + actualName() + ")");
+    	pattern.append("(?=[ -][^" + DIVIDER_COMPONENTS + "])|" + DIVIDER + ")");
+    	
+    	// Actual expression to match
+    	pattern.append(DIVIDER + "?");
+    	pattern.append("(?:");
+    		pattern.append("(?:" + WHITESPACE + "*[-*]+)");
+    			pattern.append("|");
+    		pattern.append("(?:" + WHITESPACE + "*"+ tabData() + "+" + WHITESPACE + "*-+)");
+    		pattern.append(")");
+    	pattern.append("(?:" + tabData() + "+-+)*");
+    	pattern.append("(?:" + tabData() + "+ *)?");
+    	pattern.append("(?:" + DIVIDER + "?" + "(?=" + DIVIDER + "))");
+    	
+    	pattern.append(")");
         return pattern.toString();
     }
 
-    private static String measureNameSOLPattern() {
+    //Matches the name and a possible divider after it
+    private static String startOfLinePattern() {
         StringBuilder pattern = new StringBuilder();
         pattern.append("(?:");
-        pattern.append(Patterns.WHITESPACE+"*"+Patterns.DIVIDER+"*");
-        pattern.append(Patterns.WHITESPACE+"*");
-        pattern.append(genericMeasureNamePattern());
-        pattern.append(Patterns.WHITESPACE+"*");
-        pattern.append("(?:(?=-)|(?:"+Patterns.DIVIDER+"+))");
+        pattern.append(WHITESPACE + "*" + DIVIDER + "*" + WHITESPACE + "*");
+        pattern.append(actualName());
+        pattern.append(WHITESPACE + "*");
+        pattern.append("(?:(?=-)|(?:" + DIVIDER + "+))");
         pattern.append(")");
         return pattern.toString();
     }
     
     public static String measureNameExtractPattern() {
         StringBuilder pattern = new StringBuilder();
-        pattern.append("(?<=^"+Patterns.DIVIDER+"*"+")");
-        pattern.append(Patterns.WHITESPACE+"*");
-        pattern.append(genericMeasureNamePattern());
-        pattern.append(Patterns.WHITESPACE+"*");
-        pattern.append("(?="+"-" + "|" +Patterns.DIVIDER+")");  // what's ahead is a dash or a divider
+        pattern.append("(?<=^" + DIVIDER + "*" + ")");
+        pattern.append(WHITESPACE + "*");
+        pattern.append(actualName());
+        pattern.append(WHITESPACE + "*");
+        pattern.append("(?=-|" + DIVIDER + ")");  // what's ahead is a dash or a divider
         return pattern.toString();
     }
     
-    private static String genericMeasureNamePattern() {
+    private static String actualName() {
         Iterator<String> measureLineNames = getValidNames().iterator();
         StringBuilder pattern = new StringBuilder();
-        pattern.append("(?:[a-zA-Z]{1,3}|(?:"+measureLineNames.next());
+        //pattern.append("(?:[a-zA-Z]{1,3}|(?:"+measureLineNames.next());
+        pattern.append("(?:"+measureLineNames.next());
         while(measureLineNames.hasNext()) {
             pattern.append("|"+measureLineNames.next());
         }
-        pattern.append("))");
+        pattern.append(")");
         return pattern.toString();
     }
     

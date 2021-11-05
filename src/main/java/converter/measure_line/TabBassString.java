@@ -15,7 +15,7 @@ import utility.ValidationError;
 public class TabBassString extends TabGuitarString{
     public TabBassString(int stringNumber, String line, String[] nameAndPosition, int position) {
         super(stringNumber, line, nameAndPosition, position);
-        this.instrument = Instrument.BASS;
+        
         this.noteList = this.createNoteList(stringNumber, this.line, position);
     }
 
