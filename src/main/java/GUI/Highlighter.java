@@ -56,7 +56,7 @@ public class Highlighter {
     }
     
     public StyleSpans<Collection<String>> computeHighlighting(String text) {
-        
+    	System.out.println(text.length());
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         activeErrors = this.filterOverlappingRanges(this.createErrorRangeMap(converter.validate()));
         if (activeErrors.isEmpty()) {
@@ -69,12 +69,14 @@ public class Highlighter {
         int lastErrorEnd = 0;
         for (Range range : errorRanges) {
             int errorPriority = activeErrors.get(range).getPriority();
-            if (ERROR_SENSITIVITY<errorPriority) continue;
+            if (ERROR_SENSITIVITY < errorPriority) continue;
             String styleClass = getErrorStyleClass(errorPriority);
             spansBuilder.add(Collections.emptyList(), range.getStart() - lastErrorEnd);
             spansBuilder.add(Collections.singleton(styleClass), range.getSize());
             lastErrorEnd = range.getEnd();
         }
+        System.out.println(lastErrorEnd);
+        System.out.println(text.length());
         spansBuilder.add(Collections.emptyList(), text.length() - lastErrorEnd);
         return spansBuilder.create();
     }

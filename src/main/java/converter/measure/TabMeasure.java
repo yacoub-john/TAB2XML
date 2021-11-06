@@ -214,7 +214,7 @@ public abstract class TabMeasure extends ScoreComponent {
 			for (List<TabNote> chord: voice) {
 				if ((chord.get(0).mustSplit) && (chord.get(0).duration > 1)){
 					somethingToSplit = true;
-					System.out.println(chord.get(0).duration);
+					//System.out.println(chord.get(0).duration);
 					int note1dur = firstNoteDuration(totalDuration, chord.get(0).duration, getDivisions(), getBeatType());
 					int note2dur = chord.get(0).duration - note1dur;
 					List<TabNote> newChord = new ArrayList<>();
@@ -258,7 +258,7 @@ public abstract class TabMeasure extends ScoreComponent {
 			firstNote = beatDuration - offSet;
 			// TODO Assert cannot be 0
 			secondNote = duration - firstNote;
-			System.out.println("Split into " + firstNote + " and " + secondNote);
+			//System.out.println("Split into " + firstNote + " and " + secondNote);
 			beatDuration = beatDuration / 2;
 			// TODO Assert it does not get to 0
 		} while ((firstNote < 1) || (secondNote < 1));

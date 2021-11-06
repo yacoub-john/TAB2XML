@@ -17,22 +17,22 @@ import utility.ValidationError;
 public class TabSection extends ScoreComponent {
 
 	//                           a measure line at start of line(with name)          zero or more middle measure lines       (optional |'s and spaces then what's ahead is end of line)
-    private static String LINE_PATTERN = "(" + Patterns.START_OF_LINE          +          Patterns.MIDDLE_OF_LINE + "*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.WHITESPACE+"*)"     +  ")";
+    private static String LINE_PATTERN = "(" + Patterns.START_OF_LINE          +          Patterns.MIDDLE_OF_LINE + "*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.SPACEORTAB+"*)"     +  ")";
 
     String origin;  //the string that was passed to the constructor upon the instantiation of this class
     int position;   //the index in Score.rootString at which the String "MeasureCollection().origin" is located
     int endIndex;
     private TabRow tabRow;
-    public static String PATTERN = getRegexPattern();
-    boolean isFirstCollection;
+    //public static String PATTERN = getRegexPattern();
+    boolean isFirstTabSection;
     private List<Instruction> instructionList = new ArrayList<>();
     private boolean repeatsFound = false;
 
-    public TabSection(String origin, int position, boolean isFirstCollection) {
+    public TabSection(String origin, int position, boolean isFirstTabSection) {
         this.origin = origin;
         this.position = position;
         this.endIndex = position+this.origin.length();
-        this.isFirstCollection = isFirstCollection;
+        this.isFirstTabSection = isFirstTabSection;
         createTabRowAndInstructionList(origin);
         for (Instruction instruction : this.instructionList)
             instruction.applyTo(this);
@@ -68,16 +68,19 @@ public class TabSection extends ScoreComponent {
 		for (int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);
 			int start = starts.get(i);
-			Matcher topInstructionMatcher = Pattern.compile("((^|\\n)" + Instruction.LINE_PATTERN + ")+").matcher(line);
+			//Matcher topInstructionMatcher = Pattern.compile("((^|\\n)" + Instruction.LINE_PATTERN + ")+").matcher(line);
+			Matcher topInstructionMatcher = Pattern.compile(Instruction.LINE_PATTERN).matcher(line);
 			if (topInstructionMatcher.find()) {  // no need for loop as only one line
 				this.instructionList.addAll(extractInstructions(topInstructionMatcher.group(), this.position + start + topInstructionMatcher.start(), true));
 				continue;
 			}
-			Matcher tabRowMatcher = Pattern.compile("((^|\\n)" + tabRowLinePattern() + ")").matcher(line); 
+			String pattern = tabRowLinePattern();
+			Matcher tabRowMatcher = Pattern.compile(pattern).matcher(line); 
 			if (tabRowMatcher.find()) { 		
 				if (line.charAt(0) == '\n') {
 					line = line.substring(1);
 					start++;
+					System.out.println("How did you get here?");
 				}
 				tabRowStarts.add(start);
 				tabRowLines.add(line);
@@ -97,7 +100,7 @@ public class TabSection extends ScoreComponent {
 			String tabRowLine = "[" + (this.position + lineStartIdx) + "]" + line;
 			tabRowString.add(tabRowLine);
 		}
-		if (isFirstCollection && Settings.getInstance().getInstrument() == Instrument.GUITAR && tabRowString.size() < 6)
+		if (isFirstTabSection && Settings.getInstance().getInstrument() == Instrument.GUITAR && tabRowString.size() < 6)
 			Settings.getInstance().detectedInstrument = Instrument.BASS;
 		this.tabRow = new TabRow(tabRowString);
 	}
@@ -127,21 +130,21 @@ public class TabSection extends ScoreComponent {
     }
 
     public static String tabRowLinePattern() {
-        return "("+ Patterns.WHITESPACE + "*(" + LINE_PATTERN + Patterns.WHITESPACE + "*)+)";
+        return "(^"+ Patterns.SPACEORTAB + "*(" + LINE_PATTERN + Patterns.SPACEORTAB + "*)+)";
     }
 
     /**
      * Creates the regex pattern for detecting a tab section (i.e a collection of tab rows (really one tab row and their corresponding instructions)
      * @return a String regex pattern enclosed in brackets that identifies a tab section pattern (the pattern also captures the newline right before the tab row collection)
      */
-    private static String getRegexPattern() {
+    public static String getRegexPattern() {
         // Zero or more instructions, followed by one or more tab rows, followed by zero or more instructions
         return "((^|\\n)"+ Instruction.LINE_PATTERN+")*"          // 0 or more lines separated by newlines, each containing a group of instructions
                 + "("                                                                   // then the tab row, which is made of...
                 +       "(^|\\n)"                                                           // a start of line or a new line
                 +       TabSection.tabRowLinePattern()                               // a tab row followed by whitespace, all repeated one or more times
                 + ")+"                                                                  // the tab row I just described is repeated one or more times.
-                + "(\\n"+ Instruction.LINE_PATTERN+")*";
+                + "(\\n" + Instruction.LINE_PATTERN+")*";
     }
 	    
 	    public TabRow getTabRow() {

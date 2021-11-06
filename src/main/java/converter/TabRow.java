@@ -84,13 +84,21 @@ public class TabRow extends ScoreComponent {
             int currentLineStartPos = positions.get(i);
             //Find the name at the beginning of a text line
             //Returns an array of two strings, first is the line name, next is the position of it (as a string)
+            int offset = currentLineStartPos;
             String[] lineName = nameOf(currentLine, currentLineStartPos);
+            currentLineStartPos += Integer.parseInt(lineName[1]);
+            offset = Integer.parseInt(lineName[1]) - offset + lineName[0].length();
             if (Settings.getInstance().getInstrument() == Instrument.GUITAR && i < 6) {
             	if (lineName[0] == "") lineName[0] = Settings.getInstance().guitarTuning[i][0];    // Keep using what ever tuning was previously set if this is guitar
             	Settings.getInstance().guitarTuning[i][0] = lineName[0];  // Update tuning. Only likely to make a difference for the first measure
             }
+            if (Settings.getInstance().getInstrument() == Instrument.BASS && i < 4) {
+            	if (lineName[0] == "") lineName[0] = Settings.getInstance().bassTuning[i][0];    // Keep using what ever tuning was previously set if this is bass
+            	Settings.getInstance().bassTuning[i][0] = lineName[0];  // Update tuning. Only likely to make a difference for the first measure
+            }
             int measureCount = 0;
-            Matcher measureInsidesMatcher = Pattern.compile(Patterns.INSIDES_PATTERN).matcher(currentLine);
+            
+            Matcher measureInsidesMatcher = Pattern.compile(Patterns.insidesPattern()).matcher(currentLine.substring(offset));
             while (measureInsidesMatcher.find()) {
                 measureCount++;
                 String measureLineString = measureInsidesMatcher.group();
@@ -289,11 +297,11 @@ public class TabRow extends ScoreComponent {
     }
 
     
-    public String[] nameOf(String measureLineStr, int lineStartIdx) {
+    public String[] nameOf(String measureLineStr, int pos) {
         Pattern measureLineNamePttrn = Pattern.compile(Patterns.measureNameExtractPattern());
         Matcher measureLineNameMatcher = measureLineNamePttrn.matcher(measureLineStr);
         if (measureLineNameMatcher.find())
-            return new String[] {measureLineNameMatcher.group(), "" + (lineStartIdx + measureLineNameMatcher.start())};
+            return new String[] {measureLineNameMatcher.group(), "" + (pos + measureLineNameMatcher.start())};
         else
             return null;
     }

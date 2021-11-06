@@ -69,7 +69,7 @@ public abstract class Instruction extends ScoreComponent{
 
     private static String getLinePattern() {
         String instruction = "(("+TimeSignature.PATTERN+")|("+Repeat.PATTERN+"))";
-        return "("+Patterns.WHITESPACE+"*" + instruction + Patterns.WHITESPACE+"*" + ")+";
+        return "("+Patterns.SPACEORTAB+"*" + instruction + Patterns.SPACEORTAB+"*" + ")+";
     }
 
 	public boolean isTop() {

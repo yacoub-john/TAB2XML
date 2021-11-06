@@ -69,7 +69,7 @@ public class Repeat extends Instruction {
         String count = "[0-9]{1,2}";
         String repeatTextPattern = "[Rr][Ee][Pp][Ee][Aa][Tt]" + "([ -]{0,7}|[ \t]{0,2})"  +  "(" +"("+times+count+")|("+ count+times +")|("+ count + "([ -]{0,7}|[ \t]{0,3})"  + timesLong + ")" + ")";
         //     | or sol or whitespace   optional space or -                     optional space or -     | or eol or whitespace
-        return "("+"(((?<=\\|)|\\||^|"+ Patterns.WHITESPACE + ")|(?<=\n))"  +        "[ -]*"       +   repeatTextPattern   +   "[ -]*"     +     "(($|\\s)|\\|)" + ")";
+        return "("+"(((?<=\\|)|\\||^|"+ Patterns.SPACEORTAB + ")|(?<=\\n))"  +        "[ -]*"       +   repeatTextPattern   +   "[ -]*"     +     "(($|\\s)|\\|)" + ")";
     }
 
 	public List<ValidationError> validate() {

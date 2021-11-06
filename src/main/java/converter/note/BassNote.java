@@ -19,10 +19,10 @@ public class BassNote extends GuitarNote {
     protected int getDefaultOctave(int stringNumber) {
     	int result;
     	switch (stringNumber) {
-	    	case 1: result = 3; break;
+	    	case 1: result = 2; break;
 	    	case 2: result = 2; break;
-	    	case 3: result = 2; break;
-	    	case 4: result = 2; break;
+	    	case 3: result = 1; break;
+	    	case 4: result = 1; break;
 	    	case 5: result = 1; break;
 	    	case 6: result = 1; break;
 	    	default: result = 0; break;

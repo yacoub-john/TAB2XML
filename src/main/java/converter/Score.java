@@ -57,7 +57,8 @@ public class Score extends ScoreComponent {
 			int lineCount = 0;
 			while (lineMatcher.find()) { // go through each line
 				String x = lineMatcher.group();
-				Matcher tabRowLineMatcher = Pattern.compile(TabSection.tabRowLinePattern()).matcher(x);
+				String pattern = TabSection.tabRowLinePattern();
+				Matcher tabRowLineMatcher = Pattern.compile(pattern).matcher(x);
 				if (tabRowLineMatcher.find()) {
 					lineCount ++;
 					if (lineCount > 12) break; // Should know the instrument by then
@@ -127,12 +128,15 @@ public class Score extends ScoreComponent {
      */
     private List<TabSection> createTabSectionList(Map<Integer, String> stringFragments) {
         List<TabSection> tabSectionList = new ArrayList<>();
-        boolean isFirstCollection = true;
+        boolean isFirstTabSection = true;
         for (Map.Entry<Integer, String> fragment : stringFragments.entrySet()) {
-			Matcher matcher = Pattern.compile(TabSection.PATTERN).matcher(fragment.getValue());
-			while (matcher.find())
-				tabSectionList.add(new TabSection(matcher.group(), fragment.getKey() + matcher.start(), isFirstCollection));
-			isFirstCollection = false;
+        	String tabSectionRegexPattern = TabSection.getRegexPattern();
+        	String tabRowLinePattern = TabSection.tabRowLinePattern();
+			Matcher matcher = Pattern.compile(tabSectionRegexPattern, Pattern.MULTILINE).matcher(fragment.getValue());
+			while (matcher.find()) {
+				tabSectionList.add(new TabSection(matcher.group(), fragment.getKey() + matcher.start(), isFirstTabSection));
+				isFirstTabSection = false;
+			}
         }
         return tabSectionList;
     }

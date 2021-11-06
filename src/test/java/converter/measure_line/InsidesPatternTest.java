@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InsidesPatternTest {
-    Pattern pattern = Pattern.compile(Patterns.INSIDES_PATTERN);
+    Pattern pattern = Pattern.compile(Patterns.insidesPattern());
 
     @Test
     void multipleDividersValidTest() {

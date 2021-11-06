@@ -7,7 +7,8 @@ import java.util.Set;
 import converter.note.NoteFactory;
 
 public class Patterns {
-    public static final String WHITESPACE = "[^\\S\\n\\r]";
+    public static final String SPACEORTAB = "[^\\S\\n\\r]";
+    //public static final String SPACEORTAB = "[ \t]";
     //public static final String COMMENT = "^[^\\S\\n\\r]*#.+(?=\\n)";
     public static final String DIVIDER_COMPONENTS = "|{}";
     public static final String DIVIDER = "["+DIVIDER_COMPONENTS+"]";
@@ -18,11 +19,11 @@ public class Patterns {
     //|--------------------- when it is in between other measures
     public static String MIDDLE_OF_LINE = "("+Patterns.DIVIDER+"+" + insidesPattern()+")";
 
-    public static String INSIDES_PATTERN = insidesPattern();
+    //public static String INSIDES_PATTERN = insidesPattern();
 
-    public static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; // doesn't match anything
+    private static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; // doesn't match anything
     
-    private static String tabData() {
+    private static String nonDashDividerNewline() {
     	//return "(?:" + NoteFactory.GUITAR_NOTE_PATTERN + "|" + NoteFactory.GUITAR_NOTE_CONNECTOR + "|" + NoteFactory.DRUM_NOTE_PATTERN = ")";
         return "[^-\\n"+Patterns.DIVIDER_COMPONENTS+"]";
     }
@@ -36,25 +37,30 @@ public class Patterns {
      * only if it is surrounded by more than one | (i.e ||------| extracts |------ and ||------||| extracts |------|, but |------| extracts ------)
      * @return the bracket-enclosed String regex pattern.
      */
-    private static String insidesPattern() {
+    public static String insidesPattern() {
     	StringBuilder pattern = new StringBuilder();
     	pattern.append("("+INSIDES_PATTERN_SPECIAL_CASE);
     	pattern.append("|"+INSIDES_PATTERN_SPECIAL_CASE);
+    	pattern.append("|");
     	
     	// Positive lookbehind
-    	pattern.append("|(?<=(?:[ \\r\\n]" + actualName() + ")");
-    	pattern.append("(?=[ -][^" + DIVIDER_COMPONENTS + "])|" + DIVIDER + ")");
+    	pattern.append("(?<=");
+    			pattern.append("(([ \\r\\n]|^)" + actualName() + ")");   // actualName can be empty string
+    			pattern.append("(?=[ -][^" + DIVIDER_COMPONENTS + "])");
+    		pattern.append("|");
+    			pattern.append(DIVIDER);
+    	pattern.append(")");
     	
     	// Actual expression to match
     	pattern.append(DIVIDER + "?");
-    	pattern.append("(?:");
-    		pattern.append("(?:" + WHITESPACE + "*[-*]+)");
+    	pattern.append("(");
+    		pattern.append("(" + SPACEORTAB + "*[-*]+)");
     			pattern.append("|");
-    		pattern.append("(?:" + WHITESPACE + "*"+ tabData() + "+" + WHITESPACE + "*-+)");
+    		pattern.append("(" + SPACEORTAB + "*"+ nonDashDividerNewline() + "+" + SPACEORTAB + "*-+)");
     		pattern.append(")");
-    	pattern.append("(?:" + tabData() + "+-+)*");
-    	pattern.append("(?:" + tabData() + "+ *)?");
-    	pattern.append("(?:" + DIVIDER + "?" + "(?=" + DIVIDER + "))");
+    	pattern.append("(" + nonDashDividerNewline() + "+-+)*");  // matches multiple notes
+    	pattern.append("(" + nonDashDividerNewline() + "+ *)?");
+    	pattern.append("(" + DIVIDER + "?" + "(?=" + DIVIDER + "))");
     	
     	pattern.append(")");
         return pattern.toString();
@@ -63,11 +69,11 @@ public class Patterns {
     //Matches the name and a possible divider after it
     private static String startOfLinePattern() {
         StringBuilder pattern = new StringBuilder();
-        pattern.append("(?:");
-        pattern.append(WHITESPACE + "*" + DIVIDER + "*" + WHITESPACE + "*");
+        pattern.append("(");
+        pattern.append(SPACEORTAB + "*" + DIVIDER + "*" + SPACEORTAB + "*");
         pattern.append(actualName());
-        pattern.append(WHITESPACE + "*");
-        pattern.append("(?:(?=-)|(?:" + DIVIDER + "+))");
+        pattern.append(SPACEORTAB + "*");
+        pattern.append("((?=-)|(?:" + DIVIDER + "+))");
         pattern.append(")");
         return pattern.toString();
     }
@@ -75,9 +81,9 @@ public class Patterns {
     public static String measureNameExtractPattern() {
         StringBuilder pattern = new StringBuilder();
         pattern.append("(?<=^" + DIVIDER + "*" + ")");
-        pattern.append(WHITESPACE + "*");
+        pattern.append(SPACEORTAB + "*");
         pattern.append(actualName());
-        pattern.append(WHITESPACE + "*");
+        pattern.append(SPACEORTAB + "*");
         pattern.append("(?=-|" + DIVIDER + ")");  // what's ahead is a dash or a divider
         return pattern.toString();
     }

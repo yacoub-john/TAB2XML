@@ -153,14 +153,13 @@ public abstract class TabString extends ScoreComponent {
 	 */
 	public List<ValidationError> validate() {
 	    
-	    int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 	    if (name==null) {
 	        addError(
 	                "invalid measure line name.",
 	                1,
 	                getRanges());
 	    }
-	    Matcher matcher = Pattern.compile(Patterns.INSIDES_PATTERN).matcher("|"+line+"|");
+	    Matcher matcher = Pattern.compile(Patterns.insidesPattern()).matcher("|"+line+"|");
 	    if (!matcher.find() || !matcher.group().equals(this.line.strip())) {     // "|"+name because the MeasureLine.INSIDES_PATTERN expects a newline, space, or | to come before
 	        addError(
 	                "invalid measure line.",
