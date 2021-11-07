@@ -75,8 +75,8 @@ public class Highlighter {
             spansBuilder.add(Collections.singleton(styleClass), range.getSize());
             lastErrorEnd = range.getEnd();
         }
-        System.out.println(lastErrorEnd);
-        System.out.println(text.length());
+        //System.out.println(lastErrorEnd);
+        //System.out.println(text.length());
         spansBuilder.add(Collections.emptyList(), text.length() - lastErrorEnd);
         return spansBuilder.create();
     }

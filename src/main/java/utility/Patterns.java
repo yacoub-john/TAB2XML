@@ -23,9 +23,9 @@ public class Patterns {
 
     private static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; // doesn't match anything
     
-    private static String nonDashDividerNewline() {
+    private static String nonDashDividerWhitespace() {
     	//return "(?:" + NoteFactory.GUITAR_NOTE_PATTERN + "|" + NoteFactory.GUITAR_NOTE_CONNECTOR + "|" + NoteFactory.DRUM_NOTE_PATTERN = ")";
-        return "[^-\\n"+Patterns.DIVIDER_COMPONENTS+"]";
+        return "[^-\\n" + DIVIDER_COMPONENTS + SPACEORTAB +"]";
     }
 
     /**
@@ -54,19 +54,19 @@ public class Patterns {
     	// Actual expression to match
     	pattern.append(DIVIDER + "?");
     	pattern.append("(");
-    		pattern.append("(" + SPACEORTAB + "*[-*]+)");
+    		pattern.append("(" + SPACEORTAB + "{0,2}[-*]+)");
     			pattern.append("|");
-    		pattern.append("(" + SPACEORTAB + "*"+ nonDashDividerNewline() + "+" + SPACEORTAB + "*-+)");
+    		pattern.append("(" + SPACEORTAB + "{0,2}"+ nonDashDividerWhitespace() + "+" + SPACEORTAB + "{0,2}-*)");
     		pattern.append(")");
-    	pattern.append("(" + nonDashDividerNewline() + "+-+)*");  // matches multiple notes
-    	pattern.append("(" + nonDashDividerNewline() + "+ *)?");
+    	pattern.append("(" + nonDashDividerWhitespace() + "+-*)*");  // matches multiple notes separated by dashes
+    	pattern.append("(" + nonDashDividerWhitespace() + "+ *)?");  // optional note(s) at the end + optional spaces
     	pattern.append("(" + DIVIDER + "?" + "(?=" + DIVIDER + "))");
     	
     	pattern.append(")");
         return pattern.toString();
     }
 
-    //Matches the name and a possible divider after it
+    //Matches the name and possible divider(s) after it
     private static String startOfLinePattern() {
         StringBuilder pattern = new StringBuilder();
         pattern.append("(");

@@ -84,10 +84,9 @@ public class TabRow extends ScoreComponent {
             int currentLineStartPos = positions.get(i);
             //Find the name at the beginning of a text line
             //Returns an array of two strings, first is the line name, next is the position of it (as a string)
-            int offset = currentLineStartPos;
+            int nameOffset = currentLineStartPos;
             String[] lineName = nameOf(currentLine, currentLineStartPos);
-            currentLineStartPos += Integer.parseInt(lineName[1]);
-            offset = Integer.parseInt(lineName[1]) - offset + lineName[0].length();
+            nameOffset = Integer.parseInt(lineName[1]) - nameOffset + lineName[0].length();
             if (Settings.getInstance().getInstrument() == Instrument.GUITAR && i < 6) {
             	if (lineName[0] == "") lineName[0] = Settings.getInstance().guitarTuning[i][0];    // Keep using what ever tuning was previously set if this is guitar
             	Settings.getInstance().guitarTuning[i][0] = lineName[0];  // Update tuning. Only likely to make a difference for the first measure
@@ -98,11 +97,11 @@ public class TabRow extends ScoreComponent {
             }
             int measureCount = 0;
             
-            Matcher measureInsidesMatcher = Pattern.compile(Patterns.insidesPattern()).matcher(currentLine.substring(offset));
+            Matcher measureInsidesMatcher = Pattern.compile(Patterns.insidesPattern()).matcher(currentLine.substring(nameOffset));
             while (measureInsidesMatcher.find()) {
                 measureCount++;
                 String measureLineString = measureInsidesMatcher.group();
-                int measurePosition = currentLineStartPos+measureInsidesMatcher.start();    //the starting position of the insides of this measure in the root string Score.tabText
+                int measurePosition = currentLineStartPos + nameOffset + measureInsidesMatcher.start();    //the starting position of the insides of this measure in the root string Score.tabText
 
                 if (textList.size()<measureCount) {
                     textList.add(new ArrayList<>());

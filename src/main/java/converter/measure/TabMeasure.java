@@ -173,34 +173,37 @@ public abstract class TabMeasure extends ScoreComponent {
     	return divisions;
     }
     
-    public int setDivisions() {
-        int measureLength = getMaxMeasureLineLength();
-        int firstNotePosition = voiceSortedNoteList.get(0).get(0).distance;
-        int usefulMeasureLength = measureLength - firstNotePosition;
-        // Must subtract for double digit numbers
-        usefulMeasureLength = adjustDivisionsForDoubleCharacterNotes(usefulMeasureLength); 
-        // For beatType 2, we double duration and divisions to avoid
-    	// having divisions be a .5
-        int beatTypeFactor = beatType == 2 ? 2 : 1;
-        
-        divisions = usefulMeasureLength * beatType * beatTypeFactor / (beatCount * 4);
-        
-        if (usefulMeasureLength * beatType * beatTypeFactor % (beatCount * 4) > 0) {
-        	System.out.println("Measure " + measureCount + ": Length of measure not good for divisions");
-        	nonIntegerDivisions = true;
-        }
-        if (!Arrays.stream(supportedDivisions).anyMatch(i -> i == divisions)) {
-        	System.out.println("Measure " + measureCount + ": Unsupported divisions: " + divisions);
-        	unSupportedDivisions = true;
-        }
-        
-        for (List<TabNote> voice : this.voiceSortedNoteList) {
-            for (TabNote note : voice) {
-                note.setDivisions(this.divisions);
-            }
-        }
-        return divisions;
-    }
+	public void setDivisions() {
+		int measureLength = getMaxMeasureLineLength();
+		if (voiceSortedNoteList.size() == 0)
+			divisions = measureLength;
+		else {
+			int firstNotePosition = voiceSortedNoteList.get(0).get(0).distance;
+			int usefulMeasureLength = measureLength - firstNotePosition;
+			// Must subtract for double digit numbers
+			usefulMeasureLength = adjustDivisionsForDoubleCharacterNotes(usefulMeasureLength);
+			// For beatType 2, we double duration and divisions to avoid
+			// having divisions be a .5
+			int beatTypeFactor = beatType == 2 ? 2 : 1;
+
+			divisions = usefulMeasureLength * beatType * beatTypeFactor / (beatCount * 4);
+
+			if (usefulMeasureLength * beatType * beatTypeFactor % (beatCount * 4) > 0) {
+				System.out.println("Measure " + measureCount + ": Length of measure not good for divisions");
+				nonIntegerDivisions = true;
+			}
+			if (!Arrays.stream(supportedDivisions).anyMatch(i -> i == divisions)) {
+				System.out.println("Measure " + measureCount + ": Unsupported divisions: " + divisions);
+				unSupportedDivisions = true;
+			}
+
+			for (List<TabNote> voice : this.voiceSortedNoteList) {
+				for (TabNote note : voice) {
+					note.setDivisions(this.divisions);
+				}
+			}
+		}
+	}
     
     protected abstract int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureLength);
 
@@ -422,19 +425,7 @@ public abstract class TabMeasure extends ScoreComponent {
 	 */
 	public List<ValidationError> validate() {
 	
-	    boolean hasGuitarMeasureLines = true;
-	    boolean hasDrumMeasureLines = true;
-	    boolean lineSizeEqual = true;
-	
-	    int previousLineLength = -1;
-	    for (TabString tabString : this.tabStringList) {
-	        hasGuitarMeasureLines &= tabString instanceof TabGuitarString;
-	        hasDrumMeasureLines &= tabString instanceof TabDrumString;
-	
-	        int currentLineLength = tabString.line.replace("\s", "").length();
-	        lineSizeEqual &= (previousLineLength<0) || previousLineLength==currentLineLength;
-	        previousLineLength = currentLineLength;
-	    }
+	    
 	    if (unSupportedDivisions) {
 	        addError(
 	                "Could not determine timing correctly: Unsupported divisions",
@@ -451,7 +442,20 @@ public abstract class TabMeasure extends ScoreComponent {
 	                1, getRanges());
 	    }
 	    
+	    boolean hasGuitarMeasureLines = true;
+	    boolean hasDrumMeasureLines = true;
+	    boolean lineSizeEqual = true;
 	
+	    int previousLineLength = -1;
+	    for (TabString tabString : this.tabStringList) {
+	        hasGuitarMeasureLines &= tabString instanceof TabGuitarString;
+	        hasDrumMeasureLines &= tabString instanceof TabDrumString;
+	
+	        int currentLineLength = tabString.line.replace("\s", "").length();
+	        lineSizeEqual &= (previousLineLength<0) || previousLineLength==currentLineLength;
+	        previousLineLength = currentLineLength;
+	    }
+	    
 	    if (!(hasGuitarMeasureLines || hasDrumMeasureLines)) {
 	        addError(
 	                "All measure lines in a measure must be of the same type (i.e. all guitar measure lines or all drum measure lines)",
