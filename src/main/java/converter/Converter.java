@@ -7,6 +7,7 @@ import java.util.List;
 
 import GUI.MainViewController;
 import utility.MusicXMLCreator;
+import utility.Settings;
 import utility.ValidationError;
 
 public class Converter {
@@ -24,7 +25,6 @@ public class Converter {
 	public void update() {
 		score = new Score(mvc.mainText.getText());
 		mxlc = new MusicXMLCreator(score);
-		//mvc.setDetectedInstrument(score.detectedInstrument());
 	}
 	
 	public String getMusicXML() {
@@ -38,7 +38,6 @@ public class Converter {
 	public List<ValidationError> validate() {
 		return score.validate();
 	}
-	
     public void saveMusicXMLFile(File file) {
         try {
             PrintWriter writer;

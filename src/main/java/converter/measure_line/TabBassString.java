@@ -7,14 +7,15 @@ import java.util.List;
 import converter.Instrument;
 import converter.Score;
 import converter.note.TabNote;
+import utility.AnchoredText;
 import utility.DrumUtils;
 import utility.GuitarUtils;
 import utility.Settings;
 import utility.ValidationError;
 
 public class TabBassString extends TabGuitarString{
-    public TabBassString(int stringNumber, String line, String[] nameAndPosition, int position) {
-        super(stringNumber, line, nameAndPosition, position);
+    public TabBassString(int stringNumber, AnchoredText dataAT, AnchoredText nameAT) {
+        super(stringNumber, dataAT, nameAT);
         
         this.noteList = this.createNoteList(stringNumber, this.line, position);
     }

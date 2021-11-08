@@ -18,13 +18,14 @@ import models.measure.barline.Repeat;
 import models.measure.direction.Direction;
 import models.measure.direction.DirectionType;
 import models.measure.direction.Words;
+import utility.AnchoredText;
 import utility.Settings;
 import utility.ValidationError;
 
 public class DrumMeasure extends TabMeasure {
 
-    public DrumMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasureInGroup) {
-        super(lines, lineNamesAndPositions, linePositions, isFirstMeasureInGroup);
+    public DrumMeasure(List<AnchoredText> inputData, List<AnchoredText> inputNameData, boolean isFirstMeasureInGroup) {
+        super(inputData, inputNameData, isFirstMeasureInGroup);
     }
     
     @Override
@@ -47,9 +48,9 @@ public class DrumMeasure extends TabMeasure {
 		return duration;
 	}
 
-	protected TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position)
+	protected TabString newTabString(int stringNumber, AnchoredText data, AnchoredText name)
 	{
-		return new TabDrumString(stringNumber, line, nameAndPosition, position);
+		return new TabDrumString(stringNumber, data, name);
 	}
 	
 	private Attributes getAttributesModel() {

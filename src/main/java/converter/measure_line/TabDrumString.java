@@ -9,6 +9,7 @@ import java.util.Set;
 import converter.Instrument;
 import converter.Score;
 import converter.note.TabNote;
+import utility.AnchoredText;
 import utility.DrumPiece;
 import utility.DrumUtils;
 import utility.Settings;
@@ -19,8 +20,8 @@ public class TabDrumString extends TabString {
     //public static String COMPONENT = "[xXoOdDfF#]";
     private DrumPiece drumPiece;
 
-    public TabDrumString(int stringNumber, String line, String[] nameAndPosition, int position) {
-        super(stringNumber, line, nameAndPosition, position);
+    public TabDrumString(int stringNumber, AnchoredText dataAT, AnchoredText nameAT) {
+        super(stringNumber, dataAT, nameAT);
         
         drumPiece = DrumUtils.getDrumPiece(name.strip(), line.strip());
         if (drumPiece != null)

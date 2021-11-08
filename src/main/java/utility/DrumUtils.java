@@ -68,7 +68,7 @@ public static void createDrumSet() {
 		
 		List<String> kickNames = new ArrayList<String>(Arrays.asList("B","BD"));
 		List<String> snareNames = new ArrayList<String>(Arrays.asList("S","SD"));
-		List<String> hihatNames = new ArrayList<String>(Arrays.asList("HH"));
+		List<String> hihatNames = new ArrayList<String>(Arrays.asList("H","HH"));
 		List<String> rideNames = new ArrayList<String>(Arrays.asList("R","RD"));
 		List<String> crashNames = new ArrayList<String>(Arrays.asList("C","CC"));
 		List<String> highTomNames = new ArrayList<String>(Arrays.asList("T","HT"));

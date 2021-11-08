@@ -15,6 +15,7 @@ import models.measure.attributes.Key;
 import models.measure.attributes.StaffDetails;
 import models.measure.attributes.StaffTuning;
 import models.measure.attributes.Time;
+import utility.AnchoredText;
 import utility.Settings;
 import utility.ValidationError;
 
@@ -22,13 +23,13 @@ public class BassMeasure extends GuitarMeasure {
     public static final int MIN_LINE_COUNT = 4;
     public static final int MAX_LINE_COUNT = 4;
 
-    public BassMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasure) {
-        super(lines, lineNamesAndPositions, linePositions, isFirstMeasure);
+    public BassMeasure(List<AnchoredText> inputData, List<AnchoredText> inputNameData, boolean isFirstMeasure) {
+        super(inputData, inputNameData, isFirstMeasure);
     }
 
-	protected TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position)
+	protected TabString newTabString(int stringNumber, AnchoredText data, AnchoredText name)
 	{
-		return new TabBassString(stringNumber, line, nameAndPosition, position);
+		return new TabBassString(stringNumber, data, name);
 	}
     @Override
     public Attributes getAttributesModel() {

@@ -80,11 +80,11 @@ public class MainViewController extends Application {
 	public MainViewController() {
 		Settings s = Settings.getInstance();
 		prefs = Preferences.userRoot();
+		s.inputFolder = prefs.get("inputFolder", System.getProperty("user.home"));
 		s.outputFolder = prefs.get("outputFolder", System.getProperty("user.home"));
 		s.tsNum = Integer.parseInt(prefs.get("tsNum", "4"));
 		s.tsDen = Integer.parseInt(prefs.get("tsDen", "4"));
 		s.errorSensitivity = Integer.parseInt(prefs.get("errorSensitivity", "4"));
-		
 	}
 
 	@FXML 
@@ -148,12 +148,12 @@ public class MainViewController extends Application {
 		boolean userOkToGoAhead = promptSave();
 		if (!userOkToGoAhead) return;
 
-		String userDirectoryString = System.getProperty("user.home");
+		String startFolder = prefs.get("inputFolder", System.getProperty("user.home"));
 		File openDirectory;
 		if (saveFile!=null && saveFile.canRead()) {
 			openDirectory = new File(saveFile.getParent());
 		}else
-			openDirectory = new File(userDirectoryString);
+			openDirectory = new File(startFolder);
 
 		if(!openDirectory.canRead()) {
 			openDirectory = new File("c:/");

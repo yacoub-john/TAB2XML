@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import converter.instruction.Instruction;
 import converter.instruction.RepeatType;
 import converter.measure.BassMeasure;
 import converter.measure.DrumMeasure;
 import converter.measure.GuitarMeasure;
 import converter.measure.TabMeasure;
+import utility.AnchoredText;
 import utility.DrumUtils;
 import utility.GuitarUtils;
 import utility.Patterns;
@@ -20,68 +20,65 @@ import utility.ValidationError;
 
 public class TabRow extends ScoreComponent {
 
-    public List<TabMeasure> tabMeasures;
-	public List<String> lines = new ArrayList<>();
-	public List<Integer> positions = new ArrayList<>();
-    public List<Instruction> instructions = new ArrayList<>();
+    public List<TabMeasure> tabMeasures = new ArrayList<>();
+	public List<AnchoredText> data = new ArrayList<>();
+	//public List<Integer> positions = new ArrayList<>();
+    public TabRow() {}
     
     /**
-     * Creates a TabRow object from a List of Strings which represent the lines in the tablature row
-     * @param origin a List<String> containing the lines which are meant to represent a tablature row. Each String in
-     *              "origin" begins with a tag indicating the index at which it is positioned in the root string from
-     *               which it was extracted (i.e Score.tabText). (i.e "[startIdx]stringContent" )
-     *               "origin" is guaranteed to be a valid **representation** of a TabRow as it is only instantiated
-     *               from the TabSection class, which has to be made up of measure groups before it can be constructed
-     *               (look at TabSection.getInstance() and TabSection.PATTERN). However, though it is
-     *               guaranteed to be a valid representation of a measure group(i.e it looks like a measure group), the
-     *               measure group which it is representing is not guaranteed to be valid itself.
+     * Creates a TabRow object from a List of AnchoredText which represent the lines in the tablature row
+     * @param data a List<AnchoredText> containing the lines which are meant to represent a tablature row. 
      */
-    public TabRow(List<String> origin) {
+    public TabRow(List<AnchoredText> inputData) {
+    	data = inputData;
     	
-    	//Extract lines and positions, should really pass those separately
-        for (String lineWithTag : origin) {
-            Matcher tagMatcher = Pattern.compile("^\\[[0-9]+\\]").matcher(lineWithTag);
-            tagMatcher.find();
-            int startIdx = Integer.parseInt(tagMatcher.group().replaceAll("[\\[\\]]",""));
-            String line = lineWithTag.substring(tagMatcher.end());
-
-            this.positions.add(startIdx);
-            this.lines.add(line);
-        }
-        
-        tabMeasures = createTabMeasureList(lines, positions);
-        
-    }
-
-    public TabRow() {}
-	/**
-     * Creates a List of TabMeasure objects from the provided string representation of a TabRow.
-     * These TabMeasure objects are not guaranteed to be valid. You can find out if all the TabMeasure
-     * objects in this TabRow are actually valid by calling the TabRow.validate() method.
-     * @param tabRowLines A List (parallel with "positions") that contains the lines of the measure group which is to
-     *                          be split into separate measures
-     * @param positions A parallel List (parallel with "measureGroupLines") that contains the index at which the
-     *                  corresponding measure group line in "measureGroupLines" can be found in the root string from which
-     *                  it was derived (i.e Score.ROOT_STRING)
-     * @return A List of Measures derived from their String representation, "measureGroupLines".
-     */
-    private List<TabMeasure> createTabMeasureList(List<String> tabRowLines, List<Integer> positions){
-        
-    	List<TabMeasure> measureList = new ArrayList<>();
+//    	//Extract lines and positions, should really pass those separately
+//        for (String lineWithTag : origin) {
+//            Matcher tagMatcher = Pattern.compile("^\\[[0-9]+\\]").matcher(lineWithTag);
+//            tagMatcher.find();
+//            int startIdx = Integer.parseInt(tagMatcher.group().replaceAll("[\\[\\]]",""));
+//            String line = lineWithTag.substring(tagMatcher.end());
+//
+//            this.positions.add(startIdx);
+//            this.lines.add(line);
+//        }
+//        
+//        tabMeasures = createTabMeasureList(lines, positions);
+//        
+//    }
+//
+//    
+//	/**
+//     * Creates a List of TabMeasure objects from the provided string representation of a TabRow.
+//     * These TabMeasure objects are not guaranteed to be valid. You can find out if all the TabMeasure
+//     * objects in this TabRow are actually valid by calling the TabRow.validate() method.
+//     * @param tabRowLines A List (parallel with "positions") that contains the lines of the measure group which is to
+//     *                          be split into separate measures
+//     * @param positions A parallel List (parallel with "measureGroupLines") that contains the index at which the
+//     *                  corresponding measure group line in "measureGroupLines" can be found in the root string from which
+//     *                  it was derived (i.e Score.ROOT_STRING)
+//     * @return A List of Measures derived from their String representation, "measureGroupLines".
+//     */
+//    private List<TabMeasure> createTabMeasureList(List<String> tabRowLines, List<Integer> positions){
+//        
+//    	List<TabMeasure> tabMeasures = new ArrayList<>();
 
         // Setting up three parallel arrays to store the information of each measure
 
-        // 1. The text of each line
-        List<List<String>> textList = new ArrayList<>();
-        // 2. The position of each line in Score.tabText
-        List<List<Integer>> positionsList = new ArrayList<>();
-        // 3. The name of each line (string tuning or drum part)
-        List<List<String[]>> namesList = new ArrayList<>();
+//        // 1. The text of each line
+//        List<List<String>> textList = new ArrayList<>();
+//        // 2. The position of each line in Score.tabText
+//        List<List<Integer>> positionsList = new ArrayList<>();
+//        // 3. The name of each line (string tuning or drum part)
+//        List<List<String[]>> namesList = new ArrayList<>();
+    	
+    	List<List<AnchoredText>> measureData = new ArrayList<>();
+    	List<List<AnchoredText>> measureNameData = new ArrayList<>();
 
         //Iterate over all the lines of the tabRow, e.g. all six for guitar
-        for (int i=0; i < tabRowLines.size(); i++) {
-            String currentLine = tabRowLines.get(i);
-            int currentLineStartPos = positions.get(i);
+        for (int i=0; i < data.size(); i++) {
+            String currentLine = data.get(i).text;//  tabRowLines.get(i);
+            int currentLineStartPos = data.get(i).positionInScore;
             //Find the name at the beginning of a text line
             //Returns an array of two strings, first is the line name, next is the position of it (as a string)
             int nameOffset = currentLineStartPos;
@@ -100,35 +97,41 @@ public class TabRow extends ScoreComponent {
             Matcher measureInsidesMatcher = Pattern.compile(Patterns.insidesPattern()).matcher(currentLine.substring(nameOffset));
             while (measureInsidesMatcher.find()) {
                 measureCount++;
-                String measureLineString = measureInsidesMatcher.group();
-                int measurePosition = currentLineStartPos + nameOffset + measureInsidesMatcher.start();    //the starting position of the insides of this measure in the root string Score.tabText
+                String measureText = measureInsidesMatcher.group();
+                int measurePositionInLine = nameOffset + measureInsidesMatcher.start();
+                int measurePositionInScore = currentLineStartPos + measurePositionInLine;    //the starting position of the insides of this measure in the root string Score.tabText
 
-                if (textList.size()<measureCount) {
-                    textList.add(new ArrayList<>());
-                    positionsList.add(new ArrayList<>());
-                    namesList.add(new ArrayList<>());
+                // If we are starting a new measure, measureCount is larger by 1
+                if (measureData.size() < measureCount) {
+                    measureData.add(new ArrayList<>());
+                    measureNameData.add(new ArrayList<>());
+                    //namesList.add(new ArrayList<>());
                 }
 
                 // Get the particular measure we are interested in and add this line to its list of lines
-                List<String> measureLines = textList.get(measureCount-1);  //-1 cuz of zero indexing
-                List<Integer> measurePositions = positionsList.get(measureCount-1);
-                List<String[]> measureNames = namesList.get(measureCount-1);
-                measureLines.add(measureLineString);
-                measurePositions.add(measurePosition);
-                measureNames.add(lineName);
+                AnchoredText currentLineData = new AnchoredText(measureText, measurePositionInScore, measurePositionInLine);
+                measureData.get(measureCount - 1).add(currentLineData);
+                AnchoredText currentNameData = new AnchoredText(lineName[0], Integer.parseInt(lineName[1]) - nameOffset + currentLineStartPos, Integer.parseInt(lineName[1]) - nameOffset);
+                measureNameData.get(measureCount - 1).add(currentNameData);
+                
+//                List<String> measureLines = textList.get(measureCount-1);  //-1 cuz of zero indexing
+//                List<Integer> measurePositions = positionsList.get(measureCount-1);
+//                List<String[]> measureNames = namesList.get(measureCount-1);
+//                measureLines.add(measureLineString);
+//                measurePositions.add(measurePosition);
+//                measureNames.add(lineName);
             }
         }
         boolean isFirstMeasureInGroup = true;
         //Iterate over all the extracted measures
-        for (int i = 0; i < textList.size(); i++) {
-            List<String> measureLineList = textList.get(i);
-            List<Integer> measureLinePositionList = positionsList.get(i);
-            List<String[]> measureLineNameList = namesList.get(i);
+        for (int i = 0; i < measureData.size(); i++) {
+//            List<String> measureLineList = textList.get(i);
+//            List<Integer> measureLinePositionList = positionsList.get(i);
+//            List<String[]> measureLineNameList = namesList.get(i);
 
-            measureList.add(from(measureLineList, measureLineNameList, measureLinePositionList, isFirstMeasureInGroup));
+            tabMeasures.add(from(measureData.get(i), measureNameData.get(i), isFirstMeasureInGroup));
             isFirstMeasureInGroup = false;
         }
-        return measureList;
     }
 
     /**
@@ -147,72 +150,73 @@ public class TabRow extends ScoreComponent {
      * @return A Measure object which is either of type GuitarMeasure if the measure was understood to be a guitar
      * measure, or of type DrumMeasure if the measure was understood to be of type DrumMeasure
      */
-    private TabMeasure from(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {
-        boolean repeatStart = checkRepeatStart(lineList);
-        boolean repeatEnd = checkRepeatEnd(lineList);
-        String repeatCountStr = extractRepeatCount(lineList);
-        removeRepeatMarkings(lineList, linePositionList, repeatStart, repeatEnd, repeatCountStr);
-        int repeatCount = 1;
-        if (!repeatCountStr.isEmpty()) {
-            Matcher numMatcher = Pattern.compile("(?<=\\])[0-9]+").matcher(repeatCountStr);
-            numMatcher.find();
-            repeatCountStr = numMatcher.group();
-            repeatCount = Integer.parseInt(repeatCountStr);
-        }
+    private TabMeasure from(List<AnchoredText> measureAT, List<AnchoredText> measureNameAT, boolean isFirstMeasureInGroup) {
+    	//TODO Fix this to use anchored text, also the four lines at the end
+//        boolean repeatStart = checkRepeatStart(lineList);
+//        boolean repeatEnd = checkRepeatEnd(lineList);
+//        String repeatCountStr = extractRepeatCount(lineList);
+//        removeRepeatMarkings(lineList, linePositionList, repeatStart, repeatEnd, repeatCountStr);
+//        int repeatCount = 1;
+//        if (!repeatCountStr.isEmpty()) {
+//            Matcher numMatcher = Pattern.compile("(?<=\\])[0-9]+").matcher(repeatCountStr);
+//            numMatcher.find();
+//            repeatCountStr = numMatcher.group();
+//            repeatCount = Integer.parseInt(repeatCountStr);
+//        }
 
         TabMeasure measure = switch (Settings.getInstance().getInstrument()) {
-        case GUITAR -> new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-        case BASS -> new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-        case DRUMS -> new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-        case NONE -> detectAndCreateMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+        case GUITAR -> new GuitarMeasure(measureAT, measureNameAT, isFirstMeasureInGroup);
+        case BASS -> new BassMeasure(measureAT, measureNameAT, isFirstMeasureInGroup);
+        case DRUMS -> new DrumMeasure(measureAT, measureNameAT, isFirstMeasureInGroup);
+        case NONE -> detectAndCreateMeasure(measureAT, measureNameAT, isFirstMeasureInGroup);
     };
     
-        if (repeatStart)
-            measure.setRepeat(repeatCount, RepeatType.START);
-        if (repeatEnd)
-            measure.setRepeat(repeatCount, RepeatType.END);
+//        if (repeatStart)
+//            measure.setRepeat(repeatCount, RepeatType.START);
+//        if (repeatEnd)
+//            measure.setRepeat(repeatCount, RepeatType.END);
         return measure;
     }
 
     //TODO Should replace with exception
-	private TabMeasure detectAndCreateMeasure(List<String> lineList, List<String[]> lineNameList, List<Integer> linePositionList, boolean isFirstMeasureInGroup) {
-    	double guitarLikelihood = GuitarUtils.isGuitarMeasureLikelihood(lineList, lineNameList);
-        double drumLikelihood = DrumUtils.isDrumMeasureLikelihood(lineList, lineNameList);
-        //double bassLikelihood = GuitarUtils.isBassMeasureLikelihood(lineList, lineNameList);
-
-        //adjusting values
-//        double guitarLikelihoodAdj = guitarLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.GUITAR ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
-//        double drumLikelihoodAdj = drumLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.DRUMS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
-//        double bassLikelihoodAdj = bassLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.BASS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
-
-        double guitarLikelihoodAdj = guitarLikelihood;
-        double drumLikelihoodAdj = drumLikelihood;
-        //double bassLikelihoodAdj = bassLikelihood;
+	private TabMeasure detectAndCreateMeasure(List<AnchoredText> inputData, List<AnchoredText> inputNameData, boolean isFirstMeasureInGroup) {
+//    	double guitarLikelihood = GuitarUtils.isGuitarMeasureLikelihood(lineList, lineNameList);
+//        double drumLikelihood = DrumUtils.isDrumMeasureLikelihood(lineList, lineNameList);
+//        //double bassLikelihood = GuitarUtils.isBassMeasureLikelihood(lineList, lineNameList);
+//
+//        //adjusting values
+////        double guitarLikelihoodAdj = guitarLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.GUITAR ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+////        double drumLikelihoodAdj = drumLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.DRUMS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+////        double bassLikelihoodAdj = bassLikelihood*(1-FOLLOW_PREV_MEASURE_WEIGHT) + (PREV_MEASURE_TYPE==Instrument.BASS ? FOLLOW_PREV_MEASURE_WEIGHT : 0);
+//
+//        double guitarLikelihoodAdj = guitarLikelihood;
+//        double drumLikelihoodAdj = drumLikelihood;
+//        //double bassLikelihoodAdj = bassLikelihood;
         
-        TabMeasure measure;
-        if (guitarLikelihoodAdj >= drumLikelihoodAdj) {
-        	// If it's a 6-string bass, the user has to set it explicitly in Current Song Settings
-        	if (lineList.size() >= 6)
-        		measure = new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-        	else
-        		measure = new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-//            PREV_MEASURE_TYPE = Instrument.GUITAR;
-//            // the more confident we are about what type of measure this is, the more we want the next measure to be likely to follow it.
-//            //dont use the guitarLikelihoodAdj "Adj" score to calculate confidence or else the effect will build on itself everytime we adjust the FOLLOW_PREV_MEASURE_WEIGHT value
-//            double confidenceScore = guitarLikelihood-Math.min(Math.max(drumLikelihood, bassLikelihood), guitarLikelihood);
-
-            //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
-//        }else if (bassLikelihoodAdj >= drumLikelihoodAdj){
-//            measure = new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-//            PREV_MEASURE_TYPE = Instrument.BASS;
-//            double confidenceScore = bassLikelihood-Math.min(Math.max(drumLikelihood, guitarLikelihood)*2, bassLikelihood);
+        TabMeasure measure = null;
+//        if (guitarLikelihoodAdj >= drumLikelihoodAdj) {
+//        	// If it's a 6-string bass, the user has to set it explicitly in Current Song Settings
+//        	if (lineList.size() >= 6)
+//        		measure = new GuitarMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+//        	else
+//        		measure = new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+////            PREV_MEASURE_TYPE = Instrument.GUITAR;
+////            // the more confident we are about what type of measure this is, the more we want the next measure to be likely to follow it.
+////            //dont use the guitarLikelihoodAdj "Adj" score to calculate confidence or else the effect will build on itself everytime we adjust the FOLLOW_PREV_MEASURE_WEIGHT value
+////            double confidenceScore = guitarLikelihood-Math.min(Math.max(drumLikelihood, bassLikelihood), guitarLikelihood);
+//
 //            //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
-        }else {
-            measure = new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
-//            PREV_MEASURE_TYPE = Instrument.DRUMS;
-//            double confidenceScore = drumLikelihood-Math.min(Math.max(bassLikelihood, guitarLikelihood)*2, drumLikelihood);
-//            //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
-        }
+////        }else if (bassLikelihoodAdj >= drumLikelihoodAdj){
+////            measure = new BassMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+////            PREV_MEASURE_TYPE = Instrument.BASS;
+////            double confidenceScore = bassLikelihood-Math.min(Math.max(drumLikelihood, guitarLikelihood)*2, bassLikelihood);
+////            //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
+//        }else {
+//            measure = new DrumMeasure(lineList, lineNameList, linePositionList, isFirstMeasureInGroup);
+////            PREV_MEASURE_TYPE = Instrument.DRUMS;
+////            double confidenceScore = drumLikelihood-Math.min(Math.max(bassLikelihood, guitarLikelihood)*2, drumLikelihood);
+////            //FOLLOW_PREV_MEASURE_WEIGHT = FOLLOW_PREV_MEASURE_WEIGHT * adjustRawConfidenceScore(confidenceScore);;
+//        }
 		return measure;
 	}
 
@@ -337,13 +341,13 @@ public class TabRow extends ScoreComponent {
     /**
      * @return the range of the first line of this TabRow, first character is at position 1
      */
-    public Range getRelativeRange() {
-        if (this.lines.isEmpty()) return null;
-        int position = this.positions.get(0);
-        int relStartPos = position-Score.tabText.substring(0,position).lastIndexOf("\n");
-        int relEndPos = relStartPos + this.lines.get(0).length();
-        return new Range(relStartPos, relEndPos);
-    }
+//    public Range getRelativeRange() {
+//        if (this.lines.isEmpty()) return null;
+//        int position = this.positions.get(0);
+//        int relStartPos = position - Score.tabText.substring(0,position).lastIndexOf("\n");
+//        int relEndPos = relStartPos + this.lines.get(0).length();
+//        return new Range(relStartPos, relEndPos);
+//    }
 
     /**
 	 * Creates a string representation of the index position range of each line making up this MeasureGroup instance,
@@ -354,9 +358,9 @@ public class TabRow extends ScoreComponent {
 	 */
 	 public List<Range> getRanges() {
 	    List<Range> linePositions = new ArrayList<>();
-	    for (int i=0; i<this.lines.size(); i++) {
-	        int startIdx = this.positions.get(i);
-	        int endIdx = startIdx+this.lines.get(i).length();
+	    for (int i=0; i<data.size(); i++) {
+	        int startIdx = data.get(i).positionInScore; //)  this.positions.get(i);
+	        int endIdx = startIdx + data.get(i).text.length(); //  this.lines.get(i).length();
 	        linePositions.add(new Range(startIdx, endIdx));
 	    }
 	    return linePositions;
@@ -423,9 +427,6 @@ public class TabRow extends ScoreComponent {
 	
 	    for (TabMeasure measure : this.tabMeasures) {
 	        errors.addAll(measure.validate());
-	    }
-	    for (Instruction instruction : this.instructions) {
-	        errors.addAll(instruction.validate());
 	    }
 	
 	    return errors;

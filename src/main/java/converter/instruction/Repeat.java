@@ -1,7 +1,5 @@
 package converter.instruction;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,19 +8,21 @@ import converter.ScoreComponent;
 import converter.TabRow;
 import converter.TabSection;
 import converter.measure.TabMeasure;
+import utility.AnchoredText;
 import utility.Patterns;
 import utility.Range;
-import utility.Settings;
 import utility.ValidationError;
 
 public class Repeat extends Instruction {
-    public static String PATTERN = getPattern();
+    
+	public static String PATTERN = getPattern();
     private int repeatCount;
     private boolean startApplied = false;
     private boolean endApplied = false;
-    public Repeat(String content, int position, boolean isTop) {
-        super(content, position, isTop);
-        Matcher matcher = Pattern.compile("[0-9]+").matcher(content);
+    
+    public Repeat(AnchoredText inputAT, boolean isTop) {
+        super(inputAT, isTop);
+        Matcher matcher = Pattern.compile("[0-9]+").matcher(at.text);
         if (matcher.find())
             this.repeatCount = Integer.parseInt(matcher.group());
     }

@@ -13,6 +13,7 @@ public class Settings {
     
     public int errorSensitivity = 4;
     public String outputFolder = System.getProperty("user.home");
+    public String inputFolder = System.getProperty("user.home");
     public int tsNum = 4;
     public int tsDen = 4;
     public String title = "";

@@ -1,47 +1,33 @@
 package converter.instruction;
 
-import converter.Score;
+import java.util.ArrayList;
+import java.util.List;
+
 import converter.ScoreComponent;
+import utility.AnchoredText;
 import utility.Patterns;
 import utility.Range;
 import utility.ValidationError;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public abstract class Instruction extends ScoreComponent{
 	protected boolean isTop;
     
     public static String LINE_PATTERN = getLinePattern();
 
-    protected String content;
-    protected int position;
-    protected Range range;
+    protected Range rangeInLine;
     protected boolean hasBeenApplied;
 
-    Instruction(String content, int position, boolean isTop) {
-        this.content = content;
-        this.position = position;
+    Instruction(AnchoredText inputAT, boolean isTop) {
+        this.at = inputAT;
         this.isTop = isTop;
-        int relStartPos = position - Score.tabText.substring(0,position).lastIndexOf("\n");
-        int relEndPos = relStartPos + content.length() - 1;
+        //int relStartPos = position - Score.tabText.substring(0,position).lastIndexOf("\n");
+        int relStartPos = at.positionInLine;
+        int relEndPos = relStartPos + at.text.length() - 1;
         setRange(new Range(relStartPos, relEndPos));
-        
     }
 
     public abstract <E extends ScoreComponent> void applyTo(E scoreComponent);
 
-    
-
-    String getContent() {
-        return this.content;
-    }
-    int getPosition() {
-        return this.position;
-    }
     void setHasBeenApplied(boolean bool) {
         this.hasBeenApplied = bool;
     }
@@ -52,7 +38,7 @@ public abstract class Instruction extends ScoreComponent{
 	@Override
 	public List<Range> getRanges() {
 		List<Range> ranges = new ArrayList<>();
-		ranges.add(new Range(position,position+content.length()));
+		ranges.add(new Range(at.positionInScore, at.positionInScore + at.text.length()));
 		return ranges;
 	}
 	
@@ -81,11 +67,11 @@ public abstract class Instruction extends ScoreComponent{
 	}
 
 	public Range getRange() {
-		return range;
+		return rangeInLine;
 	}
 
 	public void setRange(Range range) {
-		this.range = range;
+		this.rangeInLine = range;
 	}
 }
 

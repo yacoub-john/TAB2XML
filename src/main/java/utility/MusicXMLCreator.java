@@ -3,7 +3,7 @@ package utility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import converter.Instrument;
+
 import converter.Score;
 import custom_exceptions.TXMLException;
 
@@ -15,7 +15,7 @@ public class MusicXMLCreator {
     }
 
     public String generateMusicXML() {
-        if(score.tabText.isBlank()){
+        if(score.at.text.isBlank()){
             return "";
         }
         XmlMapper mapper = new XmlMapper();

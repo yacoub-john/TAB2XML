@@ -1,8 +1,6 @@
 package converter.instruction;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,19 +9,19 @@ import converter.ScoreComponent;
 import converter.TabRow;
 import converter.TabSection;
 import converter.measure.TabMeasure;
+import utility.AnchoredText;
 import utility.Patterns;
 import utility.Range;
-import utility.Settings;
 import utility.ValidationError;
 
 public class TimeSignature extends Instruction {
     public static String PATTERN = "(?<=^|\\n|" + Patterns.SPACEORTAB + ")[0-9][0-9]?\\/[0-9][0-9]?(?=$|\\n|" + Patterns.SPACEORTAB + ")";
     private int beatType;
     private int beatCount;
-    public TimeSignature(String content, int position, boolean isTop) {
-        super(content, position, isTop);
-        Matcher beatCountMatcher = Pattern.compile("[0-9]+(?=[/\\\\])").matcher(content);
-        Matcher beatTypeMatcher = Pattern.compile("(?<=[/\\\\])[0-9]+").matcher(content);
+    public TimeSignature(AnchoredText inputAT, boolean isTop) {
+        super(inputAT, isTop);
+        Matcher beatCountMatcher = Pattern.compile("[0-9]+(?=[/\\\\])").matcher(at.text);
+        Matcher beatTypeMatcher = Pattern.compile("(?<=[/\\\\])[0-9]+").matcher(at.text);
         if (beatCountMatcher.find())
             this.beatCount = Integer.parseInt(beatCountMatcher.group());
         if (beatTypeMatcher.find())
@@ -77,10 +75,6 @@ public class TimeSignature extends Instruction {
     }
 
     public static boolean isValid(int beatCount, int beatType) {
-//        return switch (beatCount + "/" + beatType) {
-//            case "2/4", "2/2", "3/8", "3/4", "3/2", "4/8", "4/4", "4/2", "6/8", "6/4", "9/8", "9/4", "12/8", "12/4" -> true;
-//            default -> false;
-//        };
     	boolean result = true;
     	int[] validDens = {2,4,8,16,32};
     	if (!Arrays.stream(validDens).anyMatch(i -> i == beatType)) result = false;

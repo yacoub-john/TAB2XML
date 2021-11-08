@@ -15,6 +15,7 @@ import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
 import converter.note.NoteFactory;
 import converter.note.TabNote;
+import utility.AnchoredText;
 import utility.Range;
 import utility.Settings;
 import utility.ValidationError;
@@ -25,11 +26,13 @@ public abstract class TabMeasure extends ScoreComponent {
     protected int measureCount;
     protected int beatCount = Settings.getInstance().tsNum;
     protected int beatType = Settings.getInstance().tsDen;
-    List<String> lines;
-    List<String[]> lineNamesAndPositions;
+    List<AnchoredText> data;
+    List<AnchoredText> nameData;
+    //List<String> lines;
+    //List<String[]> lineNamesAndPositions;
     public int lineCount;
-    List<Integer> positions;
-    public List<TabString> tabStringList;
+    //List<Integer> positions;
+    public List<TabString> tabStringList = new ArrayList<>();
     boolean isFirstMeasureInGroup;
     List<List<TabNote>> voiceSortedNoteList;   // a list of voices where each voice is a sorted list of notes
 
@@ -44,14 +47,17 @@ public abstract class TabMeasure extends ScoreComponent {
     protected int[] supportedDivisions = {1,2,3,4,6,8,12,16,24,48};
     
 
-    public TabMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasureInGroup) {
+    //public TabMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasureInGroup) {
+    public TabMeasure(List<AnchoredText> inputData, List<AnchoredText> inputNameData, boolean isFirstMeasureInGroup) {
         this.measureCount = ++MEASURE_INDEX;
-        this.lines = lines;
-        this.lineCount = this.lines.size();
-        this.lineNamesAndPositions = lineNamesAndPositions;
-        this.positions = linePositions;
+        this.data = inputData;
+        this.nameData = inputNameData;
+        //this.lines = lines;
+        this.lineCount = this.data.size();
+        //this.lineNamesAndPositions = lineNamesAndPositions;
+        //this.positions = linePositions;
         this.isFirstMeasureInGroup = isFirstMeasureInGroup;
-        this.tabStringList = this.createTabStringList(this.lines, this.lineNamesAndPositions, this.positions);
+        createTabStringList();
         this.voiceSortedNoteList = this.getVoiceSortedNoteList();
         setChords();
         setDurations();
@@ -68,15 +74,14 @@ public abstract class TabMeasure extends ScoreComponent {
      * @return A list of TabString objects. The concrete class type of these TabString objects is determined
      * from the input String lists(lines and lineNames), and they are not guaranteed to all be of the same type.
      */
-    protected List<TabString> createTabStringList(List<String> lines, List<String[]> namesAndPosition, List<Integer> linePositions) {
-        List<TabString> tabStringList = new ArrayList<>();
-        for (int i=0; i<lines.size(); i++) {
-            String line = lines.get(i);
-            String[] nameAndPosition = namesAndPosition.get(i);
-            int position = linePositions.get(i);
-            tabStringList.add(newTabString(i+1,line, nameAndPosition, position));
+    protected void createTabStringList() {
+        
+        for (int i=0; i<data.size(); i++) {
+//            String line = lines.get(i);
+//            String[] nameAndPosition = namesAndPosition.get(i);
+//            int position = linePositions.get(i);
+            tabStringList.add(newTabString(i+1, data.get(i), nameData.get(i)));
         }
-        return tabStringList;
     }
 
     /**
@@ -87,7 +92,7 @@ public abstract class TabMeasure extends ScoreComponent {
      *                 was derived (i.e Score.tabText)
      * @return a TabString either of type TabGuitarString, TabBassString, or TabDrumString
      */
-    protected abstract TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position);
+    protected abstract TabString newTabString(int stringNumber, AnchoredText data, AnchoredText name);
     
     protected void setChords() {
 	    for (List<TabNote> voice : this.voiceSortedNoteList) {
@@ -365,20 +370,22 @@ public abstract class TabMeasure extends ScoreComponent {
      * @return the range of the first line of the measure in its text line
      */
     public Range getRelativeRange() {
-        if (this.lines.isEmpty()) return null;
-        int position;
-        if (this.isFirstMeasureInGroup)
-            position = Integer.parseInt(lineNamesAndPositions.get(0)[1]);   // use the starting position of the name instead.
-        else
-            position = this.positions.get(0);       // Took that -1 away: use the starting position of the inside of the measure minus one, so that it also captures the starting line of that measure "|"
-        int relStartPos = position - Score.tabText.substring(0,position).lastIndexOf("\n");
-        String line = this.lines.get(0);
-        int lineLength = 0;
-        if (line.matches("[^|]*\\|\\s*"))   //if it ends with a |
-            lineLength = line.length()-1;
-        else
-            lineLength = line.length();
-        int relEndPos = relStartPos + lineLength;
+        if (this.data.isEmpty()) return null;
+//        int position;
+//        if (this.isFirstMeasureInGroup)
+//            position = Integer.parseInt(lineNamesAndPositions.get(0)[1]);   // use the starting position of the name instead.
+//        else
+//            position = this.positions.get(0);       // Took that -1 away: use the starting position of the inside of the measure minus one, so that it also captures the starting line of that measure "|"
+//        int relStartPos = position - Score.tabText.substring(0,position).lastIndexOf("\n");
+//        String line = this.lines.get(0);
+//        int lineLength = 0;
+//        if (line.matches("[^|]*\\|\\s*"))   //if it ends with a |
+//            lineLength = line.length()-1;
+//        else
+//            lineLength = line.length();
+//        int relEndPos = relStartPos + lineLength;
+        int relStartPos = data.get(0).positionInLine;
+        int relEndPos = relStartPos + data.get(0).text.length();
         return new Range(relStartPos, relEndPos);
     }
 
@@ -402,9 +409,9 @@ public abstract class TabMeasure extends ScoreComponent {
 	 */
 	public List<Range> getRanges() {
 	    List<Range> linePositions = new ArrayList<>();
-	    for (int i=0; i<this.lines.size(); i++) {
-	        int startIdx = this.positions.get(i);
-	        int endIdx = startIdx+this.lines.get(i).length();
+	    for (int i=0; i<data.size(); i++) {
+	        int startIdx = data.get(i).positionInScore; // this.positions.get(i);
+	        int endIdx = startIdx + data.get(i).text.length(); // this.lines.get(i).length();
 	        linePositions.add(new Range(startIdx, endIdx));
 	    }
 	    return linePositions;

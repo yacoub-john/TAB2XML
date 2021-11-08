@@ -11,6 +11,7 @@ import converter.Score;
 import converter.ScoreComponent;
 import converter.note.TabNote;
 import converter.note.NoteFactory;
+import utility.AnchoredText;
 import utility.DrumUtils;
 import utility.GuitarUtils;
 import utility.Patterns;
@@ -26,11 +27,11 @@ public abstract class TabString extends ScoreComponent {
     public List<TabNote> noteList;
     
 
-    protected TabString(int stringNumber, String line, String[] namesAndPosition, int position) {
-        this.line = line;
-        this.name = namesAndPosition[0];
-        this.namePosition = Integer.parseInt(namesAndPosition[1]);
-        this.position = position;
+    protected TabString(int stringNumber, AnchoredText dataAT, AnchoredText nameAT) {
+        this.line = dataAT.text;
+        this.position = dataAT.positionInScore;
+        this.name = nameAT.text;
+        this.namePosition = nameAT.positionInScore;
         this.noteList = this.createNoteList(stringNumber, this.line, position);
     }
 

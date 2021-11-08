@@ -18,6 +18,7 @@ import models.part_list.MIDIInstrument;
 import models.part_list.PartList;
 import models.part_list.ScoreInstrument;
 import models.part_list.ScorePart;
+import utility.AnchoredText;
 import utility.DrumPiece;
 import utility.DrumPieceInfo;
 import utility.DrumUtils;
@@ -28,19 +29,20 @@ import utility.ValidationError;
 
 public class Score extends ScoreComponent {
 
-	public static String tabText;
+	//public static String tabText;
 	private Map<Integer, String> scoreTextFragments;
 	private List<TabSection> tabSectionList;
     public static int CRITICAL_ERROR_CUTOFF = 1;
     private List<TabMeasure> tabMeasureList;
 
     public Score(String textInput) {
+    	
     	TabMeasure.MEASURE_INDEX = 0;
     	DrumUtils.createDrumSet();
 		DrumUtils.createDrumNickNames();
-    	tabText = textInput;
+		at = new AnchoredText(textInput, 0, 0);
     	detectInstrument();
-        scoreTextFragments = getScoreTextFragments(tabText);
+        scoreTextFragments = getScoreTextFragments(at.text);
         tabSectionList = createTabSectionList(scoreTextFragments);
         tabMeasureList = createMeasureList();
         applyTimeSignatureUntilNextChange();
@@ -55,7 +57,7 @@ public class Score extends ScoreComponent {
 		if (Settings.getInstance().instrumentSetting == InstrumentSetting.AUTO) {
 			double guitarScore = 0;
 			double drumScore = 0;
-			Matcher lineMatcher = Pattern.compile("(?<=^|\\n)[^\\n]+(?=$|\\n)").matcher(tabText);
+			Matcher lineMatcher = Pattern.compile("(?<=^|\\n)[^\\n]+(?=$|\\n)").matcher(at.text);
 			int lineCount = 0;
 			while (lineMatcher.find()) { // go through each line
 				String x = lineMatcher.group();
@@ -93,6 +95,7 @@ public class Score extends ScoreComponent {
      * actual piece of text (String)
      */
     public LinkedHashMap<Integer, String> getScoreTextFragments(String input) {
+    	//TODO Should use anchored text also
         LinkedHashMap<Integer, String> inputFragments = new LinkedHashMap<>();
 
         // Finding the point where there is a break between two pieces of text.
@@ -110,7 +113,7 @@ public class Score extends ScoreComponent {
 
             int paragraphStart = previousTextBreakEnd;
             int paragraphEnd = textBreakMatcher.start();
-            String fragment = tabText.substring(previousTextBreakEnd,paragraphEnd);
+            String fragment = at.text.substring(previousTextBreakEnd,paragraphEnd);
             if (!fragment.strip().isEmpty()) {
                 inputFragments.put(paragraphStart, fragment);
             }
@@ -136,14 +139,15 @@ public class Score extends ScoreComponent {
         	//String tabRowLinePattern = TabSection.tabRowLinePattern();
 			Matcher matcher = Pattern.compile(tabSectionRegexPattern, Pattern.MULTILINE).matcher(fragment.getValue());
 			while (matcher.find()) {
-				tabSectionList.add(new TabSection(matcher.group(), fragment.getKey() + matcher.start(), isFirstTabSection));
+				AnchoredText at = new AnchoredText(matcher.group(), fragment.getKey() + matcher.start(), 0);
+				tabSectionList.add(new TabSection(at, isFirstTabSection));
 				isFirstTabSection = false;
 			}
         }
         return tabSectionList;
     }
 
-    //TODO Update to use the attribute measures
+    //TODO Update to use the attribute tabMeasureList
     private void applyTimeSignatureUntilNextChange() {
 	    int currBeatCount = Settings.getInstance().tsNum;
 	    int currBeatType = Settings.getInstance().tsDen;
@@ -237,8 +241,8 @@ public class Score extends ScoreComponent {
         return new PartList(scoreParts);
     }
     
-//    private int lastReturn(int position) {
-//    	return tabText.substring(0,position).lastIndexOf("\n");
+//    public int positionInLine(int position) {
+//    	return position - at.text.substring(0, position).lastIndexOf("\n");
 //    }
     
     // TODO synchronized because the ScorePartwise model has an instance counter which has to remain the same for all
@@ -291,15 +295,15 @@ public class Score extends ScoreComponent {
 	    
 	    int prevEndIdx = 0;
 	    ArrayList<Range> positions = new ArrayList<>();
-	    for (TabSection msurCollction : this.tabSectionList) {
-	    	String uninterpretedFragment = tabText.substring(prevEndIdx,msurCollction.position);
+	    for (TabSection tabSection : this.tabSectionList) {
+	    	String uninterpretedFragment = at.text.substring(prevEndIdx, tabSection.at.positionInScore);
 	    	if (!uninterpretedFragment.isBlank()) {
 	    		positions.add(new Range(prevEndIdx, prevEndIdx+uninterpretedFragment.length()));
 	    	}
-	    	prevEndIdx = msurCollction.endIndex;
+	    	prevEndIdx = tabSection.endIndex;
 	    }
 	
-	    String restOfDocument = tabText.substring(prevEndIdx);
+	    String restOfDocument = at.text.substring(prevEndIdx);
 	    if (!restOfDocument.isBlank()) {
 	        positions.add(new Range(prevEndIdx, prevEndIdx+restOfDocument.length()));
 	    }
@@ -309,7 +313,8 @@ public class Score extends ScoreComponent {
 	        
 	    }
 	
-	    //--------------Validate your aggregates (regardless of if you're valid, as there is no significant validation performed upon yourself that preclude your aggregates from being valid)-------------------
+	    // Validate your aggregates (regardless of if you're valid, as there is no significant
+	    // validation performed upon yourself that preclude your aggregates from being valid)
 	    for (TabSection colctn : this.tabSectionList) {
 	        errors.addAll(colctn.validate());
 	    }

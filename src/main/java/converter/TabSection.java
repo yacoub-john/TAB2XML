@@ -9,6 +9,7 @@ import converter.instruction.Instruction;
 import converter.instruction.InvalidRepeat;
 import converter.instruction.Repeat;
 import converter.instruction.TimeSignature;
+import utility.AnchoredText;
 import utility.Patterns;
 import utility.Range;
 import utility.Settings;
@@ -19,8 +20,8 @@ public class TabSection extends ScoreComponent {
 	//                           a measure line at start of line(with name)          zero or more middle measure lines       (optional |'s and spaces then what's ahead is end of line)
     private static String LINE_PATTERN = "(" + Patterns.START_OF_LINE          +          Patterns.MIDDLE_OF_LINE + "*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.SPACEORTAB+"*)"     +  ")";
 
-    String origin;  //the string that was passed to the constructor upon the instantiation of this class
-    int position;   //the index in Score.rootString at which the String "MeasureCollection().origin" is located
+    //String at.text;  //the string that was passed to the constructor upon the instantiation of this class
+    //int position;   //the index in Score.rootString at which the String "MeasureCollection().at.text" is located
     int endIndex;
     private TabRow tabRow;
     //public static String PATTERN = getRegexPattern();
@@ -28,38 +29,32 @@ public class TabSection extends ScoreComponent {
     private List<Instruction> instructionList = new ArrayList<>();
     private boolean repeatsFound = false;
 
-    public TabSection(String origin, int position, boolean isFirstTabSection) {
-        this.origin = origin;
-        this.position = position;
-        this.endIndex = position+this.origin.length();
+    public TabSection(AnchoredText at, boolean isFirstTabSection) {
+        this.at = at;
+        this.endIndex = at.positionInScore + at.text.length();
         this.isFirstTabSection = isFirstTabSection;
-        createTabRowAndInstructionList(origin);
+        createTabRowAndInstructionList();
         for (Instruction instruction : this.instructionList)
             instruction.applyTo(this);
     }
 
 	/**
-	 * Separates the provided String representation of a TabSection into
-	 * Instructions, and a TabRow collection (of one?)
+	 * Separates the text of this TabSection into
+	 * Instructions, and a TabRow
 	 * 
-	 * @param origin the String representation of a TabSection from which the
-	 *               instructions, and the TabRow collection are extracted. Each
-	 *               String stored in instructionList and tabRowList begins with a
-	 *               tag (i.e "[startIdx]stringContent" ) specifying the start index
-	 *               of the String in Score.tabText
 	 */
-	private void createTabRowAndInstructionList(String origin) {
+	private void createTabRowAndInstructionList() {
 
 		//Range tabRowRange = null;
 		List<String> lines = new ArrayList<>();
 		List<Integer> starts= new ArrayList<>();
-		List<String> tabRowLines = new ArrayList<>();
-		List<Integer> tabRowStarts= new ArrayList<>();
+		List<AnchoredText> tabRowData = new ArrayList<>();
+		//List<Integer> tabRowStarts= new ArrayList<>();
 		// Match one or more tablature lines 
-		//Matcher matcher = Pattern.compile("((^|\\n)" + tabRowLinePattern() + ")+").matcher(origin);
-		//Matcher lineMatcher = Pattern.compile("((^|\\n)" + tabRowLinePattern() + ")").matcher(origin);  // Match only one line
-		//Matcher lineMatcher = Pattern.compile("(^" + tabRowLinePattern() + ")").matcher(origin);  // Match only one line
-		Matcher lineMatcher = Pattern.compile("(?<=^|\\n)[^\\n]+(?=$|\\n)").matcher(origin);
+		//Matcher matcher = Pattern.compile("((^|\\n)" + tabRowLinePattern() + ")+").matcher(at.text);
+		//Matcher lineMatcher = Pattern.compile("((^|\\n)" + tabRowLinePattern() + ")").matcher(at.text);  // Match only one line
+		//Matcher lineMatcher = Pattern.compile("(^" + tabRowLinePattern() + ")").matcher(at.text);  // Match only one line
+		Matcher lineMatcher = Pattern.compile("(?<=^|\\n)[^\\n]+(?=$|\\n)").matcher(at.text);
         while (lineMatcher.find()) { // go through each line
         	String l = lineMatcher.group();
         	lines.add(l);
@@ -71,7 +66,8 @@ public class TabSection extends ScoreComponent {
 			//Matcher topInstructionMatcher = Pattern.compile("((^|\\n)" + Instruction.LINE_PATTERN + ")+").matcher(line);
 			Matcher topInstructionMatcher = Pattern.compile(Instruction.LINE_PATTERN).matcher(line);
 			if (topInstructionMatcher.find()) {  // no need for loop as only one line
-				this.instructionList.addAll(extractInstructions(topInstructionMatcher.group(), this.position + start + topInstructionMatcher.start(), true));
+				AnchoredText instructionAT = new AnchoredText(topInstructionMatcher.group(), at.positionInScore + start + topInstructionMatcher.start(), topInstructionMatcher.start());
+				this.instructionList.addAll(extractInstructions(instructionAT, true));
 				continue;
 			}
 			String pattern = tabRowLinePattern();
@@ -82,48 +78,56 @@ public class TabSection extends ScoreComponent {
 					start++;
 					System.out.println("How did you get here?");
 				}
-				tabRowStarts.add(start);
-				tabRowLines.add(line);
+				AnchoredText tabRowAT = new AnchoredText(line, at.positionInScore + start, 0);
+				tabRowData.add(tabRowAT);
+				//tabRowStarts.add(start);
+				//tabRowLines.add(line);
 			}
 		}
 		//TODO redo this error
 		//else addError ("No tablature detected", 1, getRanges()); Also assert tabRowStart is not -1
 
-		createTabRow(tabRowStarts, tabRowLines);
-		}
-	
-	private void createTabRow(List<Integer> tabRowStarts, List<String> tabRowLines) {
-		List<String> tabRowString = new ArrayList<>();
-		for (int i=0; i < tabRowLines.size() ; i++)	{
-			String line = tabRowLines.get(i);
-			int lineStartIdx = tabRowStarts.get(i);
-			String tabRowLine = "[" + (this.position + lineStartIdx) + "]" + line;
-			tabRowString.add(tabRowLine);
-		}
-		if (isFirstTabSection && Settings.getInstance().getInstrument() == Instrument.GUITAR && tabRowString.size() < 6)
+		//createTabRow(tabRowStarts, tabRowLines);
+		if (isFirstTabSection && Settings.getInstance().getInstrument() == Instrument.GUITAR && tabRowData.size() < 6)
 			Settings.getInstance().detectedInstrument = Instrument.BASS;
-		this.tabRow = new TabRow(tabRowString);
-	}
+		this.tabRow = new TabRow(tabRowData);
+		}
 	
-    private List<Instruction> extractInstructions(String line, int position, boolean isTop) {
+//	private void createTabRow(List<Integer> tabRowStarts, List<String> tabRowLines) {
+//		List<String> tabRowString = new ArrayList<>();
+//		for (int i=0; i < tabRowLines.size() ; i++)	{
+//			String line = tabRowLines.get(i);
+//			int lineStartIdx = tabRowStarts.get(i);
+//			String tabRowLine = "[" + (at.positionInScore + lineStartIdx) + "]" + line;
+//			tabRowString.add(tabRowLine);
+//		}
+//		if (isFirstTabSection && Settings.getInstance().getInstrument() == Instrument.GUITAR && tabRowString.size() < 6)
+//			Settings.getInstance().detectedInstrument = Instrument.BASS;
+//		this.tabRow = new TabRow(tabRowString);
+//	}
+	
+    private List<Instruction> extractInstructions(AnchoredText instrAT, boolean isTop) {
         List<Instruction> instructionList = new ArrayList<>();
         // Matches the repeat text including any barlines
-        Matcher repeatMatcher = Pattern.compile(Repeat.PATTERN).matcher(line);
+        Matcher repeatMatcher = Pattern.compile(Repeat.PATTERN).matcher(instrAT.text);
         boolean repeatsAdded = false;
         
         while((repeatMatcher.find())) {
+        	AnchoredText repeatAT = new AnchoredText(repeatMatcher.group(), instrAT.positionInScore + repeatMatcher.start(), instrAT.positionInLine + repeatMatcher.start());
         	if (repeatsFound)
-        		instructionList.add(new InvalidRepeat(repeatMatcher.group(), position+repeatMatcher.start(), isTop));
+        		instructionList.add(new InvalidRepeat(repeatAT, isTop));
         	else {
         		repeatsAdded = true;
-        		instructionList.add(new Repeat(repeatMatcher.group(), position+repeatMatcher.start(), isTop));
+        		instructionList.add(new Repeat(repeatAT, isTop));
         	}
         }
         if (repeatsAdded) repeatsFound = true;
         
-        Matcher timeSigMatcher = Pattern.compile(TimeSignature.PATTERN).matcher(line);
+        Matcher timeSigMatcher = Pattern.compile(TimeSignature.PATTERN).matcher(instrAT.text);
         while(timeSigMatcher.find()) {
-            instructionList.add(new TimeSignature(timeSigMatcher.group(), position+timeSigMatcher.start(), isTop));
+        	AnchoredText timeSigAT = new AnchoredText(timeSigMatcher.group(), instrAT.positionInScore + timeSigMatcher.start(), instrAT.positionInLine + timeSigMatcher.start());
+        	
+            instructionList.add(new TimeSignature(timeSigAT, isTop));
         }
 
         return instructionList;
@@ -154,7 +158,7 @@ public class TabSection extends ScoreComponent {
 @Override
 	public List<Range> getRanges() {
 		List<Range> ranges = new ArrayList<>();
-		ranges.add(new Range(position,position+origin.length()));
+		ranges.add(new Range(at.positionInScore,at.positionInScore+at.text.length()));
 		return null;
 	}
 

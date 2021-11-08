@@ -8,6 +8,7 @@ import java.util.List;
 import converter.Instrument;
 import converter.Score;
 import converter.note.TabNote;
+import utility.AnchoredText;
 import utility.DrumUtils;
 import utility.GuitarUtils;
 import utility.Settings;
@@ -17,8 +18,8 @@ public class TabGuitarString extends TabString {
 
     public static String COMPONENT = "[0-9hHpPsS\\/\\\\]";
 
-    public TabGuitarString(int stringNumber, String line, String[] nameAndPosition, int position) {
-        super(stringNumber, line, nameAndPosition, position);
+    public TabGuitarString(int stringNumber, AnchoredText dataAT, AnchoredText nameAT) {
+        super(stringNumber, dataAT, nameAT);
         
     }
 

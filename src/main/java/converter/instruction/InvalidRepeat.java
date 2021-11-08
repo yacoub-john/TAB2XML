@@ -3,11 +3,12 @@ package converter.instruction;
 import java.util.List;
 
 import converter.ScoreComponent;
+import utility.AnchoredText;
 import utility.ValidationError;
 
 public class InvalidRepeat extends Instruction {
-	public InvalidRepeat(String content, int position, boolean isTop) {
-		super(content, position, isTop);
+	public InvalidRepeat(AnchoredText inputAT, boolean isTop) {
+		super(inputAT, isTop);
 		hasBeenApplied = true;
 	}
 

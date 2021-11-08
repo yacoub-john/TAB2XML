@@ -12,6 +12,7 @@ import models.measure.barline.Repeat;
 import models.measure.direction.Direction;
 import models.measure.direction.DirectionType;
 import models.measure.direction.Words;
+import utility.AnchoredText;
 import utility.DoubleDigitStyle;
 import utility.Settings;
 import utility.ValidationError;
@@ -23,8 +24,8 @@ public class GuitarMeasure extends TabMeasure{
     private static final int MIN_LINE_COUNT = 6;
     private static final int MAX_LINE_COUNT = 6;
 
-    public GuitarMeasure(List<String> lines, List<String[]> lineNamesAndPositions, List<Integer> linePositions, boolean isFirstMeasure) {
-        super(lines, lineNamesAndPositions, linePositions, isFirstMeasure);
+    public GuitarMeasure(List<AnchoredText> inputData, List<AnchoredText> inputNameData, boolean isFirstMeasure) {
+        super(inputData, inputNameData, isFirstMeasure);
     }
 
     @Override
@@ -61,9 +62,9 @@ public class GuitarMeasure extends TabMeasure{
 		return duration;
 	}
 
-	protected TabString newTabString(int stringNumber, String line, String[] nameAndPosition, int position)
+	protected TabString newTabString(int stringNumber, AnchoredText data, AnchoredText name)
 	{
-		return new TabGuitarString(stringNumber, line, nameAndPosition, position);
+		return new TabGuitarString(stringNumber, data, name);
 	}
 	
 	public Attributes getAttributesModel() {

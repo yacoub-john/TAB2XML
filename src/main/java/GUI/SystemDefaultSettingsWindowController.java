@@ -16,6 +16,7 @@ public class SystemDefaultSettingsWindowController extends Application {
 	private MainViewController mvc;
 	Preferences prefs;
 
+	@FXML public TextField inputFolderField;
 	@FXML public TextField outputFolderField;
 	@FXML private ComboBox<String> cmbErrorSensitivity;
 	@FXML private ComboBox<String> cmbNumerator;
@@ -32,11 +33,10 @@ public class SystemDefaultSettingsWindowController extends Application {
 	public void initialize() {
 		Settings s = Settings.getInstance();
 		
-		String outputFolder = s.outputFolder;
-		if (outputFolder == null)
-			outputFolderField.setPromptText("Not set yet...");
-		else
-			outputFolderField.setText(outputFolder);
+		String inputFolder = prefs.get("inputFolder", System.getProperty("user.home"));
+		inputFolderField.setText(inputFolder);
+		String outputFolder = prefs.get("outputFolder", System.getProperty("user.home"));
+		outputFolderField.setText(outputFolder);
 		
 		cmbErrorSensitivity.getItems().removeAll(cmbErrorSensitivity.getItems());
 		cmbErrorSensitivity.getItems().addAll("Level 1 - Minimal Error Checking", "Level 2 - Standard Error Checking", "Level 3 - Advanced Error Checking", "Level 4 - Detailed Error Checking");
@@ -69,16 +69,23 @@ public class SystemDefaultSettingsWindowController extends Application {
 	}
 
 	@FXML
-	private void handleChangeFolder() {
+	private void handleChangeOutputFolder() {
 		DirectoryChooser dc = new DirectoryChooser();
-		dc.setInitialDirectory(new File("src"));
+		dc.setInitialDirectory(new File(prefs.get("outputFolder", System.getProperty("user.home"))));
 		File selected = dc.showDialog(MainApp.STAGE);
 		outputFolderField.setText(selected.getAbsolutePath());
-		//Settings.getInstance().outputFolder = selected.getAbsolutePath();
-
 		prefs.put("outputFolder", selected.getAbsolutePath());
 	}
 
+	@FXML
+	private void handleChangeInputFolder() {
+		DirectoryChooser dc = new DirectoryChooser();
+		dc.setInitialDirectory(new File(prefs.get("inputFolder", System.getProperty("user.home"))));
+		File selected = dc.showDialog(MainApp.STAGE);
+		inputFolderField.setText(selected.getAbsolutePath());
+		prefs.put("inputFolder", selected.getAbsolutePath());
+	}
+	
 	@FXML
 	private void handleTSNumerator() {
 		String value = cmbNumerator.getValue().toString();
