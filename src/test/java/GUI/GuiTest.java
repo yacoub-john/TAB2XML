@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import org.fxmisc.richtext.CodeArea;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxAssert;
@@ -23,7 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.prefs.Preferences;
 import javafx.fxml.FXML;
-
+@Disabled
 @ExtendWith(ApplicationExtension.class)
 public class GuiTest  extends ApplicationTest {
     @Override

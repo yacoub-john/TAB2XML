@@ -36,6 +36,8 @@ public class Score extends ScoreComponent {
 
     public Score(String textInput) {
     	TabMeasure.MEASURE_INDEX = 0;
+    	DrumUtils.createDrumSet();
+		DrumUtils.createDrumNickNames();
     	tabText = textInput;
     	detectInstrument();
         scoreTextFragments = getScoreTextFragments(tabText);
@@ -131,7 +133,7 @@ public class Score extends ScoreComponent {
         boolean isFirstTabSection = true;
         for (Map.Entry<Integer, String> fragment : stringFragments.entrySet()) {
         	String tabSectionRegexPattern = TabSection.getRegexPattern();
-        	String tabRowLinePattern = TabSection.tabRowLinePattern();
+        	//String tabRowLinePattern = TabSection.tabRowLinePattern();
 			Matcher matcher = Pattern.compile(tabSectionRegexPattern, Pattern.MULTILINE).matcher(fragment.getValue());
 			while (matcher.find()) {
 				tabSectionList.add(new TabSection(matcher.group(), fragment.getKey() + matcher.start(), isFirstTabSection));

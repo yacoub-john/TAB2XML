@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
+@Disabled
 public class GuitarMeasureLineTest {
 
     /* Testing individual bars for valid and invalid inputs */

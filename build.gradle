@@ -37,12 +37,35 @@ dependencies {
     implementation 'com.github.JensPiegsa:jfugue:5.0.9'
 }
 
+task debug {
+    group = "application"
+    description = "Runs this project in debug mode on port 2311"
+	doFirst {
+		application {
+    		applicationDefaultJvmArgs = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=2311']
+		}
+	}
+	finalizedBy run
+}
+
 test {
     useJUnitPlatform()
     testLogging {
-        events 'passed', 'skipped', 'failed'
+        //events 'passed', 'skipped', 'failed'
+        events 'passed', 'failed'
     }
     finalizedBy jacocoTestReport
+}
+
+task testDebug {
+	group = "verification"
+    description = "Runs the tests in debug mode on port 2311"
+    doFirst {
+    	test {
+    		jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=2311'
+   		}
+   	}
+    finalizedBy test
 }
 
 javafx {
@@ -59,14 +82,3 @@ run {
 
 mainClassName = 'GUI.MainApp'
 
-task debug {
-    group = "application"
-    description = "Runs this project in debug mode on port 2311"
-	doFirst {
-		application {
-    		applicationDefaultJvmArgs = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=2311']
-		}
-	}
-}
-
-debug.finalizedBy run

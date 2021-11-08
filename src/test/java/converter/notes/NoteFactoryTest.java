@@ -7,6 +7,8 @@ import models.measure.note.notations.Notations;
 import models.measure.note.notations.Slide;
 import models.measure.note.notations.technical.HammerOn;
 import models.measure.note.notations.technical.PullOff;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -14,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@Disabled
 public class NoteFactoryTest {
  /*   HashMap<String, Integer> correctGraceNoteSamples = new HashMap<>() {
         {

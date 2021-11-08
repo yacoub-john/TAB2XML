@@ -84,8 +84,7 @@ public class MainViewController extends Application {
 		s.tsNum = Integer.parseInt(prefs.get("tsNum", "4"));
 		s.tsDen = Integer.parseInt(prefs.get("tsDen", "4"));
 		s.errorSensitivity = Integer.parseInt(prefs.get("errorSensitivity", "4"));
-		DrumUtils.createDrumSet();
-		DrumUtils.createDrumNickNames();
+		
 	}
 
 	@FXML 

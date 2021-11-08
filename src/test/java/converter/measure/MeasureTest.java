@@ -2,13 +2,14 @@ package converter.measure;
 
 import converter.note.TabNote;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+@Disabled
 public class MeasureTest {
 
     private TabMeasure measureInstance;
