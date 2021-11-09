@@ -58,7 +58,7 @@ public class NoteFactory {
     public static final String GUITAR_NOTE_GROUP_PATTERN = getGuitarNoteGroupPattern();
     public static final String GUITAR_NOTE_CONNECTOR = "[hpbsHPBS\\/\\\\]";
 
-    public static final String DRUM_NOTE_PATTERN = "[xXoOdDfF#]";
+    public static final String DRUM_NOTE_PATTERN = "[xXoOdDfgF#]";
 	public static final String DRUM_NOTE_GROUP_PATTERN = getDrumNoteGroupPattern();
     public static final String DRUM_NOTE_CONNECTOR = "$a";//there are no connectors, so this is a regex that never matches anything. an a after the end of the string
 

@@ -70,9 +70,9 @@ public class Score extends ScoreComponent {
 					if (line.charAt(0) == '\n') {
 						line = line.substring(1);
 					}
-					String[] nameAnd = new TabRow().nameOf(line, 0);
-					String name = nameAnd[0];
-					String tab = line.substring(Integer.parseInt(nameAnd[1]) + name.length());
+					AnchoredText nameData = new TabRow().nameOf(line, 0);
+					String name = nameData.text;
+					String tab = line.substring(nameData.positionInScore + name.length());
 					guitarScore += GuitarUtils.isGuitarLineLikelihood(name, tab);
 					drumScore += DrumUtils.isDrumLineLikelihood(name, tab);
 				}

@@ -24,8 +24,8 @@ public class Patterns {
     private static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; // doesn't match anything
     
     private static String nonDashDividerWhitespace() {
-    	//return "(?:" + NoteFactory.GUITAR_NOTE_PATTERN + "|" + NoteFactory.GUITAR_NOTE_CONNECTOR + "|" + NoteFactory.DRUM_NOTE_PATTERN = ")";
-        return "[^-\\n" + DIVIDER_COMPONENTS + SPACEORTAB +"]";
+    	//return "(?:" + NoteFactory.GUITAR_NOTE_PATTERN + "|" + NoteFactory.GUITAR_NOTE_CONNECTOR + "|" + NoteFactory.DRUM_NOTE_PATTERN + ")";
+        return "[^-\\n" + DIVIDER_COMPONENTS + SPACEORTAB +"+]"; // Added + to exclude drum tab timing
     }
 
     /**

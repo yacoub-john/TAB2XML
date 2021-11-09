@@ -142,32 +142,19 @@ public abstract class TabString extends ScoreComponent {
 	}
 	
 	/**
-	 * TODO Validates this MeasureLine object by ensuring if the amount of whitespace contained in this measureline is not
-	 * above a certain percentage of the total length of the line, as this can lead to the program interpreting chords
-	 * and timings vastly different than the user expects. This method does not validate its aggregated Note objects.
-	 * That job is left up to its concrete GuitarMeasureLine and DrumMeasureLine classes.
-	 * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
-	 * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
-	 * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
-	 * found in the root string from which it was derived (i.e Score.tabText).
-	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
+	 * Provides a warning for whitespace in the tab
+	 * @return a List<ValidationError> for all locations that contain whitespaces
 	 */
 	public List<ValidationError> validate() {
 	    
-	    if (name==null) {
-	        addError(
-	                "invalid measure line name.",
-	                1,
-	                getRanges());
-	    }
-	    Matcher matcher = Pattern.compile(Patterns.insidesPattern()).matcher("|"+line+"|");
-	    if (!matcher.find() || !matcher.group().equals(this.line.strip())) {     // "|"+name because the MeasureLine.INSIDES_PATTERN expects a newline, space, or | to come before
-	        addError(
-	                "invalid measure line.",
-	                1,
-	                getRanges());
-	        
-	    }
+//	    Matcher matcher = Pattern.compile(Patterns.insidesPattern()).matcher("|"+line+"|");
+//	    if (!matcher.find() || !matcher.group().equals(this.line.strip())) {     // "|"+name because the MeasureLine.INSIDES_PATTERN expects a newline, space, or | to come before
+//	        addError(
+//	                "invalid measure line.",
+//	                1,
+//	                getRanges());
+//	        
+//	    }
 	
 	    if (this.line.length()-this.line.replaceAll("\s", "").length() != 0) {
 	        addError(

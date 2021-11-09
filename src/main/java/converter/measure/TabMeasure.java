@@ -368,6 +368,7 @@ public abstract class TabMeasure extends ScoreComponent {
 
     /**
      * @return the range of the first line of the measure in its text line
+     * If this is the first measure in the line, the range includes the line name
      */
     public Range getRelativeRange() {
         if (this.data.isEmpty()) return null;
@@ -385,6 +386,8 @@ public abstract class TabMeasure extends ScoreComponent {
 //            lineLength = line.length();
 //        int relEndPos = relStartPos + lineLength;
         int relStartPos = data.get(0).positionInLine;
+        if (this.isFirstMeasureInGroup)
+        	relStartPos = nameData.get(0).positionInLine;
         int relEndPos = relStartPos + data.get(0).text.length();
         return new Range(relStartPos, relEndPos);
     }
@@ -459,7 +462,7 @@ public abstract class TabMeasure extends ScoreComponent {
 	        hasDrumMeasureLines &= tabString instanceof TabDrumString;
 	
 	        int currentLineLength = tabString.line.replace("\s", "").length();
-	        lineSizeEqual &= (previousLineLength<0) || previousLineLength==currentLineLength;
+	        lineSizeEqual &= (previousLineLength < 0) || previousLineLength == currentLineLength;
 	        previousLineLength = currentLineLength;
 	    }
 	    
