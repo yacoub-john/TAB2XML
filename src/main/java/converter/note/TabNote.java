@@ -113,6 +113,10 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
         	else
         		this.mustSplit = false;
     }
+    
+    public int getDuration() {
+    	return duration;
+    }
 
     public boolean addDecorator(NoteModelDecorator noteDecor, String message) {
         this.noteDecorMap.put(noteDecor, message);
@@ -120,11 +124,14 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     }
 
     public String getType() {
-    	int RESOLUTION = 192;
-    	int factor = RESOLUTION / (divisions * 4);
+    	isTriplet = false;
+    	dotCount = 0;
+    	int RESOLUTION = 192;  // 3 x 2^6
+    	int noteVal = RESOLUTION * duration / (divisions * 4);
+    	
 //    	if (RESOLUTION % (divisions * 4) != 0)
 //    		System.out.println("Assumption wrong about divisions: " + divisions);
-    	int noteVal = factor * duration;
+    	//int noteVal = factor * duration;
     	switch (noteVal) { 
     	case 0: return ""; // Grace note
     	case 3: return "64th";

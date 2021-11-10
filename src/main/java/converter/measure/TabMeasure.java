@@ -120,10 +120,7 @@ public abstract class TabMeasure extends ScoreComponent {
 			    int duration = nextChordDistance-currentChordDistance;
 			    duration = adjustDurationForSpecialCases(duration, chord, nextChord);
 			    
-			    for (TabNote note : chord) {
-			    	// For beatType 2, we double duration and divisions to avoid
-			    	// having divisions be a .5
-			    	if (beatType == 2) duration = duration * 2;
+			    for (TabNote note : chord) {			    	
 			        note.setDuration(duration);
 			    }
 			}
@@ -135,10 +132,7 @@ public abstract class TabMeasure extends ScoreComponent {
 			    int duration = maxMeasureLineLen-currentChordDistance;
 			    duration = adjustDurationForSpecialCases(duration, chord, null);
 			    
-			    for (TabNote note : chord) {
-			    	// For beatType 2, we double duration and divisions to avoid
-			    	// having divisions be a .5
-			    	if (beatType == 2) duration = duration * 2;
+			    for (TabNote note : chord) {			    	
 			        note.setDuration(duration);
 			    }
 			}
@@ -191,13 +185,18 @@ public abstract class TabMeasure extends ScoreComponent {
 			// having divisions be a .5
 			int beatTypeFactor = beatType == 2 ? 2 : 1;
 
-			divisions = usefulMeasureLength * beatType * beatTypeFactor / (beatCount * 4);
+			// We do not divide by beatCount, to avoid fractional divisions
+			// All durations are multiplied by beatCount to compensate
+			divisions = usefulMeasureLength * beatType * beatTypeFactor / 4;
+			
+			int adjustment = divisions % beatCount;
+			if (divisions > adjustment) divisions -= adjustment;
 
-			if (usefulMeasureLength * beatType * beatTypeFactor % (beatCount * 4) > 0) {
-				System.out.println("Measure " + measureCount + ": Length of measure not good for divisions");
+			if (adjustment > 0) {
+				System.out.println("Measure " + measureCount + ": Length of measure not good for divisions. Adjusted from " + (divisions + adjustment) + " to " + divisions);
 				nonIntegerDivisions = true;
 			}
-			if (!Arrays.stream(supportedDivisions).anyMatch(i -> i == divisions)) {
+			if (!Arrays.stream(supportedDivisions).anyMatch(i -> i == divisions / beatCount)) {
 				System.out.println("Measure " + measureCount + ": Unsupported divisions: " + divisions);
 				unSupportedDivisions = true;
 			}
@@ -205,6 +204,13 @@ public abstract class TabMeasure extends ScoreComponent {
 			for (List<TabNote> voice : this.voiceSortedNoteList) {
 				for (TabNote note : voice) {
 					note.setDivisions(this.divisions);
+					int factor = beatCount;
+					// For beatType 2, we double duration and divisions to avoid
+			    	// having divisions be a .5
+			    	if (beatType == 2) factor = 2;
+			    	// We multiply by beatCount to compensate for divisions 
+			    	// multiplied by beatCount also
+			    	note.setDuration(note.getDuration() * factor); 
 				}
 			}
 		}
