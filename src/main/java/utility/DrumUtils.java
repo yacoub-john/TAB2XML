@@ -117,7 +117,7 @@ public static void createDrumSet() {
 	        charGroups++;
 	
 	    int noteGroups = 0;
-	    Matcher noteGroupMatcher = Pattern.compile(NoteFactory.DRUM_NOTE_GROUP_PATTERN).matcher(line);
+	    Matcher noteGroupMatcher = Pattern.compile(Patterns.DRUM_NOTE_GROUP_PATTERN).matcher(line);
 	    while (noteGroupMatcher.find()) {
 	        //in-case a guitar note group has -'s inside it (e.g 5---h3 is a valid guitar note group for a hammer on,
 	        // but will distort the ratio of character group to note group because one note group contains 2 character groups)

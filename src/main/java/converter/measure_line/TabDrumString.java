@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import converter.Score;
+import converter.note.DrumNoteFactory;
+import converter.note.GuitarNoteFactory;
+import converter.note.NoteFactory;
 import converter.note.TabNote;
 import utility.AnchoredText;
 import utility.DrumPiece;
@@ -20,6 +23,11 @@ public class TabDrumString extends TabString {
         drumPiece = DrumUtils.getDrumPiece(name.strip(), line.strip());
         if (drumPiece != null) USED_DRUM_PARTS.add(drumPiece);
     }
+    
+	@Override
+	protected NoteFactory createNoteFactory() {
+		return new DrumNoteFactory();
+	}
 
     public List<ValidationError> validate() {
         

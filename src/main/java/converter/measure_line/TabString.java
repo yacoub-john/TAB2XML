@@ -66,6 +66,7 @@ public abstract class TabString extends ScoreComponent {
 	 * @return the list of Note objects
 	 */
 	protected List<TabNote> createNoteList(int stringNumber, String line, int position) {
+		NoteFactory nf = createNoteFactory();
 		List<TabNote> noteList = new ArrayList<>();
 		Matcher noteMatcher = Pattern.compile(TabNote.PATTERN).matcher(line);
 		while (noteMatcher.find()) {
@@ -73,12 +74,13 @@ public abstract class TabString extends ScoreComponent {
 			String leadingStr = line.substring(0, noteMatcher.start()).replaceAll("\s", "");
 			int distanceFromMeasureStart = leadingStr.length();
 			if (!match.isBlank()) {
-				NoteFactory nf = new NoteFactory(stringNumber, match, position + noteMatcher.start(), this.name, distanceFromMeasureStart);
-				noteList.addAll(nf.getNotes());
+				noteList.addAll(nf.getNotes(stringNumber, match, position + noteMatcher.start(), this.name, distanceFromMeasureStart));
 			}
 		}
 		return noteList;
 	}
+	
+	protected abstract NoteFactory createNoteFactory();
     
 //    public boolean isGuitar(boolean strictCheck) {
 //    	boolean x = GuitarUtils.getValidGuitarNames().contains(this.name.strip());

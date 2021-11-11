@@ -48,11 +48,11 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     //particular note. We thus will know the exact place where the problem is instead of the whole measure not being recognised as an
     // actual measure just because of that error and we flag the whole measure as an error instead of this one, small, specific
     // area of hte measure (the pattern for detecting measure groups uses this pattern)
-    public static String COMPONENT_PATTERN = "[^-\\n\\r"+Patterns.DIVIDER_COMPONENTS+"]";
+    public static String COMPONENT_PATTERN = "[^-\\n\\r" + Patterns.DIVIDER_COMPONENTS+"]";
     public static String PATTERN = getNotePattern();
 
     private static String getNotePattern() {
-        return "(" + NoteFactory.GUITAR_NOTE_GROUP_PATTERN + "|" + NoteFactory.DRUM_NOTE_GROUP_PATTERN + "|" + COMPONENT_PATTERN+"+" + ")";
+        return "(" + Patterns.GUITAR_NOTE_GROUP_PATTERN + "|" + Patterns.DRUM_NOTE_GROUP_PATTERN + "|" + COMPONENT_PATTERN+"+" + ")";
     }
 
     public TabNote(int stringNumber, String text, int position, String lineName, int distanceFromMeasureStart) {

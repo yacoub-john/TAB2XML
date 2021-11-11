@@ -13,6 +13,18 @@ public class Patterns {
     public static final String DIVIDER_COMPONENTS = "|{}";
     public static final String DIVIDER = "["+DIVIDER_COMPONENTS+"]";
 
+	public static final String FRET = "((?<=^|[^0-9])[0-9]{1,2}(?=$|[^0-9]))";
+    public static final String GRACE = "(g"+ FRET +"([hps]"+ FRET +")+)";
+    public static final String HARMONIC = "\\["+ FRET +"\\]";
+
+	public static final String GUITAR_NOTE_PATTERN = "("+GRACE+"|"+HARMONIC+"|"+ FRET +")";
+    public static final String GUITAR_NOTE_CONNECTOR = "[hpbsHPBS\\/\\\\]";
+    public static final String GUITAR_NOTE_GROUP_PATTERN = "("+GUITAR_NOTE_PATTERN+"(-*"+GUITAR_NOTE_CONNECTOR+GUITAR_NOTE_PATTERN+")*)";
+    
+    public static final String DRUM_NOTE_PATTERN = "[xXoOdDfgF#]";
+	public static final String DRUM_NOTE_GROUP_PATTERN = DRUM_NOTE_PATTERN +"+";
+    public static final String DRUM_NOTE_CONNECTOR = "$a"; //there are no connectors, so this is a regex that never matches anything. an a after the end of the string
+    
     // e------------ or |e---------------- or |e|-------------------- when it is the first measure of the measure group (start of line, SOL)
     public static String START_OF_LINE = "(" + startOfLinePattern() + insidesPattern() + ")";
 

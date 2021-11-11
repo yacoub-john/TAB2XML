@@ -6,14 +6,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import converter.Score;
 import converter.ScoreComponent;
 import converter.instruction.RepeatType;
 import converter.instruction.TimeSignature;
 import converter.measure_line.TabDrumString;
 import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
-import converter.note.NoteFactory;
+import converter.note.GuitarNoteFactory;
 import converter.note.TabNote;
 import models.measure.Backup;
 import models.measure.attributes.Attributes;
@@ -253,7 +252,8 @@ public abstract class TabMeasure extends ScoreComponent {
 						newVoice.add(n);
 						TabNote newNote = n.copy();
 						newNote.setDuration(note2dur);
-						new NoteFactory().tie(n,newNote);
+						//TODO Improve on the design
+						new GuitarNoteFactory().tie(n,newNote);
 						newChord.add(newNote);
 					}
 					for (TabNote n : newChord) {

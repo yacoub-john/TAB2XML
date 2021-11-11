@@ -3,6 +3,8 @@ package converter.measure_line;
 import java.util.List;
 
 import converter.Score;
+import converter.note.GuitarNoteFactory;
+import converter.note.NoteFactory;
 import converter.note.TabNote;
 import utility.AnchoredText;
 import utility.GuitarUtils;
@@ -12,7 +14,6 @@ public class TabGuitarString extends TabString {
 
     public TabGuitarString(int stringNumber, AnchoredText dataAT, AnchoredText nameAT) {
         super(stringNumber, dataAT, nameAT);
-        
     }
 
     @Override
@@ -34,5 +35,10 @@ public class TabGuitarString extends TabString {
 
         return errors;
     }
+
+	@Override
+	protected NoteFactory createNoteFactory() {
+		return new GuitarNoteFactory();
+	}
     
 }
