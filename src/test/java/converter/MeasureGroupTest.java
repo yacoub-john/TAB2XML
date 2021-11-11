@@ -1,5 +1,6 @@
 package converter;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -20,11 +21,18 @@ public class MeasureGroupTest {
 
 	@BeforeEach
 	void init() {
-		Settings.getInstance().instrumentSetting = InstrumentSetting.GUITAR;
+		Settings.getInstance().setInstrumentSetting(InstrumentSetting.AUTO);
 	}
 
+	@AfterEach
+	void tearDown() throws Exception {
+		Settings.getInstance().setInstrumentSetting(InstrumentSetting.AUTO);
+	}
+	
+    @Disabled
     @Test
     void testValidate_validInput1() {
+    	Settings.getInstance().setInstrumentSetting(InstrumentSetting.GUITAR);
         List<AnchoredText> origin = new ArrayList<>();
         origin.add(new AnchoredText("e|-3-2-2-0----|",0,0));
         origin.add(new AnchoredText("a|-3-2-2-0----|",0,0));

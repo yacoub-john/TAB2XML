@@ -27,41 +27,34 @@ public class Repeat extends Instruction {
             this.repeatCount = Integer.parseInt(matcher.group());
     }
 
-    public <E extends ScoreComponent> void applyTo(E scoreComponent) {
-        if ((!isTop) || this.getHasBeenApplied() || this.repeatCount==0) {
-            this.setHasBeenApplied(true);
-            return;
-        }
+	public <E extends ScoreComponent> void applyTo(E scoreComponent) {
+		if ((!isTop) || this.getHasBeenApplied() || this.repeatCount == 0) {
+			this.setHasBeenApplied(true);
+			return;
+		}
 
-        if (scoreComponent instanceof TabSection) {
-            TabSection tabSection = (TabSection) scoreComponent;
-            TabMeasure firstMeasure = null;
-            TabMeasure lastMeasure = null;
-            TabRow tabRow = tabSection.getTabRow();
-            //for (TabRow tabRow : tabSection.getTabRowList()) {
-                //Range tabRowRange = tabRow.getRelativeRange();
-                //if (tabRowRange == null) continue;
-                //if (!this.getRange().overlaps(tabRowRange)) continue;
-                // Getting here means we are dealing with at least one repeat instruction above the tab row
-                //tabRow.removeRepeatInstruction();  // Only removes the first time
-                //TODO Figure out if there's nested repeats and remove as many lines above
-                //TODO Nested repeats don't get applied below but create an error (take from Invalid Repeat, and then delete that class)
-                for (TabMeasure measure : tabRow.getMeasureList()) {
-                    Range measureRange = measure.getRelativeRange();
-                    if (measureRange==null || !this.getRange().overlaps(measureRange)) continue;
-                    if (firstMeasure==null && !this.startApplied)
-                        firstMeasure = measure;
-                    if (!this.endApplied)
-                        lastMeasure = measure;
-                }
-            //}
-            if (firstMeasure!=null)
-                this.startApplied = firstMeasure.setRepeat(this.repeatCount, RepeatType.START);
-            if (lastMeasure!=null)
-                this.endApplied = lastMeasure.setRepeat(this.repeatCount, RepeatType.END);
-        }
-        this.setHasBeenApplied(this.startApplied && this.endApplied);
-    }
+		if (scoreComponent instanceof TabSection) {
+			TabSection tabSection = (TabSection) scoreComponent;
+			TabMeasure firstMeasure = null;
+			TabMeasure lastMeasure = null;
+			TabRow tabRow = tabSection.getTabRow();
+			for (TabMeasure measure : tabRow.getMeasureList()) {
+				Range measureRange = measure.getRelativeRange();
+				if (measureRange == null || !this.getRange().overlaps(measureRange))
+					continue;
+				if (firstMeasure == null && !this.startApplied)
+					firstMeasure = measure;
+				if (!this.endApplied)
+					lastMeasure = measure;
+			}
+
+			if (firstMeasure != null)
+				this.startApplied = firstMeasure.setRepeat(this.repeatCount, RepeatType.START);
+			if (lastMeasure != null)
+				this.endApplied = lastMeasure.setRepeat(this.repeatCount, RepeatType.END);
+		}
+		this.setHasBeenApplied(this.startApplied && this.endApplied);
+	}
 
     private static String getPattern() {
         String times = "[xX]";

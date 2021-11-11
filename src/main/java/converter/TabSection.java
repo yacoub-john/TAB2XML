@@ -20,11 +20,8 @@ public class TabSection extends ScoreComponent {
 	//                           a measure line at start of line(with name)          zero or more middle measure lines       (optional |'s and spaces then what's ahead is end of line)
     private static String LINE_PATTERN = "(" + Patterns.START_OF_LINE          +          Patterns.MIDDLE_OF_LINE + "*"    +   "("+ Patterns.DIVIDER+"*"+Patterns.SPACEORTAB+"*)"     +  ")";
 
-    //String at.text;  //the string that was passed to the constructor upon the instantiation of this class
-    //int position;   //the index in Score.rootString at which the String "MeasureCollection().at.text" is located
     int endIndex;
     private TabRow tabRow;
-    //public static String PATTERN = getRegexPattern();
     boolean isFirstTabSection;
     private List<Instruction> instructionList = new ArrayList<>();
     private boolean repeatsFound = false;
@@ -41,70 +38,48 @@ public class TabSection extends ScoreComponent {
 	/**
 	 * Separates the text of this TabSection into
 	 * Instructions, and a TabRow
-	 * 
 	 */
 	private void createTabRowAndInstructionList() {
 
-		//Range tabRowRange = null;
 		List<String> lines = new ArrayList<>();
-		List<Integer> starts= new ArrayList<>();
+		List<Integer> starts = new ArrayList<>();
 		List<AnchoredText> tabRowData = new ArrayList<>();
-		//List<Integer> tabRowStarts= new ArrayList<>();
-		// Match one or more tablature lines 
-		//Matcher matcher = Pattern.compile("((^|\\n)" + tabRowLinePattern() + ")+").matcher(at.text);
-		//Matcher lineMatcher = Pattern.compile("((^|\\n)" + tabRowLinePattern() + ")").matcher(at.text);  // Match only one line
-		//Matcher lineMatcher = Pattern.compile("(^" + tabRowLinePattern() + ")").matcher(at.text);  // Match only one line
 		Matcher lineMatcher = Pattern.compile("(?<=^|\\n)[^\\n]+(?=$|\\n)").matcher(at.text);
-        while (lineMatcher.find()) { // go through each line
-        	String l = lineMatcher.group();
-        	lines.add(l);
-        	starts.add(lineMatcher.start());
-        }
+		while (lineMatcher.find()) { // go through each line
+			String l = lineMatcher.group();
+			lines.add(l);
+			starts.add(lineMatcher.start());
+		}
 		for (int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);
 			int start = starts.get(i);
-			//Matcher topInstructionMatcher = Pattern.compile("((^|\\n)" + Instruction.LINE_PATTERN + ")+").matcher(line);
 			Matcher topInstructionMatcher = Pattern.compile(Instruction.LINE_PATTERN).matcher(line);
-			if (topInstructionMatcher.find()) {  // no need for loop as only one line
-				AnchoredText instructionAT = new AnchoredText(topInstructionMatcher.group(), at.positionInScore + start + topInstructionMatcher.start(), topInstructionMatcher.start());
+			if (topInstructionMatcher.find()) { // no need for loop as only one line
+				AnchoredText instructionAT = new AnchoredText(topInstructionMatcher.group(),
+						at.positionInScore + start + topInstructionMatcher.start(), topInstructionMatcher.start());
 				this.instructionList.addAll(extractInstructions(instructionAT, true));
 				continue;
 			}
 			String pattern = tabRowLinePattern();
-			Matcher tabRowMatcher = Pattern.compile(pattern).matcher(line); 
-			if (tabRowMatcher.find()) { 		
-				if (line.charAt(0) == '\n') {
+			Matcher tabRowMatcher = Pattern.compile(pattern).matcher(line);
+			if (tabRowMatcher.find()) {
+				if (line.charAt(0) == '\n') { //TODO Probably not needed any more
 					line = line.substring(1);
 					start++;
 					System.out.println("How did you get here?");
 				}
 				AnchoredText tabRowAT = new AnchoredText(line, at.positionInScore + start, 0);
 				tabRowData.add(tabRowAT);
-				//tabRowStarts.add(start);
-				//tabRowLines.add(line);
 			}
 		}
-		//TODO redo this error
-		//else addError ("No tablature detected", 1, getRanges()); Also assert tabRowStart is not -1
+		// TODO redo this error
+		// else addError ("No tablature detected", 1, getRanges()); Also assert
+		// tabRowStart is not -1
 
-		//createTabRow(tabRowStarts, tabRowLines);
 		if (isFirstTabSection && Settings.getInstance().getInstrument() == Instrument.GUITAR && tabRowData.size() < 6)
-			Settings.getInstance().detectedInstrument = Instrument.BASS;
+			Settings.getInstance().setDetectedInstrument(Instrument.BASS);
 		this.tabRow = new TabRow(tabRowData);
-		}
-	
-//	private void createTabRow(List<Integer> tabRowStarts, List<String> tabRowLines) {
-//		List<String> tabRowString = new ArrayList<>();
-//		for (int i=0; i < tabRowLines.size() ; i++)	{
-//			String line = tabRowLines.get(i);
-//			int lineStartIdx = tabRowStarts.get(i);
-//			String tabRowLine = "[" + (at.positionInScore + lineStartIdx) + "]" + line;
-//			tabRowString.add(tabRowLine);
-//		}
-//		if (isFirstTabSection && Settings.getInstance().getInstrument() == Instrument.GUITAR && tabRowString.size() < 6)
-//			Settings.getInstance().detectedInstrument = Instrument.BASS;
-//		this.tabRow = new TabRow(tabRowString);
-//	}
+	}
 	
     private List<Instruction> extractInstructions(AnchoredText instrAT, boolean isTop) {
         List<Instruction> instructionList = new ArrayList<>();
@@ -138,7 +113,7 @@ public class TabSection extends ScoreComponent {
     }
 
     /**
-     * Creates the regex pattern for detecting a tab section (i.e a collection of tab rows (really one tab row and their corresponding instructions)
+     * Creates the regex pattern for detecting a tab section (i.e a tab row and corresponding instructions)
      * @return a String regex pattern enclosed in brackets that identifies a tab section pattern (the pattern also captures the newline right before the tab row collection)
      */
     public static String getRegexPattern() {
@@ -147,33 +122,23 @@ public class TabSection extends ScoreComponent {
                 + "("                                                                   // then the tab row, which is made of...
                 +       "(^|\\n)"                                                           // a start of line or a new line
                 +       TabSection.tabRowLinePattern()                               // a tab row followed by whitespace, all repeated one or more times
-                + ")+"                                                                  // the tab row I just described is repeated one or more times.
+                + ")+"                                                                  // the tab row just described is repeated one or more times.
                 + "(\\n" + Instruction.LINE_PATTERN+")*";
     }
 	    
-	    public TabRow getTabRow() {
-	        return this.tabRow;
-	    }
+	public TabRow getTabRow() {
+		return this.tabRow;
+	}
 
-@Override
+	@Override
 	public List<Range> getRanges() {
 		List<Range> ranges = new ArrayList<>();
-		ranges.add(new Range(at.positionInScore,at.positionInScore+at.text.length()));
+		ranges.add(new Range(at.positionInScore, at.positionInScore + at.text.length()));
 		return null;
 	}
 
-/**
-	 * Validates the aggregated TabRow objects of this class. It stops evaluation at the first aggregated object
-	 * which fails validation.
-	 * TODO it might be better to not have it stop when one aggregated object fails validation, but instead have it
-	 *      validate all of them and return a List of all aggregated objects that failed validation, so the user knows
-	 *      all what is wrong with their tablature file, instead of having to fix one problem before being able to see
-	 *      what the other problems with their text file is.
-	 * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
-	 * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
-	 * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
-	 * found in the root string from which it was derived (i.e Score.tabText).
-	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
+	/**
+	 * Validates the aggregated TabRow objects of this class.
 	 */
 	public List<ValidationError> validate() {
 		errors.addAll(tabRow.validate());
@@ -183,12 +148,11 @@ public class TabSection extends ScoreComponent {
 		return errors;
 	}
 
-	@Override
-    public String toString() {
-		//TODO Needs to be updated to include instructions?
-        StringBuilder outStr = new StringBuilder();    
-        outStr.append(this.tabRow.toString());
-        return outStr.toString();
-    }
+//	@Override
+//    public String toString() {
+//        StringBuilder outStr = new StringBuilder();    
+//        outStr.append(this.tabRow.toString());
+//        return outStr.toString();
+//    }
 
 }

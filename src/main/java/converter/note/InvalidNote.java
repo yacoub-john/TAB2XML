@@ -1,10 +1,7 @@
 package converter.note;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import utility.Settings;
 import utility.ValidationError;
 
 public class InvalidNote extends TabNote {
@@ -19,7 +16,6 @@ public class InvalidNote extends TabNote {
     
     @Override
 	public TabNote copy() {
-		// TODO Auto-generated method stub
 		return new InvalidNote(this);
 	}
 
@@ -29,12 +25,8 @@ public class InvalidNote extends TabNote {
     }
 
     public List<ValidationError> validate() {
-        
 
-        addError(
-                "Unrecognized text, will be ignored.",
-                3,
-                getRanges());
+        addError("Unrecognized text, will be ignored.", 3, getRanges());
         return errors;
     }
 }

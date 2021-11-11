@@ -71,7 +71,7 @@ public class NotePlayer {
         else if (Settings.getInstance().getInstrument() == Instrument.DRUMS)
             DISPLAY_TEXT = "Only guitar and bass measures can be played.";
         else {
-            DISPLAY_TEXT = scoreTmp.toString();
+            DISPLAY_TEXT = ""; //scoreTmp.toString();
             SCORE = scoreTmp;
         }
 

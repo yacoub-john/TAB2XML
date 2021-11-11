@@ -80,59 +80,59 @@ public abstract class TabString extends ScoreComponent {
 		return noteList;
 	}
     
-    public boolean isGuitar(boolean strictCheck) {
-    	boolean x = GuitarUtils.getValidGuitarNames().contains(this.name.strip());
-        if (!x) return false;
-        if (!strictCheck) return true;
-        for (TabNote note : this.noteList) {
-            if (!note.isGuitar())
-                return false;
-        }
-        return true;
-    }
+//    public boolean isGuitar(boolean strictCheck) {
+//    	boolean x = GuitarUtils.getValidGuitarNames().contains(this.name.strip());
+//        if (!x) return false;
+//        if (!strictCheck) return true;
+//        for (TabNote note : this.noteList) {
+//            if (!note.isGuitar())
+//                return false;
+//        }
+//        return true;
+//    }
+//
+//    public boolean isDrum(boolean strictCheck) {
+//    	boolean x = DrumUtils.getNickNameSet().contains(this.name.strip());
+//        if (!x) return false;
+//        if (!strictCheck) return true;
+//        for (TabNote note : this.noteList) {
+//            if (!note.isDrum())
+//                return false;
+//        }
+//        return true;
+//    }
 
-    public boolean isDrum(boolean strictCheck) {
-    	boolean x = DrumUtils.getNickNameSet().contains(this.name.strip());
-        if (!x) return false;
-        if (!strictCheck) return true;
-        for (TabNote note : this.noteList) {
-            if (!note.isDrum())
-                return false;
-        }
-        return true;
-    }
-
-    public String recreateLineString(int maxMeasureLineLength) {
-	    StringBuilder outStr = new StringBuilder();
-	    if (this.noteList.isEmpty()) {
-	        for (int i=0; i<this.line.length(); i++) {
-	            String str = String.valueOf(this.line.charAt(i));
-	            if (str.matches("\s")) continue;
-	            outStr.append(str);
-	        }
-	        outStr.append("|");
-	        return outStr.toString();
-	    }
-	
-	    double maxRatio = 0;
-	    for (TabNote note : this.noteList) {
-	        maxRatio = Math.max(maxRatio, note.durationRatio);
-	    }
-	    int actualLineDistance = maxMeasureLineLength;
-	
-	
-	    int prevNoteEndDist = 0;
-	    for (TabNote note : this.noteList) {
-	        if (!note.validate().isEmpty()) continue;
-	        int dashCount = note.distance-prevNoteEndDist;
-	        outStr.append("-".repeat(Math.max(0, dashCount)));
-	        outStr.append(note.sign);
-	        prevNoteEndDist = note.distance + note.sign.length();
-	    }
-	    outStr.append("-".repeat(Math.max(0, actualLineDistance - prevNoteEndDist)));
-	    outStr.append("|");
-	    return outStr.toString();
-	}
+//    public String recreateLineString(int maxMeasureLineLength) {
+//	    StringBuilder outStr = new StringBuilder();
+//	    if (this.noteList.isEmpty()) {
+//	        for (int i=0; i<this.line.length(); i++) {
+//	            String str = String.valueOf(this.line.charAt(i));
+//	            if (str.matches("\s")) continue;
+//	            outStr.append(str);
+//	        }
+//	        outStr.append("|");
+//	        return outStr.toString();
+//	    }
+//	
+//	    double maxRatio = 0;
+//	    for (TabNote note : this.noteList) {
+//	        maxRatio = Math.max(maxRatio, note.durationRatio);
+//	    }
+//	    int actualLineDistance = maxMeasureLineLength;
+//	
+//	
+//	    int prevNoteEndDist = 0;
+//	    for (TabNote note : this.noteList) {
+//	        if (!note.validate().isEmpty()) continue;
+//	        int dashCount = note.distance-prevNoteEndDist;
+//	        outStr.append("-".repeat(Math.max(0, dashCount)));
+//	        outStr.append(note.sign);
+//	        prevNoteEndDist = note.distance + note.sign.length();
+//	    }
+//	    outStr.append("-".repeat(Math.max(0, actualLineDistance - prevNoteEndDist)));
+//	    outStr.append("|");
+//	    return outStr.toString();
+//	}
 
 	@Override
 	public List<Range> getRanges() {
@@ -167,9 +167,9 @@ public abstract class TabString extends ScoreComponent {
 	    return errors;
 	}
 
-	@Override
-    public String toString() {
-        return this.name.strip()+"|"+this.recreateLineString(this.line.length())+"|";
-    }
+//	@Override
+//    public String toString() {
+//        return this.name.strip()+"|"+this.recreateLineString(this.line.length())+"|";
+//    }
 
 }

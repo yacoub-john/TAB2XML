@@ -144,8 +144,6 @@ public class NoteFactory {
 
     private HashMap<String, String> getPatternPackage(String origin) {
         HashMap<String, String> patternPackage = new HashMap<>();
-//        Matcher guitarMatcher = Pattern.compile("^"+GUITAR_NOTE_GROUP_PATTERN+"$").matcher(origin);
-//        Matcher drumMatcher = Pattern.compile("^"+DRUM_NOTE_GROUP_PATTERN+"$").matcher(origin);
         if (this.instrument == Instrument.GUITAR || this.instrument == Instrument.BASS) {
             patternPackage.put("instrument", "guitar");
             patternPackage.put("note-group-pattern", GUITAR_NOTE_GROUP_PATTERN);
@@ -174,11 +172,13 @@ public class NoteFactory {
         List<TabNote> noteList = new ArrayList<>();
         if (patternPackage.get("instrument").equalsIgnoreCase("drum")) {
             if (origin.strip().equalsIgnoreCase("x")||origin.strip().equalsIgnoreCase("o")||origin.strip().equalsIgnoreCase("#"))
-                noteList.add((TabNote) new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart));
+                noteList.add(new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart));
             else if (origin.strip().equalsIgnoreCase("f"))
                 noteList.addAll(createFlam(origin, position, distanceFromMeasureStart));
             else if (origin.strip().equalsIgnoreCase("d"))
                 noteList.addAll(createDrag(origin, position, distanceFromMeasureStart));
+            else if (origin.strip().equalsIgnoreCase("g"))
+                noteList.addAll(createGhost(origin, position, distanceFromMeasureStart));
             else
                 noteList.add(new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
             return noteList;
@@ -226,21 +226,39 @@ public class NoteFactory {
     	return createFlam(origin, position, distanceFromMeasureStart);
     }
 
-    private TabNote createHarmonic(String origin, int position, int distanceFromMeasureStart) {
-        TabNote note;
-        if (!origin.matches(HARMONIC)) return null;
-
-        Matcher fretMatcher = Pattern.compile("(?<=\\[)[0-9]+(?=\\])").matcher(origin);
-        fretMatcher.find();
-        note = createFret(fretMatcher.group(), position+fretMatcher.start(), distanceFromMeasureStart);
-        note.addDecorator((noteModel) -> {
-            Technical technical = getNonNullTechnical(noteModel);
-            technical.setHarmonic(new Harmonic(new Natural()));
-            return true;
-        }, "success");
-
-        return note;
+    //TODO Implement the ghost notes
+    //<notehead parentheses="yes">normal</notehead>
+    private List<TabNote> createGhost(String origin, int position, int distanceFromMeasureStart) {
+//        Note note1 = createDrumNote(origin, position, distanceFromMeasureStart);
+//        Note note2 = createDrumNote(origin, position, distanceFromMeasureStart);
+//        note2.addDecor((noteModel) -> {
+//            noteModel.setChord(null);
+//            return true;
+//        }, "success");
+//        List<Note> notes = new ArrayList<>();
+//        notes.add(note1);
+//        notes.add(note2);
+//        //slur(note1, note2);
+//        return notes;
+    	return createFlam(origin, position, distanceFromMeasureStart);
     }
+    
+	private TabNote createHarmonic(String origin, int position, int distanceFromMeasureStart) {
+		TabNote note;
+		if (!origin.matches(HARMONIC))
+			return null;
+
+		Matcher fretMatcher = Pattern.compile("(?<=\\[)[0-9]+(?=\\])").matcher(origin);
+		fretMatcher.find();
+		note = createFret(fretMatcher.group(), position + fretMatcher.start(), distanceFromMeasureStart);
+		note.addDecorator((noteModel) -> {
+			Technical technical = getNonNullTechnical(noteModel);
+			technical.setHarmonic(new Harmonic(new Natural()));
+			return true;
+		}, "success");
+
+		return note;
+	}
 
     private boolean slide(GuitarNote note1, GuitarNote note2, String symbol, boolean onlyMessage) {
         String message = "success";
@@ -258,7 +276,6 @@ public class NoteFactory {
             note2.addDecorator((noteModel) -> true, message);
             return true;
         }
-
 
         AtomicInteger slideNum = new AtomicInteger();
         note1.addDecorator((noteModel) -> {
@@ -307,8 +324,6 @@ public class NoteFactory {
     
     public boolean tie(TabNote note1, TabNote note2) {
         String message = "success";
-
-        
         note1.addDecorator((noteModel) -> {
             if (noteModel.getNotations()==null)
                 noteModel.setNotations(new Notations());
@@ -446,13 +461,15 @@ public class NoteFactory {
         if (success) {
             grace(graceNote);
             graceNote.isGrace = true;
+            graceNote.graceDistance = -1;
         }
         return success;
     }
 
     private boolean grace(TabNote note) {
         note.addDecorator((noteModel) -> {
-            noteModel.setGrace(TabNote.SLASHED_GRACE ? new Grace("yes") : new Grace());
+        	//noteModel.setGrace(TabNote.SLASHED_GRACE ? new Grace("yes") : new Grace());
+        	noteModel.setGrace(new Grace());
             noteModel.setDuration(null);
             noteModel.setChord(null);
             return true;

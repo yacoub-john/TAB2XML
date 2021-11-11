@@ -1,14 +1,11 @@
 package converter.note;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import converter.Instrument;
 import converter.measure_line.TabDrumString;
-import models.measure.note.Chord;
 import models.measure.note.Unpitched;
 import utility.DrumPiece;
 import utility.DrumPieceInfo;
@@ -57,7 +54,7 @@ public class DrumNote extends TabNote{
 
     public List<ValidationError> validate() {
         super.validate();
-        int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
+        //int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         for (NoteModelDecorator noteDecor : this.noteDecorMap.keySet()) {
             String resp = noteDecorMap.get(noteDecor);
@@ -69,7 +66,6 @@ public class DrumNote extends TabNote{
             int startIdx = this.position;
             int endIdx = this.position+this.origin.length();
 
-
             matcher = Pattern.compile("(?<=^\\[)[0-9]+,[0-9]+(?=\\])").matcher(message);
             if (matcher.find()) {
                 String positions = matcher.group();
@@ -78,10 +74,7 @@ public class DrumNote extends TabNote{
                 endIdx = Integer.parseInt(matcher.group());
                 message = message.substring(matcher.end()+2);
             }
-            addError(
-                    message,
-                    priority,
-                    getRanges());
+            addError(message, priority, getRanges());
         }
 
         return errors;

@@ -43,7 +43,7 @@ public class TimeSignature extends Instruction {
 //                if (!measureGroupRange.contains(this.getRange())) continue;
                 for (TabMeasure measure : tabRow.getMeasureList()) {
                     Range measureRange = measure.getRelativeRange();
-                    if (measureRange==null || !measureRange.contains(this.getRange())) continue;
+                    if (measureRange==null || !measureRange.overlaps(this.getRange())) continue;
                     boolean itWorked = measure.setTimeSignature(this.beatCount, this.beatType);
                     this.setHasBeenApplied(itWorked);
                     if (itWorked) measure.changesTimeSignature = true;

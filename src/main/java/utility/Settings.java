@@ -24,16 +24,33 @@ public class Settings {
     
     public DoubleDigitStyle ddStyle = DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_STRETCH;
     
-    public InstrumentSetting instrumentSetting = InstrumentSetting.AUTO;
-    public Instrument detectedInstrument = Instrument.NONE;
+    private InstrumentSetting instrumentSetting = InstrumentSetting.AUTO;
+    private Instrument detectedInstrument = Instrument.NONE;
     
     public Instrument getInstrument() {
-    	switch (instrumentSetting) {
-    	case AUTO: return detectedInstrument;
+    	switch (getInstrumentSetting()) {
+    	case AUTO: return getDetectedInstrument();
     	case GUITAR: return Instrument.GUITAR;
     	case BASS: return Instrument.BASS;
     	case DRUMS: return Instrument.DRUMS;
     	default: return Instrument.GUITAR;
     	}
     }
+
+	public InstrumentSetting getInstrumentSetting() {
+		return instrumentSetting;
+	}
+
+	public void setInstrumentSetting(InstrumentSetting instrumentSetting) {
+		this.instrumentSetting = instrumentSetting;
+		if (instrumentSetting == InstrumentSetting.AUTO) detectedInstrument = Instrument.NONE;
+	}
+
+	private Instrument getDetectedInstrument() {
+		return detectedInstrument;
+	}
+
+	public void setDetectedInstrument(Instrument detectedInstrument) {
+		this.detectedInstrument = detectedInstrument;
+	}
 }

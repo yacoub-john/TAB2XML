@@ -24,13 +24,14 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     public Instrument instrument;
     int stringNumber;
     public int distance;
+    public int graceDistance = 0;
     int position;
     public int duration;
-    public double durationRatio;
+    //public double durationRatio;
     public String sign;
     public int voice;
     public boolean isGrace;
-    public static boolean SLASHED_GRACE = true;
+    //public static boolean SLASHED_GRACE = true;
     protected Map<NoteModelDecorator, String> noteDecorMap = new LinkedHashMap<>();
     int divisions = 0;
     int beatType;
@@ -54,8 +55,8 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
         return "(" + NoteFactory.GUITAR_NOTE_GROUP_PATTERN + "|" + NoteFactory.DRUM_NOTE_GROUP_PATTERN + "|" + COMPONENT_PATTERN+"+" + ")";
     }
 
-    public TabNote(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart) {
-        this.origin = origin;
+    public TabNote(int stringNumber, String text, int position, String lineName, int distanceFromMeasureStart) {
+        this.origin = text;
         this.lineName = lineName;
         this.position = position;
         this.stringNumber = stringNumber;
@@ -63,6 +64,7 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
         this.distance = distanceFromMeasureStart;
         this.voice = 1;
     }
+    
     public TabNote(int stringNumber, String origin, int position, String lineName, int distanceFromMeasureStart, int voice) {
         this(stringNumber, origin, position, lineName, distanceFromMeasureStart);
         this.voice = voice;
@@ -79,7 +81,6 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
         //public int distance;
         //int position;
         //public int duration;
-        //public double durationRatio;
         this.sign = n.sign;
         this.voice = n.voice;
         this.isGrace = n.isGrace;
@@ -128,10 +129,6 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     	dotCount = 0;
     	int RESOLUTION = 192;  // 3 x 2^6
     	int noteVal = RESOLUTION * duration / (divisions * 4);
-    	
-//    	if (RESOLUTION % (divisions * 4) != 0)
-//    		System.out.println("Assumption wrong about divisions: " + divisions);
-    	//int noteVal = factor * duration;
     	switch (noteVal) { 
     	case 0: return ""; // Grace note
     	case 3: return "64th";
@@ -171,18 +168,20 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     	}
     }
 
-    public boolean isGuitar() {
-        // remember, invalid notes are still accepted but are created as GuitarNote objects. we want to be able to still convert despite having invalid notes, as long as we warn the user that they have invalid input. We might want to create a new concrete class, InvalidNote, that extends Note to take care of this so that we have the guarantee that this is valid.
-        return this.origin.strip().matches(NoteFactory.FRET);
-    }
-
-    public boolean isDrum() {
-        // remember, invalid notes are still accepted but are created as GuitarNote objects. we want to be able to still convert despite having invalid notes, as long as we warn the user that they have invalid input. We might want to create a new concrete class, InvalidNote, that extends Note to take care of this so that we have the guarantee that this is valid.
-        return this.origin.strip().matches(NoteFactory.DRUM_NOTE_PATTERN);
-    }
+//    public boolean isGuitar() {
+//        // remember, invalid notes are still accepted but are created as GuitarNote objects. we want to be able to still convert despite having invalid notes, as long as we warn the user that they have invalid input. We might want to create a new concrete class, InvalidNote, that extends Note to take care of this so that we have the guarantee that this is valid.
+//        return this.origin.strip().matches(NoteFactory.FRET);
+//    }
+//
+//    public boolean isDrum() {
+//        // remember, invalid notes are still accepted but are created as GuitarNote objects. we want to be able to still convert despite having invalid notes, as long as we warn the user that they have invalid input. We might want to create a new concrete class, InvalidNote, that extends Note to take care of this so that we have the guarantee that this is valid.
+//        return this.origin.strip().matches(NoteFactory.DRUM_NOTE_PATTERN);
+//    }
 
     public int compareTo(TabNote other) {
-        return this.distance-other.distance;
+    	int result = this.distance - other.distance;
+    	if (result == 0) result = this.graceDistance - other.graceDistance;
+        return result;
     }
 	
     public models.measure.note.Note getModel() {
@@ -225,7 +224,6 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
 	}
 	
 	public List<ValidationError> validate() {
-	    //List<ValidationError> result = new ArrayList<>();
 	    if (!this.origin.equals(this.origin.strip())) {
 	        addError(
 	                "Adding whitespace might result in different timing than you expect.",

@@ -29,7 +29,6 @@ import utility.ValidationError;
 
 public class Score extends ScoreComponent {
 
-	//public static String tabText;
 	private Map<Integer, String> scoreTextFragments;
 	private List<TabSection> tabSectionList;
     public static int CRITICAL_ERROR_CUTOFF = 1;
@@ -54,7 +53,7 @@ public class Score extends ScoreComponent {
 	 * Updates the value of instrument in Settings if it was set to auto-detect
 	 */
 	public void detectInstrument() {
-		if (Settings.getInstance().instrumentSetting == InstrumentSetting.AUTO) {
+		if (Settings.getInstance().getInstrumentSetting() == InstrumentSetting.AUTO) {
 			double guitarScore = 0;
 			double drumScore = 0;
 			Matcher lineMatcher = Pattern.compile("(?<=^|\\n)[^\\n]+(?=$|\\n)").matcher(at.text);
@@ -78,11 +77,11 @@ public class Score extends ScoreComponent {
 				}
 			}
 			if (guitarScore > drumScore) {
-				Settings.getInstance().detectedInstrument = Instrument.GUITAR;
+				Settings.getInstance().setDetectedInstrument(Instrument.GUITAR);
 				System.out.println("guitar");
 			}
 			else {
-				Settings.getInstance().detectedInstrument = Instrument.DRUMS;
+				Settings.getInstance().setDetectedInstrument(Instrument.DRUMS);
 				System.out.println("drums");
 			}
 		}
@@ -241,10 +240,6 @@ public class Score extends ScoreComponent {
         return new PartList(scoreParts);
     }
     
-//    public int positionInLine(int position) {
-//    	return position - at.text.substring(0, position).lastIndexOf("\n");
-//    }
-    
     // TODO synchronized because the ScorePartwise model has an instance counter which has to remain the same for all
 	// which has to remain the same for all the sub-elements it has as they use that counter. this may turn out to be
 	// a bad idea cuz it might clash with the NotePlayer class
@@ -276,21 +271,14 @@ public class Score extends ScoreComponent {
 
 	@Override
 	public List<Range> getRanges() {
-		// TODO Auto-generated method stub
+		// TODO Should return 0 to length
 		return null;
 	}
 
-	/** TODO modify this javadoc to reflect the new validation paradigm
-	 * Ensures that all the lines of the root string (the whole tablature file) is understood as multiple measure collections,
-	 * and if so, it validates all MeasureCollection objects it aggregates. It stops evaluation at the first aggregated object which fails validation.
-	 * TODO fix the logic. One rootString fragment could contain what is identified as multiple measures (maybe?) and another could be misunderstood so they cancel out and validation passes when it shouldn't
-	 * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
-	 * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
-	 * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
-	 * found in the root string from which it was derived (i.e Score.ROOT_STRING).
-	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
+	/** 
+	 * Anything outside recognized tab sections is marked as ignored.
+	 * Validates all TabSection objects it aggregates.
 	 */
-	
 	public List<ValidationError> validate() {
 	    
 	    int prevEndIdx = 0;
@@ -309,12 +297,11 @@ public class Score extends ScoreComponent {
 	    }
 	
 	    if (!positions.isEmpty()) {
-	        addError("This text can't be understood.", 4, positions);
-	        
+	        addError("This text will be ignored.", 4, positions);        
 	    }
 	
 	    // Validate your aggregates (regardless of if you're valid, as there is no significant
-	    // validation performed upon yourself that preclude your aggregates from being valid)
+	    // validation performed upon yourself that precludes your aggregates from being valid)
 	    for (TabSection colctn : this.tabSectionList) {
 	        errors.addAll(colctn.validate());
 	    }
@@ -322,14 +309,14 @@ public class Score extends ScoreComponent {
 	    return errors;
 	}
 
-	@Override
-    public String toString() {
-        String outStr = "";
-        for (TabSection measureCollection : this.tabSectionList) {
-            outStr += measureCollection.toString();
-            outStr += "\n\n";
-        }
-        return outStr;
-    }
+//	@Override
+//    public String toString() {
+//        String outStr = "";
+//        for (TabSection measureCollection : this.tabSectionList) {
+//            outStr += measureCollection.toString();
+//            outStr += "\n\n";
+//        }
+//        return outStr;
+//    }
 
 }

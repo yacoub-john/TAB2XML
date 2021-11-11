@@ -13,8 +13,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import converter.InstrumentSetting;
 import converter.Score;
 import utility.MusicXMLCreator;
+import utility.Settings;
 
 class SampleInputs {
 
@@ -27,11 +29,13 @@ class SampleInputs {
 	}
 
 	@BeforeEach
-	void setUp() throws Exception {
-	}
+    void init() {
+    	Settings.getInstance().setInstrumentSetting(InstrumentSetting.AUTO);
+    }
 
 	@AfterEach
 	void tearDown() throws Exception {
+		Settings.getInstance().setInstrumentSetting(InstrumentSetting.AUTO);
 	}
 
 	@Test
