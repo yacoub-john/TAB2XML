@@ -112,18 +112,22 @@ public abstract class TabMeasure extends ScoreComponent {
 //	    }
 //	}
 
-    protected void setChords() {
-	    for (List<TabNote> voice : this.voiceSortedNoteList) {
-	        TabNote previousNote = null;
-	        for (TabNote currentNote : voice) {
-	            if (currentNote.isGrace) continue;
-	            if (previousNote != null && previousNote.distance == currentNote.distance)
-	                currentNote.startsWithPreviousNote = true;
-	            previousNote = currentNote;
-	        }
-	    }
+	protected void setChords() {
+		for (List<TabNote> voice : this.voiceSortedNoteList) {
+			TabNote previousNote = null;
+			for (TabNote currentNote : voice) {
+				if (previousNote != null) {
+//					if (currentNote.isGrace)
+//						continue;
+					if (previousNote.distance == currentNote.distance &&
+							previousNote.graceDistance == currentNote.graceDistance)
+						currentNote.startsWithPreviousNote = true;
+				}
+				previousNote = currentNote;
+			}
+		}
 	}
-    
+
 	protected void setDurations() {
 		for (List<List<TabNote>> chordList : getVoiceSortedChordList()) {
 			// Handle all but last chord
@@ -164,7 +168,15 @@ public abstract class TabMeasure extends ScoreComponent {
 	    }
 		return doubleDigit;
 	}
-    
+	
+	protected int chordStretch(List<TabNote> chord) {
+    	int result = 1;
+    	for (TabNote note : chord) {
+	    	if (note.stretch > result) result = note.stretch;
+	    }
+		return result;
+	}
+        
     public List<List<List<TabNote>>> getVoiceSortedChordList() {
         List<List<List<TabNote>>> voiceSortedChordList = new ArrayList<>();
         for (List<TabNote> voice : this.voiceSortedNoteList) {
@@ -196,7 +208,7 @@ public abstract class TabMeasure extends ScoreComponent {
 			int firstNotePosition = voiceSortedNoteList.get(0).get(0).distance;
 			int usefulMeasureLength = measureLength - firstNotePosition;
 			// Must subtract for double digit numbers
-			usefulMeasureLength = adjustDivisionsForDoubleCharacterNotes(usefulMeasureLength);
+			usefulMeasureLength = adjustDivisionsForSpecialCases(usefulMeasureLength);
 			// For beatType 2, we double duration and divisions to avoid
 			// having divisions be a .5
 			int beatTypeFactor = beatType == 2 ? 2 : 1;
@@ -232,7 +244,7 @@ public abstract class TabMeasure extends ScoreComponent {
 		}
 	}
     
-    protected abstract int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureLength);
+    protected abstract int adjustDivisionsForSpecialCases(int usefulMeasureLength);
 
 	public boolean createTiedNotes() {
     	boolean somethingToSplit = false;
@@ -552,26 +564,4 @@ public abstract class TabMeasure extends ScoreComponent {
 	    return errors;
 	}
 
-//	@Override
-//	public String toString() {
-//	    StringBuilder stringOut = new StringBuilder();
-//	    if (TimeSignature.isValid(this.beatCount, this.beatType))
-//	        stringOut.append(this.beatCount+"/"+this.beatType+"\n");
-//	    for (int i=0; i<this.tabStringList.size()-1; i++) {
-//	        TabString measureLine = this.tabStringList.get(i);
-//	        stringOut.append(measureLine.name);
-//	        stringOut.append("|");
-//	        stringOut.append(measureLine.recreateLineString(getMaxMeasureLineLength()));
-//	        stringOut.append("\n");
-//	    }
-//	    if (!this.tabStringList.isEmpty()) {
-//	        TabString measureLine = this.tabStringList.get(this.tabStringList.size()-1);
-//	        stringOut.append(measureLine.name);
-//	        stringOut.append("|");
-//	        stringOut.append(measureLine.recreateLineString(getMaxMeasureLineLength()));
-//	        stringOut.append("\n");
-//	    }
-//	
-//	    return stringOut.toString();
-//	}
 }

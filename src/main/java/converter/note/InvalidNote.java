@@ -2,6 +2,7 @@ package converter.note;
 
 import java.util.List;
 
+import models.measure.note.Note;
 import utility.ValidationError;
 
 public class InvalidNote extends TabNote {
@@ -29,4 +30,9 @@ public class InvalidNote extends TabNote {
         addError("Unrecognized text, will be ignored.", 3, getRanges());
         return errors;
     }
+
+	@Override
+	protected void setStems(Note noteModel) {
+		// No stems for invalid notes
+	}
 }

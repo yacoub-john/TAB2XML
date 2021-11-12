@@ -3,6 +3,7 @@ package converter.note;
 import java.util.ArrayList;
 import java.util.List;
 
+import models.measure.note.Note;
 import utility.AnchoredText;
 import utility.Patterns;
 
@@ -45,7 +46,7 @@ public class DrumNoteFactory extends NoteFactory {
 		protected List<TabNote> createFlam(String origin, int position, int distanceFromMeasureStart) {
 			TabNote graceNote = new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart);
 			TabNote gracePair = new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart);
-			grace(graceNote, gracePair);
+			grace(graceNote, gracePair, 1);
 			List<TabNote> notes = new ArrayList<>();
 			notes.add(graceNote);
 			notes.add(gracePair);
@@ -83,6 +84,11 @@ public class DrumNoteFactory extends NoteFactory {
 //		        //slur(note1, note2);
 //		        return notes;
 			return createFlam(origin, position, distanceFromMeasureStart);
+		}
+
+		@Override
+		protected void setGraceStem(Note noteModel) {
+			assert noteModel.getStem().equals("up");
 		}
 
 }

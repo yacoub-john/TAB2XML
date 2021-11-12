@@ -1,7 +1,6 @@
 package converter.note;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import models.measure.note.Dot;
 import models.measure.note.TimeModification;
 import utility.Patterns;
 import utility.Range;
-import utility.Settings;
 import utility.ValidationError;
 
 public abstract class TabNote extends ScoreComponent implements Comparable<TabNote> {
@@ -38,6 +36,7 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     int beatCount;
     boolean isTriplet;
     public boolean mustSplit;
+    public int stretch = 1;
     
 
 
@@ -91,6 +90,7 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
         this.beatCount = n.beatCount;
         //boolean isTriplet;
         this.mustSplit = n.mustSplit;
+        this.stretch = n.stretch;
     }
     
     public void setDivisions(int divisions) {
@@ -206,6 +206,8 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
  	    if (!dots.isEmpty())
  	        noteModel.setDots(dots);
 
+ 	    setStems(noteModel);
+ 	    
  	    for (NoteModelDecorator noteDecor : this.noteDecorMap.keySet()) {
  	        if (noteDecorMap.get(noteDecor).equals("success"))
  	            noteDecor.applyTo(noteModel);
@@ -215,6 +217,8 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     }
 	
     public abstract TabNote copy();
+    
+    protected abstract void setStems(models.measure.note.Note noteModel);
     
 	@Override
 	public List<Range> getRanges() {

@@ -7,14 +7,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import converter.Instrument;
-import models.measure.note.Chord;
-import models.measure.note.Dot;
+import models.measure.note.Note;
 import models.measure.note.Pitch;
 import models.measure.note.notations.Notations;
 import models.measure.note.notations.technical.Technical;
 import utility.GuitarUtils;
 import utility.Range;
-import utility.Settings;
 import utility.ValidationError;
 
 public class GuitarNote extends TabNote {
@@ -140,6 +138,11 @@ public class GuitarNote extends TabNote {
 	}
 	
     @Override
+	protected void setStems(Note noteModel) {
+		// Not setting stems for guitars at this point
+	}
+
+	@Override
 	public models.measure.note.Note getModel() {
     	
 	    models.measure.note.Note noteModel = super.getModel();

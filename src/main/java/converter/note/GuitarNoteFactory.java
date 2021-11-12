@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import converter.Instrument;
+import models.measure.note.Note;
 import models.measure.note.notations.Notations;
 import models.measure.note.notations.Slide;
 import models.measure.note.notations.technical.HammerOn;
@@ -70,36 +70,59 @@ public class GuitarNoteFactory extends NoteFactory {
 				|| (Settings.getInstance().ddStyle == DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_NO_STRETCH))
 			if (origin.length() == 2)
 				distanceFromMeasureStart++;
-		return instantiateNote(origin, position, distanceFromMeasureStart);
+		return instantiateNote(origin, position, distanceFromMeasureStart, origin.length());
 	}
 
 	protected GuitarNote instantiateNote(String origin, int position, int distanceFromMeasureStart) {
 			return new GuitarNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
 	}
 	
+	protected GuitarNote instantiateNote(String origin, int position, int distanceFromMeasureStart, int stretch) {
+		GuitarNote result = new GuitarNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
+		result.stretch = stretch;
+		return result;
+	}
+	
 	protected List<TabNote> createGrace(String origin, int position, int distanceFromMeasureStart) {
 		List<TabNote> noteList = new ArrayList<>();
-		if (!origin.matches(Patterns.GRACE))
-			return noteList;
-		Matcher graceNoteMatcher = Pattern.compile("(?<=g)" + Patterns.FRET + "(?![0-9])").matcher(origin);
-		Matcher gracePairMatcher = Pattern.compile("(?<!g])" + Patterns.FRET + "$").matcher(origin);
-		Matcher relationshipMatcher = Pattern.compile("(?<=[0-9])[^0-9](?=[0-9])").matcher(origin);
-		graceNoteMatcher.find();
-		gracePairMatcher.find();
-		relationshipMatcher.find();
-		GuitarNote graceNote = createFret(graceNoteMatcher.group(), position + graceNoteMatcher.start(),
-				distanceFromMeasureStart + graceNoteMatcher.start());
-		GuitarNote gracePair = createFret(gracePairMatcher.group(), position + gracePairMatcher.start(),
-				distanceFromMeasureStart + gracePairMatcher.start());
-		String relationship = relationshipMatcher.group();
-		if (relationship.equals("h"))
-			hammerOn(graceNote, gracePair, true);
-		else if (relationship.equals("p"))
-			pullOff(graceNote, gracePair, true);
-		grace(graceNote, gracePair);
-		noteList.add(graceNote);
-		noteList.add(gracePair);
+		if (!origin.matches(Patterns.GRACE)) return noteList;
+		
+		Matcher fretMatcher = Pattern.compile(Patterns.FRET + "(?![0-9])").matcher(origin);
+		//Matcher gracePairMatcher = Pattern.compile("(?<!g])" + Patterns.FRET + "$").matcher(origin);
+		Matcher connectorMatcher = Pattern.compile("(?<=[0-9])[^0-9](?=[0-9])").matcher(origin);
+		assert fretMatcher.find();
+		GuitarNote previousNote = createFret(fretMatcher.group(), position + fretMatcher.start(), distanceFromMeasureStart + fretMatcher.start());
+		int graceCount = 0;
+		while (connectorMatcher.find())
+		{
+			graceCount++;
+			String relationship = connectorMatcher.group();
+			assert fretMatcher.find();
+			GuitarNote nextNote = createFret(fretMatcher.group(), position + fretMatcher.start(),
+					distanceFromMeasureStart + fretMatcher.start());
+			if (relationship.equals("h"))
+				hammerOn(previousNote, nextNote, true);
+			else if (relationship.equals("p"))
+				pullOff(previousNote, nextNote, true);
+			grace(previousNote, nextNote, graceCount);
+			noteList.add(previousNote);
+			previousNote = nextNote;
+		}
+		int actualDistance = previousNote.distance;
+		noteList.add(previousNote);
+		// All grace notes have the same distance as the main note, and stretch 1
+		for (TabNote note: noteList)
+		{
+			note.distance = actualDistance;
+			note.stretch = 1;
+		}
+		noteList.get(0).stretch = origin.length(); // first grace note gets all the stretch
 		return noteList;
+	}
+
+	@Override
+	protected void setGraceStem(Note noteModel) {
+		noteModel.setStem("none");
 	}
 
 	private boolean hammerOn(GuitarNote note1, GuitarNote note2, boolean onlyMessage) {

@@ -10,4 +10,9 @@ public class BassNoteFactory extends GuitarNoteFactory {
 			return new BassNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
 	}
 	
+	protected GuitarNote instantiateNote(String origin, int position, int distanceFromMeasureStart, int stretch) {
+		BassNote result = new BassNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
+		result.stretch = stretch;
+		return result;
+	}
 }

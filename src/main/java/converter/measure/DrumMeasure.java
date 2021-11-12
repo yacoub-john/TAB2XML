@@ -1,25 +1,16 @@
 package converter.measure;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import converter.Score;
 import converter.measure_line.TabDrumString;
 import converter.measure_line.TabString;
 import converter.note.TabNote;
-import models.measure.Backup;
 import models.measure.attributes.Attributes;
 import models.measure.attributes.Clef;
 import models.measure.attributes.Key;
 import models.measure.attributes.Time;
-import models.measure.barline.BarLine;
-import models.measure.barline.Repeat;
-import models.measure.direction.Direction;
-import models.measure.direction.DirectionType;
-import models.measure.direction.Words;
 import utility.AnchoredText;
-import utility.Settings;
 import utility.ValidationError;
 
 public class DrumMeasure extends TabMeasure {
@@ -29,7 +20,7 @@ public class DrumMeasure extends TabMeasure {
     }
     
     @Override
-	protected int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureLength) {
+	protected int adjustDivisionsForSpecialCases(int usefulMeasureLength) {
 		return usefulMeasureLength;
 	}
     
@@ -69,14 +60,9 @@ public class DrumMeasure extends TabMeasure {
     }
 
 	/**
-	 * Validates that all TabString objects in this DrumMeasure are TabDrumString objects, and validates its
-	 * aggregated TabString objects. It stops evaluation at the first aggregated object which fails validation.
-	 * @return a HashMap<String, String> that maps the value "success" to "true" if validation is successful and "false"
-	 * if not. If not successful, the HashMap also contains mappings "message" -> the error message, "priority" -> the
-	 * priority level of the error, and "positions" -> the indices at which each line pertaining to the error can be
-	 * found in the root string from which it was derived (i.e Score.tabText).
-	 * This value is formatted as such: "[startIndex,endIndex];[startIndex,endIndex];[startInde..."
-	 */
+     * Validates its aggregated TabString objects
+     * TODO Can be moved to superclass?
+     */
 	@Override
 	public List<ValidationError> validate() {
 	

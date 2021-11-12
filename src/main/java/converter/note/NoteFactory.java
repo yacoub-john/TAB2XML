@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import models.measure.note.Grace;
+import models.measure.note.Note;
 import models.measure.note.notations.Notations;
 import models.measure.note.notations.Slur;
 import models.measure.note.notations.Tied;
@@ -102,6 +103,8 @@ public abstract class NoteFactory {
             Notations notations = getNonNullNotations(noteModel);
             Slur slur = new Slur("start");
             slurNum.set(slur.getNumber());
+            
+            if (note1.stringNumber < 4 && ((noteModel.getStem() == null) || (!noteModel.getStem().equals("up")))) slur.setPlacement("above");
             if (notations.getSlurs()==null) notations.setSlurs(new ArrayList<>());
             notations.getSlurs().add(slur);
             return true;
@@ -139,13 +142,13 @@ public abstract class NoteFactory {
         return true;
     }
 
-    protected boolean grace(TabNote graceNote, TabNote gracePair) {
+    protected boolean grace(TabNote graceNote, TabNote gracePair, int graceDistance) {
         boolean success;
         success = slur(graceNote, gracePair);
         if (success) {
             grace(graceNote);
             graceNote.isGrace = true;
-            graceNote.graceDistance = -1;
+            graceNote.graceDistance = -10 + graceDistance; // MAX of 9 grace notes
         }
         return success;
     }
@@ -155,13 +158,17 @@ public abstract class NoteFactory {
         	//noteModel.setGrace(TabNote.SLASHED_GRACE ? new Grace("yes") : new Grace());
         	noteModel.setGrace(new Grace());
             noteModel.setDuration(null);
-            noteModel.setChord(null);
+            //noteModel.setChord(null);
+            setGraceStem(noteModel);
+            noteModel.setType("16th");
             return true;
         }, "success");
         return true;
     }
 
-    protected Technical getNonNullTechnical(models.measure.note.Note noteModel) {
+    protected abstract void setGraceStem(Note noteModel);
+
+	protected Technical getNonNullTechnical(models.measure.note.Note noteModel) {
     	if (noteModel.getNotations() == null) noteModel.setNotations(new Notations());
 	    Notations notations = noteModel.getNotations();
 	    if (notations.getTechnical() == null) notations.setTechnical(new Technical());

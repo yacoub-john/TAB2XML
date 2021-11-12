@@ -6,11 +6,11 @@ import java.util.regex.Pattern;
 
 import converter.Instrument;
 import converter.measure_line.TabDrumString;
+import models.measure.note.Note;
 import models.measure.note.Unpitched;
 import utility.DrumPiece;
 import utility.DrumPieceInfo;
 import utility.DrumUtils;
-import utility.Settings;
 import utility.ValidationError;
 
 public class DrumNote extends TabNote{
@@ -40,12 +40,16 @@ public class DrumNote extends TabNote{
     }
 
     @Override
+	protected void setStems(Note noteModel) {
+    	//noteModel.setStem(drumPiece == DrumPiece.Bass_Drum_1 ? "down" : "up");
+        noteModel.setStem("up");	
+	}
+
+	@Override
     public models.measure.note.Note getModel(){ 
     	models.measure.note.Note noteModel = super.getModel();
         noteModel.setUnpitched(new Unpitched(drumPieceInfo.getStep(), drumPieceInfo.getOctave()));
         noteModel.setInstrument(new models.measure.note.Instrument(this.drumPieceInfo.getMidiID()));
-        //TODO Should test better for bass drum here
-        noteModel.setStem(drumPiece == DrumPiece.Bass_Drum_1 ? "down" : "up");
         String noteHead = this.origin.strip();
         if ((noteHead.equalsIgnoreCase("x")) || ((noteHead.equalsIgnoreCase("o") && drumPiece == DrumPiece.Open_Hi_Hat)))
             noteModel.setNotehead("x");
@@ -54,7 +58,6 @@ public class DrumNote extends TabNote{
 
     public List<ValidationError> validate() {
         super.validate();
-        //int ERROR_SENSITIVITY = Settings.getInstance().errorSensitivity;
 
         for (NoteModelDecorator noteDecor : this.noteDecorMap.keySet()) {
             String resp = noteDecorMap.get(noteDecor);
@@ -74,6 +77,7 @@ public class DrumNote extends TabNote{
                 endIdx = Integer.parseInt(matcher.group());
                 message = message.substring(matcher.end()+2);
             }
+            System.out.println("Validate of Drum Note:" + message);
             addError(message, priority, getRanges());
         }
 

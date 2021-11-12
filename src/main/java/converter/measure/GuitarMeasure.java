@@ -29,18 +29,20 @@ public class GuitarMeasure extends TabMeasure{
     }
 
     @Override
-	protected int adjustDivisionsForDoubleCharacterNotes(int usefulMeasureLength) {
+	protected int adjustDivisionsForSpecialCases(int usefulMeasureLength) {
 		for (List<List<TabNote>> chordList : getVoiceSortedChordList()) {
 			int start = 0;
-			//Start at 1 to ignore first chord
-			//If it is double digit, it has not been counted in usefulMeasureLength
-			//Applies only for NOTE ON SECOND DIGIT
-			if (Settings.getInstance().ddStyle == DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_STRETCH) 
+			// Start at 1 to ignore first chord
+			// If it is longer than one digit, it has not been counted in
+			// usefulMeasureLength
+			// Applies only for NOTE ON SECOND DIGIT
+			if (Settings.getInstance().ddStyle == DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_STRETCH)
 				start = 1;
 			for (int i = start; i < chordList.size(); i++) {
 				List<TabNote> chord = chordList.get(i);
-				if (isDoubleDigit(chord))
-					usefulMeasureLength--;
+				usefulMeasureLength -= chordStretch(chord) - 1;
+//				if (isDoubleDigit(chord))
+//					usefulMeasureLength--;
 			}
 		}
 		return usefulMeasureLength;
@@ -50,12 +52,11 @@ public class GuitarMeasure extends TabMeasure{
 	protected int adjustDurationForSpecialCases(int duration, List<TabNote> chord, List<TabNote> nextChord) {
 		// Adjust duration due to double digit fret numbers
 		switch (Settings.getInstance().ddStyle) {
-		case NOTE_ON_FIRST_DIGIT_STRETCH: if (isDoubleDigit(chord)) duration --; break;
-		case NOTE_ON_FIRST_DIGIT_NO_STRETCH: 
+		case NOTE_ON_FIRST_DIGIT_STRETCH: duration -= chordStretch(chord) - 1;
 			break;
 		case NOTE_ON_SECOND_DIGIT_NO_STRETCH:
 			break;
-		case NOTE_ON_SECOND_DIGIT_STRETCH: if (nextChord != null && isDoubleDigit(nextChord)) duration --; break;
+		case NOTE_ON_SECOND_DIGIT_STRETCH: if (nextChord != null) duration -= chordStretch(nextChord) - 1;
 		default:
 			break;
 		}
