@@ -73,53 +73,16 @@ public abstract class TabMeasure extends ScoreComponent {
 
     /**
      * Abstract method to create the corresponding type of TabString
-     * @param line the contents of the TabString
-     * @param nameAndPosition the name of the TabString
-     * @param position  the index at which the contents of the measure line can be found in the root string from which it
-     *                 was derived (i.e Score.tabText)
+     * 
      * @return a TabString either of type TabGuitarString, TabBassString, or TabDrumString
      */
-    protected abstract TabString newTabString(int stringNumber, AnchoredText data, AnchoredText name);
-    
-//    protected void setChords() {
-//    	
-//	    for (List<TabNote> voice : this.voiceSortedNoteList) {
-//	    	if (voice.size() == 0) continue;
-//	    	List<TabNote> graceChord = new ArrayList<>();
-//	        List<TabNote> chord = new ArrayList<>();
-//	        TabNote previousNote = voice.get(0);
-//	        if (previousNote.isGrace) graceChord.add(previousNote);
-//            else chord.add(previousNote);
-//	        
-//	        for (int i = 1; i < voice.size(); i++) {
-//	        	TabNote currentNote = voice.get(i);
-//	        	if (previousNote.distance == currentNote.distance) {
-//		            if (currentNote.isGrace) graceChord.add(currentNote);
-//		            else chord.add(currentNote);
-//	        	}
-//	        	else {
-//	        		// Create the chords
-//	        		
-//	        		graceChord = new ArrayList<>();
-//		        	chord = new ArrayList<>();
-//		        	if (currentNote.isGrace) graceChord.add(currentNote);
-//		            else chord.add(currentNote);
-//	        	}
-//	        		
-////	            if (previousNote != null && previousNote.distance == currentNote.distance)
-////	                currentNote.startsWithPreviousNote = true;
-//	            previousNote = currentNote;
-//	        }
-//	    }
-//	}
+    protected abstract TabString newTabString(int stringNumber, AnchoredText data, AnchoredText name);    
 
 	protected void setChords() {
 		for (List<TabNote> voice : this.voiceSortedNoteList) {
 			TabNote previousNote = null;
 			for (TabNote currentNote : voice) {
 				if (previousNote != null) {
-//					if (currentNote.isGrace)
-//						continue;
 					if (previousNote.distance == currentNote.distance &&
 							previousNote.graceDistance == currentNote.graceDistance)
 						currentNote.startsWithPreviousNote = true;
@@ -263,48 +226,49 @@ public abstract class TabMeasure extends ScoreComponent {
 	protected abstract int adjustDivisionsForSpecialCases(int usefulMeasureLength);
 
 	public boolean createTiedNotes() {
-    	boolean somethingToSplit = false;
-    	List<List<TabNote>> newNoteList = new ArrayList<>();
-    	for (List<List<TabNote>> voice: getVoiceSortedChordList()) {
-    		List<TabNote> newVoice = new ArrayList<>();
-            newNoteList.add(newVoice);
-			int totalDuration = 0;
-			for (List<TabNote> chord: voice) {
-				if ((chord.get(0).mustSplit) && (chord.get(0).duration > 1)){
-					somethingToSplit = true;
-					int note1dur = firstNoteDuration(totalDuration, chord.get(0).duration, getDivisions(), getBeatType());
-					int note2dur = chord.get(0).duration - note1dur;
-					List<TabNote> newChord = new ArrayList<>();
-					for (TabNote n : chord) {
-						n.setDuration(note1dur);
-						newVoice.add(n);
-						TabNote newNote = n.copy();
-						newNote.setDuration(note2dur);
-						//TODO Improve on the design
-						new GuitarNoteFactory().tie(n,newNote);
-						newChord.add(newNote);
+		boolean somethingToSplit = false;
+		if (!explicitDivisions) {
+			List<List<TabNote>> newNoteList = new ArrayList<>();
+			for (List<List<TabNote>> voice: getVoiceSortedChordList()) {
+				List<TabNote> newVoice = new ArrayList<>();
+				newNoteList.add(newVoice);
+				int totalDuration = 0;
+				for (List<TabNote> chord: voice) {
+					if ((chord.get(0).mustSplit) && (chord.get(0).duration > 1)){
+						somethingToSplit = true;
+						int note1dur = firstNoteDuration(totalDuration, chord.get(0).duration, getDivisions(), getBeatType());
+						int note2dur = chord.get(0).duration - note1dur;
+						List<TabNote> newChord = new ArrayList<>();
+						for (TabNote n : chord) {
+							n.setDuration(note1dur);
+							newVoice.add(n);
+							TabNote newNote = n.copy();
+							newNote.setDuration(note2dur);
+							//TODO Improve on the design
+							new GuitarNoteFactory().tie(n,newNote);
+							newChord.add(newNote);
+						}
+						for (TabNote n : newChord) {
+							newVoice.add(n);
+						}
+						totalDuration += note1dur + note2dur;
 					}
-					for (TabNote n : newChord) {
-						newVoice.add(n);
+					else {
+						if ((chord.get(0).mustSplit) && (chord.get(0).duration <= 1)){
+							split1 = true;
+						}
+						totalDuration += chord.get(0).duration;
+						for (TabNote n : chord) {
+							n.mustSplit = false;
+							newVoice.add(n);
+						}
 					}
-					totalDuration += note1dur + note2dur;
-				}
-				else {
-					if ((chord.get(0).mustSplit) && (chord.get(0).duration <= 1)){
-						split1 = true;
-					}
-				totalDuration += chord.get(0).duration;
-				for (TabNote n : chord) {
-					n.mustSplit = false;
-					newVoice.add(n);
-				}
 				}
 			}
-			
+			this.voiceSortedNoteList = newNoteList;
 		}
-    	this.voiceSortedNoteList = newNoteList;
-    	return somethingToSplit;
-    }
+		return somethingToSplit;
+	}
     
 	private int firstNoteDuration(int totalDuration, int duration, int divisions, int den) {
 		int firstNote, secondNote = 0;
@@ -317,7 +281,7 @@ public abstract class TabMeasure extends ScoreComponent {
 			assert firstNote > 0;
 			secondNote = duration - firstNote;
 			beatDuration = beatDuration / 2;
-			assert beatDuration > 0: "Measure " + measureCount +": beatDuration is " + beatDuration;
+			//assert beatDuration > 0: "Measure " + measureCount +": beatDuration is " + beatDuration;
 		} while ((firstNote < 1) || (secondNote < 1));
 		return firstNote;
 	}
@@ -389,29 +353,6 @@ public abstract class TabMeasure extends ScoreComponent {
         Collections.sort(sortedNoteList);
         return sortedNoteList;
     }
-
-//    public boolean isGuitar(boolean strictCheck) {
-//        for (TabString measureLine : this.tabStringList) {
-//            if (!measureLine.isGuitar(strictCheck))
-//                return false;
-//        }
-//        return true;
-//    }
-//
-//    public boolean isDrum(boolean strictCheck) {
-//        for (TabString measureLine : this.tabStringList) {
-//            if (!measureLine.isDrum(strictCheck))
-//                return false;
-//        }
-//        return true;
-//    }
-//    public boolean isBass(boolean strictCheck) {
-//        for (TabString measureLine : this.tabStringList) {
-//            if (!measureLine.isGuitar(strictCheck))
-//                return false;
-//        }
-//        return this.tabStringList.size() >= BassMeasure.MIN_LINE_COUNT && this.tabStringList.size() <= BassMeasure.MAX_LINE_COUNT;
-//    }
 
     /**
      * @return the range of the first line of the measure in its text line
@@ -539,17 +480,17 @@ public abstract class TabMeasure extends ScoreComponent {
 	    if (unSupportedDivisions) {
 	        addError(
 	                "Could not determine timing correctly: Unsupported divisions",
-	                1, getRanges());
+	                2, getRanges());
 	    }
 	    if (nonIntegerDivisions) {
 	        addError(
 	                "Could not determine timing correctly: Non integer divisions",
-	                1, getRanges());
+	                2, getRanges());
 	    }
 	    if (split1) {
 	        addError(
 	                "Could not determine timing correctly: Had to split a duration of 1",
-	                1, getRanges());
+	                2, getRanges());
 	    }
 	    
 	    boolean hasGuitarMeasureLines = true;

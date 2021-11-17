@@ -9,6 +9,7 @@ import converter.instruction.Instruction;
 import converter.instruction.InvalidRepeat;
 import converter.instruction.Repeat;
 import converter.instruction.TimeSignature;
+import converter.instruction.Timing;
 import utility.AnchoredText;
 import utility.Patterns;
 import utility.Range;
@@ -99,11 +100,16 @@ public class TabSection extends ScoreComponent {
         
         Matcher timeSigMatcher = Pattern.compile(TimeSignature.PATTERN).matcher(instrAT.text);
         while(timeSigMatcher.find()) {
-        	AnchoredText timeSigAT = new AnchoredText(timeSigMatcher.group(), instrAT.positionInScore + timeSigMatcher.start(), instrAT.positionInLine + timeSigMatcher.start());
-        	
+        	AnchoredText timeSigAT = new AnchoredText(timeSigMatcher.group(), instrAT.positionInScore + timeSigMatcher.start(), instrAT.positionInLine + timeSigMatcher.start());   	
             instructionList.add(new TimeSignature(timeSigAT, isTop));
         }
 
+        Matcher timingMatcher = Pattern.compile(Timing.PATTERN).matcher(instrAT.text);
+        while(timingMatcher.find()) {
+        	AnchoredText timingAT = new AnchoredText(timingMatcher.group(), instrAT.positionInScore + timingMatcher.start(), instrAT.positionInLine + timingMatcher.start());
+            instructionList.add(new Timing(timingAT, isTop));
+        }
+        
         return instructionList;
     }
 

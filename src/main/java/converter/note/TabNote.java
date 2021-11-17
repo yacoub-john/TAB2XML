@@ -135,7 +135,10 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     			dotCount = timing.length() - 1;
     			for (int i = 0; i < dotCount; i++) duration = duration + duration / 2;
     		}
-    		else tuplet = Integer.parseInt(timing.substring(1)); // Duration unchanged for tuplets, dealt with through time modification
+    		else {
+    			tuplet = Integer.parseInt(timing.substring(1)); // Duration unchanged for tuplets, dealt with through time modification
+    			duration = duration * 2 / 3;
+    		}
     	}		
     }
 

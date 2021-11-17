@@ -3,6 +3,7 @@ package converter.instruction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,12 +30,20 @@ public class Timing extends Instruction {
     private Map<Integer, String> unrecognized = new TreeMap<>();
     private boolean tab = false;
     private int divisions = 1;
-    Set<Integer> divFactors = Set.of(1, 2, 4); // Whole, half, and quarter notes are always included
+    Set<Integer> divFactors = new HashSet<>();
+    List<Integer> missingPositions = new ArrayList<>();
     
     public Timing(AnchoredText inputAT, boolean isTop) {
         super(inputAT, isTop);
-        // Start at 2 to bypass XQ
-        Matcher timingMatcher = Pattern.compile("[" + supportedTimings + "](\\.*|[1-9]{0,2})?").matcher(at.text);
+        Matcher xqMatcher = Pattern.compile("XQ *").matcher(at.text);
+    	xqMatcher.find();
+    	setRange(new Range(xqMatcher.end(), at.text.trim().length()));
+        // Whole, half, and quarter notes are always included
+        divFactors.add(1);
+        divFactors.add(2);
+        divFactors.add(4);
+        String timingPattern = "([" + supportedTimings + "](\\.+|[0-9]{1,2})?)";
+        Matcher timingMatcher = Pattern.compile(timingPattern).matcher(at.text);
 		while (timingMatcher.find())
 		{
 			timings.put(timingMatcher.start(), timingMatcher.group());
@@ -71,33 +80,39 @@ public class Timing extends Instruction {
 				Range measureRange = measure.getRelativeRange();
 				if (measureRange == null || !measureRange.overlaps(this.getRange()))
 					continue;
+				measure.errors = new ArrayList<>();
 				List<List<List<TabNote>>> noteList = measure.getVoiceSortedChordList();
 				List<String> measureTimings = new ArrayList<>();
 				for (List<List<TabNote>> chordList : noteList) {
-					for (int i = 0; i < chordList.size() - 1; i++) {
+					for (int i = 0; i < chordList.size(); i++) {
 						List<TabNote> chord = chordList.get(i);
 						int currentChordDistance = chord.get(0).distance;
 						int chordPositionInLine = measure.data.get(0).positionInLine + currentChordDistance;
 						String givenTiming = timings.get(chordPositionInLine);
-						measureTimings.add(givenTiming);
+						if (givenTiming != null)
+							measureTimings.add(givenTiming);
+						else
+							missingPositions.add(chordPositionInLine);
 					}
 				}
-				updateDivisions(measureTimings);
-				measure.setDivisions(this.divisions);
-				for (List<List<TabNote>> chordList : noteList) {
-					for (int i = 0; i < chordList.size() - 1; i++) {
-						List<TabNote> chord = chordList.get(i);
-						int currentChordDistance = chord.get(0).distance;
-						int chordPositionInLine = measure.data.get(0).positionInLine + currentChordDistance;
-						String givenTiming = timings.get(chordPositionInLine);
-						for (TabNote note : chord)
-							note.setDuration(givenTiming, this.divisions);
+				if (missingPositions.isEmpty()) {
+					updateDivisions(measureTimings);
+					measure.setDivisions(this.divisions);
+					for (List<List<TabNote>> chordList : noteList) {
+						for (int i = 0; i < chordList.size(); i++) {
+							List<TabNote> chord = chordList.get(i);
+							int currentChordDistance = chord.get(0).distance;
+							int chordPositionInLine = measure.data.get(0).positionInLine + currentChordDistance;
+							String givenTiming = timings.get(chordPositionInLine);
+							for (TabNote note : chord)
+								note.setDuration(givenTiming, this.divisions);
 
+						}
 					}
 				}
 			}
 		}
-	}   
+	}
 
 	private void updateDivisions(List<String> mt) {
 		divisions = 1;
@@ -157,9 +172,19 @@ public class Timing extends Instruction {
         if (tab) {
             addError(
                     "The TAB character is not allowed in a timing line.",
-                    2,
+                    3,
                     getRanges());
         }
+        List<Range> ranges = new ArrayList<>();
+        for (int i: missingPositions) {
+        	ranges.add(new Range(at.positionInScore + i, at.positionInScore + i +1));
+        	if (i == at.text.length()) {
+        		List<Range> xqRange = new ArrayList<>();
+        		xqRange.add(new Range(at.positionInScore, at.positionInScore + 2)); // Highlight the XQ if the missing timing is after the end of the line
+        		addError("Missing timing designation at the end of this line", 1, xqRange);
+        	}
+         }
+        if (!ranges.isEmpty()) addError("Missing timing designation", 1, ranges);
         //TODO Add error if there are unrecognized Ranges
 
         return errors;
