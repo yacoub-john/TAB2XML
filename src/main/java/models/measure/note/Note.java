@@ -29,7 +29,7 @@ public class Note {
     @JacksonXmlProperty(localName = "time-modification")
 	TimeModification timemodification;
     String stem;
-    String notehead;
+    Notehead notehead;
     Beam beam;
     Notations notations;
     
@@ -117,7 +117,7 @@ public class Note {
         this.stem = stem;
     }
 
-    public String getNotehead() {
+    public Notehead getNotehead() {
         return notehead;
     }
 
@@ -125,7 +125,7 @@ public class Note {
         return notations;
     }
 
-    public void setNotehead(String notehead) {
+    public void setNotehead(Notehead notehead) {
         this.notehead = notehead;
     }
 

@@ -32,8 +32,8 @@ public abstract class TabMeasure extends ScoreComponent {
     protected int measureCount;
     protected int beatCount = Settings.getInstance().tsNum;
     protected int beatType = Settings.getInstance().tsDen;
-    List<AnchoredText> data;
-    List<AnchoredText> nameData;
+    public List<AnchoredText> data;
+    public List<AnchoredText> nameData;
     public int lineCount;
     public List<TabString> tabStringList = new ArrayList<>();
     boolean isFirstMeasureInGroup;
@@ -47,6 +47,7 @@ public abstract class TabMeasure extends ScoreComponent {
     protected boolean split1 = false;
     protected boolean nonIntegerDivisions = false;
     protected boolean unSupportedDivisions = false;
+    protected boolean explicitDivisions = false;
     protected int[] supportedDivisions = {1,2,3,4,6,8,12,16,24,48};
     
     public TabMeasure(List<AnchoredText> inputData, List<AnchoredText> inputNameData, boolean isFirstMeasureInGroup) {
@@ -201,50 +202,65 @@ public abstract class TabMeasure extends ScoreComponent {
     }
     
 	public void setDivisions() {
-		int measureLength = getMaxMeasureLineLength();
-		if (voiceSortedNoteList.size() == 0)
-			divisions = measureLength;
-		else {
-			int firstNotePosition = voiceSortedNoteList.get(0).get(0).distance;
-			int usefulMeasureLength = measureLength - firstNotePosition;
-			// Must subtract for double digit numbers
-			usefulMeasureLength = adjustDivisionsForSpecialCases(usefulMeasureLength);
-			// For beatType 2, we double duration and divisions to avoid
-			// having divisions be a .5
-			int beatTypeFactor = beatType == 2 ? 2 : 1;
+		if (explicitDivisions) {
+			// TODO Add error if divisions and total duration of notes does not match time
+			// signature
+		} else {
+			int measureLength = getMaxMeasureLineLength();
+			if (voiceSortedNoteList.size() == 0)
+				divisions = measureLength;
+			else {
+				int firstNotePosition = voiceSortedNoteList.get(0).get(0).distance;
+				int usefulMeasureLength = measureLength - firstNotePosition;
+				// Must subtract for double digit numbers
+				usefulMeasureLength = adjustDivisionsForSpecialCases(usefulMeasureLength);
+				// For beatType 2, we double duration and divisions to avoid
+				// having divisions be a .5
+				int beatTypeFactor = beatType == 2 ? 2 : 1;
 
-			// We do not divide by beatCount, to avoid fractional divisions
-			// All durations are multiplied by beatCount to compensate
-			divisions = usefulMeasureLength * beatType * beatTypeFactor / 4;
-			
-			int adjustment = divisions % beatCount;
-			if (divisions > adjustment) divisions -= adjustment;
+				// We do not divide by beatCount, to avoid fractional divisions
+				// All durations are multiplied by beatCount to compensate
+				divisions = usefulMeasureLength * beatType * beatTypeFactor / 4;
 
-			if (adjustment > 0) {
-				System.out.println("Measure " + measureCount + ": Length of measure not good for divisions. Adjusted from " + (divisions + adjustment) + " to " + divisions);
-				nonIntegerDivisions = true;
-			}
-			if (!Arrays.stream(supportedDivisions).anyMatch(i -> i == divisions / beatCount)) {
-				System.out.println("Measure " + measureCount + ": Unsupported divisions: " + divisions);
-				unSupportedDivisions = true;
-			}
+				int adjustment = divisions % beatCount;
+				if (divisions > adjustment)
+					divisions -= adjustment;
 
-			for (List<TabNote> voice : this.voiceSortedNoteList) {
-				for (TabNote note : voice) {
-					note.setDivisions(this.divisions);
-					int factor = beatCount;
-					// For beatType 2, we double duration and divisions to avoid
-			    	// having divisions be a .5
-			    	if (beatType == 2) factor = 2;
-			    	// We multiply by beatCount to compensate for divisions 
-			    	// multiplied by beatCount also
-			    	note.setDuration(note.getDuration() * factor); 
+				if (adjustment > 0) {
+					System.out.println(
+							"Measure " + measureCount + ": Length of measure not good for divisions. Adjusted from "
+									+ (divisions + adjustment) + " to " + divisions);
+					nonIntegerDivisions = true;
+				}
+				if (!Arrays.stream(supportedDivisions).anyMatch(i -> i == divisions / beatCount)) {
+					System.out.println("Measure " + measureCount + ": Unsupported divisions: " + divisions);
+					unSupportedDivisions = true;
+				}
+
+				for (List<TabNote> voice : this.voiceSortedNoteList) {
+					for (TabNote note : voice) {
+						note.setDivisions(this.divisions);
+						int factor = beatCount;
+						// For beatType 2, we double duration and divisions to avoid
+						// having divisions be a .5
+						if (beatType == 2)
+							factor = 2;
+						// We multiply by beatCount to compensate for divisions
+						// multiplied by beatCount also
+						note.setDuration(note.getDuration() * factor);
+					}
 				}
 			}
 		}
 	}
     
-    protected abstract int adjustDivisionsForSpecialCases(int usefulMeasureLength);
+	// Used by the Timing instructions to set the divisions explicitly
+    public void setDivisions(int div) {
+		divisions = div;
+		explicitDivisions = true;
+	}
+
+	protected abstract int adjustDivisionsForSpecialCases(int usefulMeasureLength);
 
 	public boolean createTiedNotes() {
     	boolean somethingToSplit = false;
@@ -298,10 +314,10 @@ public abstract class TabMeasure extends ScoreComponent {
 			int beats = totalDuration / beatDuration;
 			int offSet = totalDuration - beats * beatDuration;
 			firstNote = beatDuration - offSet;
-			// TODO Assert cannot be 0
+			assert firstNote > 0;
 			secondNote = duration - firstNote;
 			beatDuration = beatDuration / 2;
-			// TODO Assert it does not get to 0
+			assert beatDuration > 0: "Measure " + measureCount +": beatDuration is " + beatDuration;
 		} while ((firstNote < 1) || (secondNote < 1));
 		return firstNote;
 	}

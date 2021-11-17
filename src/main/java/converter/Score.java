@@ -32,7 +32,7 @@ public class Score extends ScoreComponent {
 	private Map<Integer, String> scoreTextFragments;
 	private List<TabSection> tabSectionList;
     public static int CRITICAL_ERROR_CUTOFF = 1;
-    private List<TabMeasure> tabMeasureList;
+    public List<TabMeasure> tabMeasureList;
 
     public Score(String textInput) {
     	

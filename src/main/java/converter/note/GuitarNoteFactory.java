@@ -124,6 +124,11 @@ public class GuitarNoteFactory extends NoteFactory {
 	protected void setGraceStem(Note noteModel) {
 		noteModel.setStem("none");
 	}
+	
+	@Override
+	protected void setGraceType(Note noteModel) {
+		noteModel.setType("16th");
+	}
 
 	private boolean hammerOn(GuitarNote note1, GuitarNote note2, boolean onlyMessage) {
 		String message = "success";

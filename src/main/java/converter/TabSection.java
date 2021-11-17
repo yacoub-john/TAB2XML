@@ -50,6 +50,7 @@ public class TabSection extends ScoreComponent {
 			lines.add(l);
 			starts.add(lineMatcher.start());
 		}
+		boolean isTop = true;
 		for (int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);
 			int start = starts.get(i);
@@ -57,24 +58,22 @@ public class TabSection extends ScoreComponent {
 			if (topInstructionMatcher.find()) { // no need for loop as only one line
 				AnchoredText instructionAT = new AnchoredText(topInstructionMatcher.group(),
 						at.positionInScore + start + topInstructionMatcher.start(), topInstructionMatcher.start());
-				this.instructionList.addAll(extractInstructions(instructionAT, true));
+				this.instructionList.addAll(extractInstructions(instructionAT, isTop));
 				continue;
 			}
 			String pattern = tabRowLinePattern();
 			Matcher tabRowMatcher = Pattern.compile(pattern).matcher(line);
 			if (tabRowMatcher.find()) {
-				if (line.charAt(0) == '\n') { //TODO Probably not needed any more
-					line = line.substring(1);
-					start++;
-					System.out.println("How did you get here?");
-				}
+				isTop = false;
+				assert line.charAt(0) != '\n';
+//				if (line.charAt(0) == '\n') {
+//					line = line.substring(1);
+//					start++;
+//				}
 				AnchoredText tabRowAT = new AnchoredText(line, at.positionInScore + start, 0);
 				tabRowData.add(tabRowAT);
 			}
 		}
-		// TODO redo this error
-		// else addError ("No tablature detected", 1, getRanges()); Also assert
-		// tabRowStart is not -1
 
 		if (isFirstTabSection && Settings.getInstance().getInstrument() == Instrument.GUITAR && tabRowData.size() < 6)
 			Settings.getInstance().setDetectedInstrument(Instrument.BASS);

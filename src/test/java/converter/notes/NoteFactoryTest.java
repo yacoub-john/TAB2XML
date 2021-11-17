@@ -1,13 +1,19 @@
 package converter.notes;
 
 import converter.Instrument;
+import converter.InstrumentSetting;
+import converter.Score;
+import converter.measure.TabMeasure;
 import converter.note.TabNote;
 import converter.note.NoteFactory;
 import models.measure.note.notations.Notations;
 import models.measure.note.notations.Slide;
 import models.measure.note.notations.technical.HammerOn;
 import models.measure.note.notations.technical.PullOff;
+import utility.Settings;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -16,8 +22,76 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
-@Disabled
+
 public class NoteFactoryTest {
+	
+    @BeforeEach
+    void init() {
+    	Settings.getInstance().setInstrumentSetting(InstrumentSetting.AUTO);
+    }
+    
+	@AfterEach
+	void tearDown() throws Exception {
+		Settings.getInstance().setInstrumentSetting(InstrumentSetting.AUTO);
+	}
+
+   
+    @Test
+    void graceTest1() {
+        
+        String input = 
+                """
+E|--------g4h16p5-------------5-6-5-5---5---|
+B|--------------5---6-------8-------------6-|
+G|------------------------------------------|
+D|----------------------7-----------------7-|
+A|----5-------------8-------7---------------|
+D|----------------------------------0-------|
+
+                """;
+
+        
+            Score score = new Score(input);
+            assertEquals(1, score.tabMeasureList.size(), "one measure was expected but found " + score.tabMeasureList.size() + ".");
+            assertTrue(score.validate().size() == 0);
+            TabMeasure measure = score.getMeasure(1);
+            TabNote n = measure.getVoiceSortedNoteList().get(0).get(1);
+            assertTrue(n.isGrace);
+            n = measure.getVoiceSortedNoteList().get(0).get(2);
+            assertTrue(n.isGrace);
+    }
+    
+    @Test
+    void graceTest2() {
+        
+        String input = 
+                """
+E|------------g4h08h15-------------5-6-5-5---5---|
+B|------------g9h12p11---6-------8-------------6-|
+G|-----------------------------------------------|
+D|---------------------------7-----------------7-|
+A|----g3s15--------------8-------7---------------|
+D|---------------------------------------0-------|
+
+                """;
+      
+            Score score = new Score(input);
+            assertEquals(1, score.tabMeasureList.size(), "one measure was expected but found " + score.tabMeasureList.size() + ".");
+            assertTrue(score.validate().size() == 0);
+            TabMeasure measure = score.getMeasure(1);
+            TabNote n = measure.getVoiceSortedNoteList().get(0).get(0);
+            assertTrue(n.isGrace);
+            n = measure.getVoiceSortedNoteList().get(0).get(2);
+            assertTrue(n.isGrace);
+            n = measure.getVoiceSortedNoteList().get(0).get(3);
+            assertTrue(n.isGrace);
+            n = measure.getVoiceSortedNoteList().get(0).get(4);
+            assertTrue(n.isGrace);
+            n = measure.getVoiceSortedNoteList().get(0).get(5);
+            assertTrue(n.isGrace);
+            n = measure.getVoiceSortedNoteList().get(0).get(6);
+            assertTrue(!n.isGrace);
+    }
  /*   HashMap<String, Integer> correctGraceNoteSamples = new HashMap<>() {
         {
             //hammer-ons

@@ -72,9 +72,10 @@ public abstract class NoteFactory {
 	        noteList.addAll(notes);
 	        note1 = notes.get(notes.size()-1);  //It is always the last note that builds a relationship. e.g you dont wanna get the grace note. you wanna get the grace pair because it is what will be creating a relationship with other notes
 	    }
-	    int endNote = idx+noteMatcher.end();
+	    int endNote = idx + noteMatcher.end();
 	    
 	    AnchoredText connectorAT = createConnector(noteList, idx, endIdx, endNote);
+	    
 	    Range newRange = new Range(endNote + connectorAT.positionInLine, endIdx);
 	    List<TabNote> remainingNotes = getNotes(newRange);
 	    if (remainingNotes.isEmpty())
@@ -160,13 +161,14 @@ public abstract class NoteFactory {
             noteModel.setDuration(null);
             //noteModel.setChord(null);
             setGraceStem(noteModel);
-            noteModel.setType("16th");
+            setGraceType(noteModel);
             return true;
         }, "success");
         return true;
     }
 
     protected abstract void setGraceStem(Note noteModel);
+    protected abstract void setGraceType(Note noteModel);
 
 	protected Technical getNonNullTechnical(models.measure.note.Note noteModel) {
     	if (noteModel.getNotations() == null) noteModel.setNotations(new Notations());

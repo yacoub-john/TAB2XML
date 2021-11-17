@@ -24,17 +24,23 @@ public static void createDrumSet() {
 		List<String> snareNames = new ArrayList<String>(Arrays.asList("S","SD"));
 		DrumPieceInfo snare = new DrumPieceInfo(snareNames, "P1-I39", "Snare", "C", 5);
 		
-		List<String> closedhihatNames = new ArrayList<String>(Arrays.asList("HH","CH"));
+		List<String> closedhihatNames = new ArrayList<String>(Arrays.asList("HH","H"));
 		DrumPieceInfo closedHiHat = new DrumPieceInfo(closedhihatNames, "P1-I43", "Closed Hi-Hat", "G", 5);
 		
-		List<String> openHiHatNames = new ArrayList<String>(Arrays.asList("HH","OH"));
+		List<String> openHiHatNames = new ArrayList<String>(Arrays.asList("HH","H"));
 		DrumPieceInfo openHiHat = new DrumPieceInfo(openHiHatNames, "P1-I47", "Open Hi-Hat", "E", 5);
 		
 		List<String> rideNames = new ArrayList<String>(Arrays.asList("R","RD"));
 		DrumPieceInfo ride = new DrumPieceInfo(rideNames, "P1-I52", "Ride Cymbal 1", "F", 5);
 		
+		List<String> rideBellNames = new ArrayList<String>(Arrays.asList("R","RD"));
+		DrumPieceInfo rideBell = new DrumPieceInfo(rideBellNames, "P1-I54", "Ride Bell", "F", 5);
+		
 		List<String> crashNames = new ArrayList<String>(Arrays.asList("C","CC"));
 		DrumPieceInfo crash = new DrumPieceInfo(crashNames, "P1-I50", "Crash Cymbal 1", "A", 5);
+		
+		List<String> chinaNames = new ArrayList<String>(Arrays.asList("CH"));
+		DrumPieceInfo china = new DrumPieceInfo(chinaNames, "P1-I53", "Chinese Cymbal 1", "C", 6);
 		
 		List<String> highTomNames = new ArrayList<String>(Arrays.asList("T","HT"));
 		DrumPieceInfo highTom = new DrumPieceInfo(highTomNames, "P1-I48", "Low-Mid Tom", "E", 5);
@@ -56,7 +62,9 @@ public static void createDrumSet() {
 		drumSet.put(DrumPiece.Open_Hi_Hat, openHiHat);
 		drumSet.put(DrumPiece.Closed_Hi_Hat, closedHiHat);
 		drumSet.put(DrumPiece.Ride_Cymbal_1, ride);
+		drumSet.put(DrumPiece.Ride_Bell, rideBell);
 		drumSet.put(DrumPiece.Crash_Cymbal_1, crash);
+		drumSet.put(DrumPiece.Chinese_Cymbal, china);
 		drumSet.put(DrumPiece.Low_Mid_Tom, highTom);
 		drumSet.put(DrumPiece.Low_Tom, midTom);
 		drumSet.put(DrumPiece.High_Floor_Tom, floorTom);
@@ -69,7 +77,8 @@ public static void createDrumSet() {
 		List<String> kickNames = new ArrayList<String>(Arrays.asList("B","BD"));
 		List<String> snareNames = new ArrayList<String>(Arrays.asList("S","SD"));
 		List<String> hihatNames = new ArrayList<String>(Arrays.asList("H","HH"));
-		List<String> rideNames = new ArrayList<String>(Arrays.asList("R","RD"));
+		List<String> rideNames = new ArrayList<String>(Arrays.asList("R","RD","RC"));
+		List<String> chinaNames = new ArrayList<String>(Arrays.asList("CH"));
 		List<String> crashNames = new ArrayList<String>(Arrays.asList("C","CC"));
 		List<String> highTomNames = new ArrayList<String>(Arrays.asList("T","HT"));
 		List<String> midTomNames = new ArrayList<String>(Arrays.asList("t","MT"));
@@ -81,6 +90,7 @@ public static void createDrumSet() {
 		for (String s: snareNames) drumNickNames.put(s, DrumPiece.Snare);
 		for (String s: hihatNames) drumNickNames.put(s, DrumPiece.Closed_Hi_Hat);
 		for (String s: rideNames) drumNickNames.put(s, DrumPiece.Ride_Cymbal_1);
+		for (String s: chinaNames) drumNickNames.put(s, DrumPiece.Chinese_Cymbal);
 		for (String s: crashNames) drumNickNames.put(s, DrumPiece.Crash_Cymbal_1);
 		for (String s: highTomNames) drumNickNames.put(s, DrumPiece.Low_Mid_Tom);
 		for (String s: midTomNames) drumNickNames.put(s, DrumPiece.Low_Tom);
@@ -95,6 +105,8 @@ public static void createDrumSet() {
 		DrumPiece result =  DrumUtils.drumNickNames.get(nickName);
 		if ((hit.equals("o")) && (result == DrumPiece.Closed_Hi_Hat)) 
 			result = DrumPiece.Open_Hi_Hat;
+		if ((hit.equals("b")) && (result == DrumPiece.Ride_Cymbal_1)) 
+			result = DrumPiece.Ride_Bell;
 		return result;
 	}
 	

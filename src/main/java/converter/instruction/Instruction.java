@@ -53,10 +53,10 @@ public abstract class Instruction extends ScoreComponent{
         return errors;
     }
 
-    private static String getLinePattern() {
-        String instruction = "(("+TimeSignature.PATTERN+")|("+Repeat.PATTERN+"))";
-        return "("+Patterns.SPACEORTAB+"*" + instruction + Patterns.SPACEORTAB+"*" + ")+";
-    }
+	private static String getLinePattern() {
+		String instruction = "((" + TimeSignature.PATTERN + ")|(" + Repeat.PATTERN + ")|(" + Timing.PATTERN + "))";
+		return "(" + Patterns.SPACEORTAB + "*" + instruction + Patterns.SPACEORTAB + "*" + ")+";
+	}
 
 	public boolean isTop() {
 		return isTop;

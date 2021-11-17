@@ -34,12 +34,12 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     int divisions = 0;
     int beatType;
     int beatCount;
-    boolean isTriplet;
+    protected int tuplet = 1;
     public boolean mustSplit;
     public int stretch = 1;
+    protected String type = "";
+    protected boolean explicitType = false;
     
-
-
     // A pattern that matches the note components of a measure line, like (2h7) or 8s3 or 12 or 4/2, etc.
     // It doesn't have to match the correct notation. It should be as vague as possible, so it matches anything that "looks"
     //like a note component (e.g it should match something like e|-------h3(-----|, even though it is invalid ) this makes it so that
@@ -95,7 +95,8 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     
     public void setDivisions(int divisions) {
     	this.divisions = divisions;
-    	if (getType().equals("1024th")) this.mustSplit = true;
+    	setType();
+    	if (type.equals("1024th")) this.mustSplit = true;
     }
     
     public void setBeatType(int bt) {
@@ -107,15 +108,38 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     }
     
     public void setDuration(int duration) {
-        this.duration = duration;
-        if (divisions > 0) 
-        	if (getType().equals("1024th")) 
-        		this.mustSplit = true;
-        	else
-        		this.mustSplit = false;
+	    this.duration = duration;
+	    if (divisions > 0) {
+	    	setType();
+	    	if (type.equals("1024th")) 
+	    		this.mustSplit = true;
+	    	else
+	    		this.mustSplit = false;
+	    }
+	}
+
+    public void setDuration(String timing, int div) {
+    	explicitType = true;
+    	char base = timing.charAt(0);
+    	switch (base) {
+    	case 'w': type = "whole"; duration = div * 4; break;
+    	case 'h': type = "half"; duration = div * 2; break;
+    	case 'q': type = "quarter"; duration = div; break;
+    	case 'e': type = "eighth"; duration = div / 2; break;
+    	case 's': type = "16th"; duration = div / 4; break;
+    	case 't': type = "32nd"; duration = div / 8; break;
+    	default: assert false: "There should not be any other base timing characters";
+    	}
+    	if (timing.length() > 1) {
+    		if (timing.charAt(1) == '.') {
+    			dotCount = timing.length() - 1;
+    			for (int i = 0; i < dotCount; i++) duration = duration + duration / 2;
+    		}
+    		else tuplet = Integer.parseInt(timing.substring(1)); // Duration unchanged for tuplets, dealt with through time modification
+    	}		
     }
-    
-    public int getDuration() {
+
+	public int getDuration() {
     	return duration;
     }
 
@@ -124,47 +148,47 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
         return true;
     }
 
-    public String getType() {
-    	isTriplet = false;
+    protected void setType() {
     	dotCount = 0;
+    	tuplet = 1;
     	int RESOLUTION = 192;  // 3 x 2^6
     	int noteVal = RESOLUTION * duration / (divisions * 4);
     	switch (noteVal) { 
-    	case 0: return ""; // Grace note
-    	case 3: return "64th";
-    	case 4: isTriplet = true; return "32nd";
-    	case 6: return "32nd";
-    	case 8: isTriplet = true; return "16th";
-    	case 9: dotCount = 1; return "32nd";
-    	case 12: return "16th";
-    	case 16: isTriplet = true; return "eighth";
-    	case 18: dotCount = 1; return "16th";
-    	case 21: dotCount = 2; return "16th";
-    	case 24: return "eighth";
-    	case 32: isTriplet = true; return "quarter";
-    	case 36: dotCount = 1; return "eighth";
-    	case 42: dotCount = 2; return "eighth";
-    	case 45: dotCount = 3; return "eighth";
-    	case 48: return "quarter";
-    	case 64: isTriplet = true; return "half";
-    	case 72: dotCount = 1; return "quarter";
-    	case 84: dotCount = 2; return "quarter";
-    	case 90: dotCount = 3; return "quarter";
-    	case 93: dotCount = 4; return "quarter";
-    	case 96: return "half";
-    	case 128: isTriplet = true; return "whole";
-    	case 144: dotCount = 1; return "half"; // 3 quarters
-    	case 168: dotCount = 2; return "half";
-    	case 180: dotCount = 3; return "half";
-    	case 186: dotCount = 4; return "half";
-    	case 189: dotCount = 5; return "half";
-    	case 192: return "whole";
-    	case 288: dotCount = 1; return "whole"; 
-    	case 336: dotCount = 2; return "whole";
-    	case 360: dotCount = 3; return "whole";
-    	case 372: dotCount = 4; return "whole";
-    	case 378: dotCount = 6; return "whole";
-    	default: return "1024th";
+    	case 0: type = ""; break; // Grace note
+    	case 3: type = "64th"; break;
+    	case 4: tuplet = 3; type = "32nd"; break;
+    	case 6: type = "32nd"; break;
+    	case 8: tuplet = 3; type = "16th"; break;
+    	case 9: dotCount = 1; type = "32nd"; break;
+    	case 12: type = "16th"; break;
+    	case 16: tuplet = 3; type = "eighth"; break;
+    	case 18: dotCount = 1; type = "16th"; break;
+    	case 21: dotCount = 2; type = "16th"; break;
+    	case 24: type = "eighth"; break;
+    	case 32: tuplet = 3; type = "quarter"; break;
+    	case 36: dotCount = 1; type = "eighth"; break;
+    	case 42: dotCount = 2; type = "eighth"; break;
+    	case 45: dotCount = 3; type = "eighth"; break;
+    	case 48: type = "quarter"; break;
+    	case 64: tuplet = 3; type = "half"; break;
+    	case 72: dotCount = 1; type = "quarter"; break;
+    	case 84: dotCount = 2; type = "quarter"; break;
+    	case 90: dotCount = 3; type = "quarter"; break;
+    	case 93: dotCount = 4; type = "quarter"; break;
+    	case 96: type = "half"; break;
+    	case 128: tuplet = 3; type = "whole"; break;
+    	case 144: dotCount = 1; type = "half"; break; // 3 quarters
+    	case 168: dotCount = 2; type = "half"; break;
+    	case 180: dotCount = 3; type = "half"; break;
+    	case 186: dotCount = 4; type = "half"; break;
+    	case 189: dotCount = 5; type = "half"; break;
+    	case 192: type = "whole"; break;
+    	case 288: dotCount = 1; type = "whole";  break;
+    	case 336: dotCount = 2; type = "whole"; break;
+    	case 360: dotCount = 3; type = "whole"; break;
+    	case 372: dotCount = 4; type = "whole"; break;
+    	case 378: dotCount = 6; type = "whole"; break;
+    	default: type = "1024th"; break;
     	}
     }
 
@@ -192,10 +216,10 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
  	    noteModel.setDuration(this.duration);
  	    noteModel.setVoice(this.voice);
 
- 	    String noteType = this.getType();
- 	    if (!noteType.isEmpty())
- 	        noteModel.setType(noteType);
- 	    if (this.isTriplet) {
+ 	    
+ 	    if (!type.isEmpty())
+ 	        noteModel.setType(type);
+ 	    if (tuplet == 3) {
  	       	TimeModification tm = new TimeModification(3,2);
  	    	noteModel.setTimeModification(tm);	
  	    }

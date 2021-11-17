@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+
+import models.measure.note.notations.technical.Ornaments;
 import models.measure.note.notations.technical.Technical;
 
 import java.util.List;
@@ -22,6 +24,8 @@ public class Notations {
     List<Slide> slides;
     
     private Tied tied;
+    
+    private Ornaments ornaments;
 
     public List<Slur> getSlurs() {
         return slurs;
@@ -53,5 +57,13 @@ public class Notations {
 
 	public void setTied(Tied tied) {
 		this.tied = tied;
+	}
+
+	public Ornaments getOrnaments() {
+		return ornaments;
+	}
+
+	public void setOrnaments(Ornaments ornaments) {
+		this.ornaments = ornaments;
 	}
 }

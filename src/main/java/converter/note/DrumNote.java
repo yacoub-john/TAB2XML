@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import converter.Instrument;
 import converter.measure_line.TabDrumString;
 import models.measure.note.Note;
+import models.measure.note.Notehead;
 import models.measure.note.Unpitched;
 import utility.DrumPiece;
 import utility.DrumPieceInfo;
@@ -52,7 +53,8 @@ public class DrumNote extends TabNote{
         noteModel.setInstrument(new models.measure.note.Instrument(this.drumPieceInfo.getMidiID()));
         String noteHead = this.origin.strip();
         if ((noteHead.equalsIgnoreCase("x")) || ((noteHead.equalsIgnoreCase("o") && drumPiece == DrumPiece.Open_Hi_Hat)))
-            noteModel.setNotehead("x");
+            noteModel.setNotehead(new Notehead("x"));
+        if (drumPiece == DrumPiece.Ride_Bell) noteModel.setNotehead(new Notehead("diamond"));
         return noteModel;
     }
 
