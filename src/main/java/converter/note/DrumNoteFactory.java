@@ -28,18 +28,20 @@ public class DrumNoteFactory extends NoteFactory {
 
 	@Override
 	protected List<TabNote> createNote(String origin, int position, int distanceFromMeasureStart) {
-		List<TabNote> noteList = new ArrayList<>();
-		if (origin.strip().equalsIgnoreCase("x") || origin.strip().equalsIgnoreCase("o")
-				|| origin.strip().equalsIgnoreCase("#") || origin.strip().equalsIgnoreCase("b"))
-			noteList.add(new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart));
-		else if (origin.strip().equalsIgnoreCase("f"))
-			noteList.addAll(createFlam(origin, position, distanceFromMeasureStart));
-		else if (origin.strip().equalsIgnoreCase("d"))
-			noteList.add(createRoll(origin, position, distanceFromMeasureStart));
-		else if (origin.strip().equalsIgnoreCase("g"))
-			noteList.add(createGhost(origin, position, distanceFromMeasureStart));
-		else
-			noteList.add(new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
+		List<TabNote> noteList = super.createNote(origin, position, distanceFromMeasureStart);
+		if (noteList.isEmpty()) {
+			if (origin.strip().equalsIgnoreCase("x") || origin.strip().equalsIgnoreCase("o")
+					|| origin.strip().equalsIgnoreCase("#") || origin.strip().equalsIgnoreCase("b"))
+				noteList.add(new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart));
+			else if (origin.strip().equalsIgnoreCase("f"))
+				noteList.addAll(createFlam(origin, position, distanceFromMeasureStart));
+			else if (origin.strip().equalsIgnoreCase("d"))
+				noteList.add(createRoll(origin, position, distanceFromMeasureStart));
+			else if (origin.strip().equalsIgnoreCase("g"))
+				noteList.add(createGhost(origin, position, distanceFromMeasureStart));
+			else
+				noteList.add(new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
+		}
 		return noteList;
 	}
 
@@ -81,12 +83,7 @@ public class DrumNoteFactory extends NoteFactory {
 		}, "success");
 		return ghostNote;
 	}
-	
-//	<notations>
-//    <ornaments>
-//       <tremolo type="single">1</tremolo>
-//    </ornaments>
-// </notations>
+
 	protected DrumNote createRoll(String origin, int position, int distanceFromMeasureStart) {
 		DrumNote rollNote = new DrumNote(stringNumber, origin, position, this.lineName, distanceFromMeasureStart);
 		rollNote.addDecorator((noteModel) -> {

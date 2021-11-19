@@ -10,7 +10,6 @@ import models.measure.note.Grace;
 import models.measure.note.Note;
 import models.measure.note.notations.Notations;
 import models.measure.note.notations.Slur;
-import models.measure.note.notations.Tied;
 import models.measure.note.notations.technical.Technical;
 import utility.AnchoredText;
 import utility.Range;
@@ -28,6 +27,10 @@ public abstract class NoteFactory {
     String noteGroupPattern, notePattern;
 	protected String connectorPattern;
 	
+	
+    /** Template method to extract all notes from a composite note pattern
+     * 
+     */
     public List<TabNote> getNotes(int inputStringNumber, String inputNoteText, int inputPosition, String inputLineName, int inputDistance) {
     	this.stringNumber = inputStringNumber;
     	this.noteText = inputNoteText;
@@ -52,11 +55,11 @@ public abstract class NoteFactory {
 	        noteList.add(new InvalidNote(stringNumber, noteText.substring(noteRange.getEnd()), position, lineName, distanceFromMeasureStart + noteRange.getEnd()));
 	    }
 	    
-	    noteList.addAll(getNotes(noteRange));
+	    noteList.addAll(getNotesFromValidRange(noteRange));
 	    return noteList;
 	}
 
-	protected List<TabNote> getNotes(Range r) {
+	protected List<TabNote> getNotesFromValidRange(Range r) {
 	    List<TabNote> noteList = new ArrayList<>();
 	    int idx = r.getStart();
 	    int endIdx = r.getEnd();
@@ -77,7 +80,7 @@ public abstract class NoteFactory {
 	    AnchoredText connectorAT = createConnector(noteList, idx, endIdx, endNote);
 	    
 	    Range newRange = new Range(endNote + connectorAT.positionInLine, endIdx);
-	    List<TabNote> remainingNotes = getNotes(newRange);
+	    List<TabNote> remainingNotes = getNotesFromValidRange(newRange);
 	    if (remainingNotes.isEmpty())
 	        return noteList;
 	    TabNote note2 = remainingNotes.get(0);
@@ -88,7 +91,22 @@ public abstract class NoteFactory {
 	    return noteList;
 	}
 
-    protected abstract List<TabNote> createNote(String origin, int position, int distanceFromMeasureStart);
+    protected List<TabNote> createNote(String origin, int position, int distanceFromMeasureStart) {
+    	List<TabNote> noteList = new ArrayList<>();
+    	if (origin.strip().equalsIgnoreCase("R"))
+			noteList.add(createRest(origin, position, distanceFromMeasureStart));
+    	if (origin.strip().equalsIgnoreCase("T")) 
+    		noteList.add(createTie(origin, position, distanceFromMeasureStart));
+    	return noteList;
+    };
+
+	private TabNote createRest(String origin, int position, int distanceFromMeasureStart) {
+		return new RestNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
+	}
+
+	private TabNote createTie(String origin, int position, int distanceFromMeasureStart) {
+		return new TieNote(stringNumber, origin, position, lineName, distanceFromMeasureStart);
+	}
 
 	protected abstract AnchoredText createConnector(List<TabNote> noteList, int idx, int endIdx, int endNote);
 
@@ -122,27 +140,6 @@ public abstract class NoteFactory {
         return true;
     }
     
-    public boolean tie(TabNote note1, TabNote note2) {
-        String message = "success";
-        note1.addDecorator((noteModel) -> {
-            if (noteModel.getNotations()==null)
-                noteModel.setNotations(new Notations());
-            Notations notations = getNonNullNotations(noteModel);
-            Tied tied = new Tied("start");
-            notations.setTied(tied);
-            return true;
-        }, message);
-        note2.addDecorator((noteModel) -> {
-            if (noteModel.getNotations()==null)
-                noteModel.setNotations(new Notations());
-            Notations notations = getNonNullNotations(noteModel);
-            Tied tied = new Tied("stop");
-            notations.setTied(tied);
-            return true;
-        }, message);
-        return true;
-    }
-
     protected boolean grace(TabNote graceNote, TabNote gracePair, int graceDistance) {
         boolean success;
         success = slur(graceNote, gracePair);
@@ -159,7 +156,6 @@ public abstract class NoteFactory {
         	//noteModel.setGrace(TabNote.SLASHED_GRACE ? new Grace("yes") : new Grace());
         	noteModel.setGrace(new Grace());
             noteModel.setDuration(null);
-            //noteModel.setChord(null);
             setGraceStem(noteModel);
             setGraceType(noteModel);
             return true;

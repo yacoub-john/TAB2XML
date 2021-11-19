@@ -16,10 +16,8 @@ import utility.ValidationError;
 
 public class DrumNote extends TabNote{
 
-    //String partID;
     private DrumPiece drumPiece;
     private DrumPieceInfo drumPieceInfo;
-    //public static String COMPONENT_PATTERN = "[xoXOdDfF#]";
 
     public DrumNote (int stringNumber, String origin, int position, String lineName, int distanceFromMeasure){
         super(stringNumber, origin, position, lineName, distanceFromMeasure);
@@ -51,7 +49,7 @@ public class DrumNote extends TabNote{
     	models.measure.note.Note noteModel = super.getModel();
         noteModel.setUnpitched(new Unpitched(drumPieceInfo.getStep(), drumPieceInfo.getOctave()));
         noteModel.setInstrument(new models.measure.note.Instrument(this.drumPieceInfo.getMidiID()));
-        String noteHead = this.origin.strip();
+        String noteHead = this.text.strip();
         if ((noteHead.equalsIgnoreCase("x")) || ((noteHead.equalsIgnoreCase("o") && drumPiece == DrumPiece.Open_Hi_Hat)))
             noteModel.setNotehead(new Notehead("x"));
         if (drumPiece == DrumPiece.Ride_Bell) noteModel.setNotehead(new Notehead("diamond"));
@@ -69,7 +67,7 @@ public class DrumNote extends TabNote{
             int priority = Integer.parseInt(matcher.group());
             String message = resp.substring(matcher.end()+1);;
             int startIdx = this.position;
-            int endIdx = this.position+this.origin.length();
+            int endIdx = this.position+this.text.length();
 
             matcher = Pattern.compile("(?<=^\\[)[0-9]+,[0-9]+(?=\\])").matcher(message);
             if (matcher.find()) {

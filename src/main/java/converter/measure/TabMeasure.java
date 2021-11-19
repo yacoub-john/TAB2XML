@@ -12,7 +12,8 @@ import converter.instruction.TimeSignature;
 import converter.measure_line.TabDrumString;
 import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
-import converter.note.GuitarNoteFactory;
+import converter.note.StartTieDecorator;
+import converter.note.StopTieDecorator;
 import converter.note.TabNote;
 import models.measure.Backup;
 import models.measure.attributes.Attributes;
@@ -37,18 +38,23 @@ public abstract class TabMeasure extends ScoreComponent {
     public int lineCount;
     public List<TabString> tabStringList = new ArrayList<>();
     boolean isFirstMeasureInGroup;
-    List<List<TabNote>> voiceSortedNoteList;   // a list of voices where each voice is a sorted list of notes
+    public List<List<TabNote>> voiceSortedNoteList;   // a list of voices where each voice is a sorted list of notes
 
     boolean repeatStart = false;
     boolean repeatEnd = false;
     int repeatCount = 0;
     public boolean changesTimeSignature = false;
     protected int divisions;
+    protected int padding = 0;
+    protected int allowedPadding = 0;
     protected boolean split1 = false;
     protected boolean nonIntegerDivisions = false;
     protected boolean unSupportedDivisions = false;
     protected boolean explicitDivisions = false;
     protected int[] supportedDivisions = {1,2,3,4,6,8,12,16,24,48};
+
+	public boolean startsWithTiedNote = false;
+    
     
     public TabMeasure(List<AnchoredText> inputData, List<AnchoredText> inputNameData, boolean isFirstMeasureInGroup) {
         this.measureCount = ++MEASURE_INDEX;
@@ -63,11 +69,13 @@ public abstract class TabMeasure extends ScoreComponent {
     }
 
 	/**
-	 * Populates the tabStringList attribute
+	 * Populates the tabStringList attribute, and updates the measure's padding
 	 */
 	protected void createTabStringList() {
+		padding = data.get(0).text.length();
 		for (int i = 0; i < data.size(); i++) {
 			tabStringList.add(newTabString(i + 1, data.get(i), nameData.get(i)));
+			if (tabStringList.get(i).padding < padding) padding = tabStringList.get(i).padding;
 		}
 	}
 
@@ -128,7 +136,7 @@ public abstract class TabMeasure extends ScoreComponent {
 	protected boolean isDoubleDigit(List<TabNote> chord) {
     	boolean doubleDigit = false;
     	for (TabNote note : chord) {
-	    	if (note.origin.length() == 2) doubleDigit = true;
+	    	if (note.text.length() == 2) doubleDigit = true;
 	    }
 		return doubleDigit;
 	}
@@ -239,13 +247,14 @@ public abstract class TabMeasure extends ScoreComponent {
 						int note1dur = firstNoteDuration(totalDuration, chord.get(0).duration, getDivisions(), getBeatType());
 						int note2dur = chord.get(0).duration - note1dur;
 						List<TabNote> newChord = new ArrayList<>();
-						for (TabNote n : chord) {
-							n.setDuration(note1dur);
-							newVoice.add(n);
-							TabNote newNote = n.copy();
+						for (TabNote oldNote : chord) {
+							oldNote.setDuration(note1dur);
+							newVoice.add(oldNote);
+							TabNote newNote = oldNote.copy();
 							newNote.setDuration(note2dur);
-							//TODO Improve on the design
-							new GuitarNoteFactory().tie(n,newNote);
+							String message = "success";
+							oldNote.addDecorator(new StartTieDecorator(), message);
+							newNote.addDecorator(new StopTieDecorator(), message);
 							newChord.add(newNote);
 						}
 						for (TabNote n : newChord) {
@@ -480,18 +489,22 @@ public abstract class TabMeasure extends ScoreComponent {
 	    if (unSupportedDivisions) {
 	        addError(
 	                "Could not determine timing correctly: Unsupported divisions",
-	                2, getRanges());
+	                3, getRanges());
 	    }
 	    if (nonIntegerDivisions) {
 	        addError(
 	                "Could not determine timing correctly: Non integer divisions",
-	                2, getRanges());
+	                3, getRanges());
 	    }
 	    if (split1) {
 	        addError(
 	                "Could not determine timing correctly: Had to split a duration of 1",
-	                2, getRanges());
+	                3, getRanges());
 	    }
+	    if ((padding > allowedPadding) && (voiceSortedNoteList.size() > 0))
+	    	addError("Empty space at the beginning of the measure will be ignored"
+	    		+ "\nYou may want to add a rest (R) or a tied note (T) for correct timing",
+                2, getRanges());
 	    
 	    boolean hasGuitarMeasureLines = true;
 	    boolean hasDrumMeasureLines = true;

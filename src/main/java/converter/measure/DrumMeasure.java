@@ -11,12 +11,14 @@ import models.measure.attributes.Clef;
 import models.measure.attributes.Key;
 import models.measure.attributes.Time;
 import utility.AnchoredText;
+import utility.Settings;
 import utility.ValidationError;
 
 public class DrumMeasure extends TabMeasure {
 
     public DrumMeasure(List<AnchoredText> inputData, List<AnchoredText> inputNameData, boolean isFirstMeasureInGroup) {
         super(inputData, inputNameData, isFirstMeasureInGroup);
+        allowedPadding = Settings.getInstance().drumsMeasureStartPadding;
     }
     
     @Override
@@ -65,24 +67,13 @@ public class DrumMeasure extends TabMeasure {
      */
 	@Override
 	public List<ValidationError> validate() {
-	
-	    //-----------------Validate yourself-------------------------
-	    super.validate(); //this validates if all TabString objects in this measure are of the same type
-	    
-	    // If we are here, all TabString objects are of the same type. Now, all we need to do is check if they are actually drum measures
-//	    if (!(this.tabStringList.get(0) instanceof TabDrumString)) {
-//	        addError(
-//	                "All measure lines in this measure must be drum measure lines.",
-//	                1,
-//	                this.getRanges());
-//	    }
-	    
+	    super.validate();
+	    // Validate Aggregates unless there are already critical errors	
 	    for (ValidationError error : errors) {
 	        if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
 	            return errors;
 	        }
 	    }
-	    //-----------------Validate Aggregates (only if you don't have critical errors)------------------		
 	    for (TabString measureLine : this.tabStringList) {
 	        errors.addAll(measureLine.validate());
 	    }

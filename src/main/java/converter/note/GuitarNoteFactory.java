@@ -45,22 +45,24 @@ public class GuitarNoteFactory extends NoteFactory {
 	
 	@Override
 	protected List<TabNote> createNote(String origin, int position, int distanceFromMeasureStart) {
-	    List<TabNote> noteList = new ArrayList<>();
-	    noteList.addAll(createGrace(origin, position, distanceFromMeasureStart));
-	    if (!noteList.isEmpty()) return noteList;
-	    TabNote harmonic = createHarmonic(origin, position, distanceFromMeasureStart);
-	    if (harmonic!=null) {
-	    	harmonic.distance ++; //So the distance is to the fret number, not the square bracket
-	        noteList.add(harmonic);
-	        return noteList;
-	    }
-	    TabNote fret = createFret(origin, position, distanceFromMeasureStart);
-	    if (fret!=null) {
-	        noteList.add(fret);
-	        return noteList;
-	    }
-	    noteList.add((TabNote) new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
-	    return noteList;
+		List<TabNote> noteList = super.createNote(origin, position, distanceFromMeasureStart);
+		if (noteList.isEmpty()) {
+			noteList.addAll(createGrace(origin, position, distanceFromMeasureStart));
+			if (!noteList.isEmpty()) return noteList;
+			TabNote harmonic = createHarmonic(origin, position, distanceFromMeasureStart);
+			if (harmonic!=null) {
+				harmonic.distance ++; //So the distance is to the fret number, not the square bracket
+				noteList.add(harmonic);
+				return noteList;
+			}
+			TabNote fret = createFret(origin, position, distanceFromMeasureStart);
+			if (fret!=null) {
+				noteList.add(fret);
+				return noteList;
+			}
+			noteList.add((TabNote) new InvalidNote(stringNumber, origin, position, lineName, distanceFromMeasureStart));
+		}
+		return noteList;
 	}
 
 	protected GuitarNote createFret(String origin, int position, int distanceFromMeasureStart) {
@@ -135,7 +137,7 @@ public class GuitarNoteFactory extends NoteFactory {
 		boolean success = true;
 		if (note1.getFret() > note2.getFret()) {
 			int startIdx = note1.position;
-			int endIdx = note2.position + note2.origin.length();
+			int endIdx = note2.position + note2.text.length();
 			message = "[2][" + startIdx + "," + endIdx + "]Hammer on \"h\" should go from a lower to a higher note.";
 			success = false;
 		}
@@ -174,7 +176,7 @@ public class GuitarNoteFactory extends NoteFactory {
 		boolean success = true;
 		if (note1.getFret() < note2.getFret()) {
 			int startIdx = note1.position;
-			int endIdx = note2.position + note2.origin.length();
+			int endIdx = note2.position + note2.text.length();
 			message = "[2][" + startIdx + "," + endIdx + "]Pull off \"p\" should go from a higher to a lower note.";
 			success = false;
 		}
@@ -237,7 +239,7 @@ public class GuitarNoteFactory extends NoteFactory {
 	private boolean slide(GuitarNote note1, GuitarNote note2, String symbol, boolean onlyMessage) {
 		String message = "success";
 		int startIdx = note1.position;
-		int endIdx = note2.position + note2.origin.length();
+		int endIdx = note2.position + note2.text.length();
 		if (symbol.equals("/") && note1.getFret() > note2.getFret()) {
 			// first bracket is the message priority, second is position to be highlighted.
 			// dont add a second bracket if you only want the individual notes to be

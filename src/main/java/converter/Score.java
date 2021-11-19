@@ -9,6 +9,11 @@ import java.util.regex.Pattern;
 
 import converter.measure.TabMeasure;
 import converter.measure_line.TabDrumString;
+import converter.note.RestNote;
+import converter.note.StartTieDecorator;
+import converter.note.StopTieDecorator;
+import converter.note.TabNote;
+import converter.note.TieNote;
 import custom_exceptions.TXMLException;
 import models.Creator;
 import models.Identification;
@@ -156,7 +161,6 @@ public class Score extends ScoreComponent {
 	                if (measure.changesTimeSignature) {
 	                    currBeatCount = measure.getBeatCount();
 	                    currBeatType = measure.getBeatType();
-	                    //continue;
 	                }
 	                measure.setTimeSignature(currBeatCount, currBeatType);
 	            }
@@ -177,6 +181,35 @@ public class Score extends ScoreComponent {
 			for (TabMeasure m : tabMeasureList) {
 				if (m.createTiedNotes())
 					noSplit = false;
+			}
+		}
+		String message = "success";
+		for (int i=0; i < tabMeasureList.size() - 1; i++) {
+
+			TabMeasure secondMeasure = tabMeasureList.get(i+1);
+			if (secondMeasure.voiceSortedNoteList.size() > 0) {
+				List<TabNote> firstVoice = secondMeasure.voiceSortedNoteList.get(0);
+
+				if (firstVoice.get(0) instanceof TieNote) {				
+					TabMeasure firstMeasure = tabMeasureList.get(i);
+					if (!firstMeasure.getVoiceSortedChordList().isEmpty()) {
+						int numberOfChords = firstMeasure.getVoiceSortedChordList().get(0).size();
+						if (numberOfChords > 0) {
+							List<TabNote> lastChord = firstMeasure.getVoiceSortedChordList().get(0).get(numberOfChords - 1);
+							int tieDuration = firstVoice.get(0).duration;
+							int tieDistance = firstVoice.get(0).distance;
+							firstVoice.remove(0); // remove the fake tie note
+							for (TabNote n: lastChord) {
+								TabNote newNote = n.copy();
+								n.addDecorator(new StartTieDecorator(), message);
+								newNote.setDuration(tieDuration);
+								newNote.distance = tieDistance;
+								newNote.addDecorator(new StopTieDecorator(), message);
+								firstVoice.add(0,newNote);
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -308,15 +341,5 @@ public class Score extends ScoreComponent {
 	
 	    return errors;
 	}
-
-//	@Override
-//    public String toString() {
-//        String outStr = "";
-//        for (TabSection measureCollection : this.tabSectionList) {
-//            outStr += measureCollection.toString();
-//            outStr += "\n\n";
-//        }
-//        return outStr;
-//    }
 
 }

@@ -44,8 +44,8 @@ public class GuitarNote extends TabNote {
         this.step = this.step(noteDetails);
         this.alter = this.alter(noteDetails);
         this.octave = this.octave(noteDetails);
-        this.sign = this.fret+"";
-        this.stringNumber = stringNumber;
+        this.sign = this.fret + "";
+        //this.stringNumber = stringNumber;
     }
 
     public GuitarNote(GuitarNote n) {
@@ -173,7 +173,7 @@ public class GuitarNote extends TabNote {
 	        int priority = Integer.parseInt(matcher.group());
 	        String message = resp.substring(matcher.end()+1);;
 	        int startIdx = this.position;
-	        int endIdx = this.position+this.origin.length();
+	        int endIdx = this.position+this.text.length();
 	
 	
 	        matcher = Pattern.compile("(?<=^\\[)[0-9]+,[0-9]+(?=\\])").matcher(message);

@@ -16,7 +16,7 @@ import utility.ValidationError;
 
 public abstract class TabNote extends ScoreComponent implements Comparable<TabNote> {
     public boolean startsWithPreviousNote;
-    public String origin;
+    public String text;
     public String lineName;
     public int dotCount;
     public Instrument instrument;
@@ -25,7 +25,6 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     public int graceDistance = 0;
     int position;
     public int duration;
-    //public double durationRatio;
     public String sign;
     public int voice;
     public boolean isGrace;
@@ -55,7 +54,7 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     }
 
     public TabNote(int stringNumber, String text, int position, String lineName, int distanceFromMeasureStart) {
-        this.origin = text;
+        this.text = text;
         this.lineName = lineName;
         this.position = position;
         this.stringNumber = stringNumber;
@@ -72,7 +71,7 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     // Copy constructor used for tied notes
     public TabNote(TabNote n) {
         this.startsWithPreviousNote = n.startsWithPreviousNote;
-        this.origin = n.origin;
+        this.text = n.text;
         this.lineName = n.lineName;
         //public int dotCount;
         this.instrument = n.instrument;
@@ -146,9 +145,8 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     	return duration;
     }
 
-    public boolean addDecorator(NoteModelDecorator noteDecor, String message) {
+    public void addDecorator(NoteModelDecorator noteDecor, String message) {
         this.noteDecorMap.put(noteDecor, message);
-        return true;
     }
 
     protected void setType() {
@@ -195,67 +193,57 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     	}
     }
 
-//    public boolean isGuitar() {
-//        // remember, invalid notes are still accepted but are created as GuitarNote objects. we want to be able to still convert despite having invalid notes, as long as we warn the user that they have invalid input. We might want to create a new concrete class, InvalidNote, that extends Note to take care of this so that we have the guarantee that this is valid.
-//        return this.origin.strip().matches(NoteFactory.FRET);
-//    }
-//
-//    public boolean isDrum() {
-//        // remember, invalid notes are still accepted but are created as GuitarNote objects. we want to be able to still convert despite having invalid notes, as long as we warn the user that they have invalid input. We might want to create a new concrete class, InvalidNote, that extends Note to take care of this so that we have the guarantee that this is valid.
-//        return this.origin.strip().matches(NoteFactory.DRUM_NOTE_PATTERN);
-//    }
-
     public int compareTo(TabNote other) {
     	int result = this.distance - other.distance;
     	if (result == 0) result = this.graceDistance - other.graceDistance;
         return result;
     }
 	
-    public models.measure.note.Note getModel() {
-    	
-    	models.measure.note.Note noteModel = new models.measure.note.Note();
-    	
- 	    if (this.startsWithPreviousNote) noteModel.setChord(new Chord());
- 	    noteModel.setDuration(this.duration);
- 	    noteModel.setVoice(this.voice);
-
- 	    
- 	    if (!type.isEmpty())
- 	        noteModel.setType(type);
- 	    if (tuplet == 3) {
- 	       	TimeModification tm = new TimeModification(3,2);
- 	    	noteModel.setTimeModification(tm);	
- 	    }
- 	    List<Dot> dots = new ArrayList<>();
- 	    for (int i=0; i<this.dotCount; i++){
- 	        dots.add(new Dot());
- 	    }
- 	    if (!dots.isEmpty())
- 	        noteModel.setDots(dots);
-
- 	    setStems(noteModel);
- 	    
- 	    for (NoteModelDecorator noteDecor : this.noteDecorMap.keySet()) {
- 	        if (noteDecorMap.get(noteDecor).equals("success"))
- 	            noteDecor.applyTo(noteModel);
- 	    }
- 	   
- 	    return noteModel;
-    }
-	
     public abstract TabNote copy();
     
     protected abstract void setStems(models.measure.note.Note noteModel);
     
+	public models.measure.note.Note getModel() {
+		
+		models.measure.note.Note noteModel = new models.measure.note.Note();
+		
+	    if (this.startsWithPreviousNote) noteModel.setChord(new Chord());
+	    noteModel.setDuration(this.duration);
+	    noteModel.setVoice(this.voice);
+	
+	    
+	    if (!type.isEmpty())
+	        noteModel.setType(type);
+	    if (tuplet == 3) {
+	       	TimeModification tm = new TimeModification(3,2);
+	    	noteModel.setTimeModification(tm);	
+	    }
+	    List<Dot> dots = new ArrayList<>();
+	    for (int i=0; i<this.dotCount; i++){
+	        dots.add(new Dot());
+	    }
+	    if (!dots.isEmpty())
+	        noteModel.setDots(dots);
+	
+	    setStems(noteModel);
+	    
+	    for (NoteModelDecorator noteDecor : this.noteDecorMap.keySet()) {
+	        if (noteDecorMap.get(noteDecor).equals("success"))
+	            noteDecor.applyTo(noteModel);
+	    }
+	
+	    return noteModel;
+	}
+
 	@Override
 	public List<Range> getRanges() {
 		List<Range> ranges = new ArrayList<>();
-		ranges.add(new Range(position,position+origin.length()));
+		ranges.add(new Range(position,position+text.length()));
 		return ranges;
 	}
 	
 	public List<ValidationError> validate() {
-	    if (!this.origin.equals(this.origin.strip())) {
+	    if (!this.text.equals(this.text.strip())) {
 	        addError(
 	                "Adding whitespace might result in different timing than you expect.",
 	                3,

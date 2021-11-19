@@ -24,6 +24,9 @@ public class Settings {
     
     public DoubleDigitStyle ddStyle = DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_STRETCH;
     
+    public int guitarMeasureStartPadding = 3;
+    public int drumsMeasureStartPadding = 0;
+    
     private InstrumentSetting instrumentSetting = InstrumentSetting.AUTO;
     private Instrument detectedInstrument = Instrument.NONE;
     

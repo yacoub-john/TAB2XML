@@ -24,6 +24,7 @@ public class GuitarMeasure extends TabMeasure{
 
     public GuitarMeasure(List<AnchoredText> inputData, List<AnchoredText> inputNameData, boolean isFirstMeasure) {
         super(inputData, inputNameData, isFirstMeasure);
+        allowedPadding = Settings.getInstance().guitarMeasureStartPadding;
         MIN_LINE_COUNT = 6;
         MAX_LINE_COUNT = 6;
     }
@@ -41,8 +42,6 @@ public class GuitarMeasure extends TabMeasure{
 			for (int i = start; i < chordList.size(); i++) {
 				List<TabNote> chord = chordList.get(i);
 				usefulMeasureLength -= chordStretch(chord) - 1;
-//				if (isDoubleDigit(chord))
-//					usefulMeasureLength--;
 			}
 		}
 		return usefulMeasureLength;
@@ -89,55 +88,37 @@ public class GuitarMeasure extends TabMeasure{
 
 
 	
-	    /**
-	     * Validates that the guitar has a supported number of strings.
-	     * Validates its aggregated TabString objects
-	     * TODO Can be moved to superclass?
-	     */
-	    public List<ValidationError> validate() {
-	        //-----------------Validate yourself-------------------------
-	        super.validate();
-	        
-	        // Now, all we need to do is check if they are actually guitar measures
-//	        if (!(this.tabStringList.get(0) instanceof TabGuitarString)) {
-//	            addError(
-//	                    "All measure lines in this measure must be Guitar measure lines.",
-//	                    1,
-//	                    this.getRanges()
-//	            );
-//	            
-//	        }else 
-//	        	
-	        	if (this.tabStringList.size()<MIN_LINE_COUNT || this.tabStringList.size()>MAX_LINE_COUNT) {
-	            String rangeMsg;
-	            if (MIN_LINE_COUNT==MAX_LINE_COUNT)
-	                rangeMsg = ""+MIN_LINE_COUNT;
-	            else
-	                rangeMsg = "between "+MIN_LINE_COUNT+" and "+MAX_LINE_COUNT;
-	
-	            addError(
-	                    "A Guitar measure should have "+rangeMsg+" lines.",
-	                    2,
-	                    this.getRanges()
-	            );
-	            
-	        }
-	
-	
-	        //-----------------Validate Aggregates (only if you don't have critical errors)------------------
-	
-	        for (ValidationError error : errors) {
-	            if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
-	                return errors;
-	            }
-	        }
-	
-	        for (TabString measureLine : this.tabStringList) {
-	            errors.addAll(measureLine.validate());
-	        }
-	
-	        return errors;
-	    }
+	/**
+	 * Validates that the guitar has a supported number of strings. Validates its
+	 * aggregated TabString objects TODO Can be moved to superclass?
+	 */
+	public List<ValidationError> validate() {
+		super.validate();
 
+		if (this.tabStringList.size() < MIN_LINE_COUNT || this.tabStringList.size() > MAX_LINE_COUNT) {
+			String rangeMsg;
+			if (MIN_LINE_COUNT == MAX_LINE_COUNT)
+				rangeMsg = "" + MIN_LINE_COUNT;
+			else
+				rangeMsg = "between " + MIN_LINE_COUNT + " and " + MAX_LINE_COUNT;
+
+			addError("A Guitar measure should have " + rangeMsg + " lines.", 2, this.getRanges());
+
+		}
+
+		// Validate Aggregates unless there are already critical errors
+
+		for (ValidationError error : errors) {
+			if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
+				return errors;
+			}
+		}
+
+		for (TabString measureLine : this.tabStringList) {
+			errors.addAll(measureLine.validate());
+		}
+
+		return errors;
+	}
 
 }
