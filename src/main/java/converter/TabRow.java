@@ -40,12 +40,12 @@ public class TabRow extends ScoreComponent {
             AnchoredText currentNameData = nameOf(currentLine, currentLineStartPos);
             int nameOffset = currentNameData.positionInLine + currentNameData.text.length();
             if (Settings.getInstance().getInstrument() == Instrument.GUITAR && i < 6) {
-            	if (currentNameData.text == "") currentNameData.text = Settings.getInstance().guitarTuning[i][0];    // Keep using what ever tuning was previously set if this is guitar
-            	Settings.getInstance().guitarTuning[i][0] = currentNameData.text;  // Update tuning. Only likely to make a difference for the first measure
+            	if (currentNameData.text == "") currentNameData.text = Settings.getInstance().getGuitarTuning()[i][0];    // Keep using what ever tuning was previously set if this is guitar
+            	Settings.getInstance().setGuitarTuning(i, currentNameData.text.toUpperCase());  // Update tuning. Only likely to make a difference for the first measure
             }
             if (Settings.getInstance().getInstrument() == Instrument.BASS && i < 4) {
-            	if (currentNameData.text == "") currentNameData.text = Settings.getInstance().bassTuning[i][0];    // Keep using what ever tuning was previously set if this is bass
-            	Settings.getInstance().bassTuning[i][0] = currentNameData.text;  // Update tuning. Only likely to make a difference for the first measure
+            	if (currentNameData.text == "") currentNameData.text = Settings.getInstance().getBassTuning()[i][0];    // Keep using what ever tuning was previously set if this is bass
+            	Settings.getInstance().setBassTuning(i, currentNameData.text.toUpperCase());  // Update tuning. Only likely to make a difference for the first measure
             }
             
             int measureCount = 0;

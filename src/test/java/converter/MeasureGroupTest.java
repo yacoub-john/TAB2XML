@@ -22,11 +22,13 @@ public class MeasureGroupTest {
 	@BeforeEach
 	void init() {
 		Settings.getInstance().setInstrumentSetting(InstrumentSetting.AUTO);
+		Settings.getInstance().setDefaultTuning();
 	}
 
 	@AfterEach
 	void tearDown() throws Exception {
 		Settings.getInstance().setInstrumentSetting(InstrumentSetting.AUTO);
+		Settings.getInstance().setDefaultTuning();
 	}
 	
     @Disabled
@@ -34,12 +36,12 @@ public class MeasureGroupTest {
     void testValidate_validInput1() {
     	Settings.getInstance().setInstrumentSetting(InstrumentSetting.GUITAR);
         List<AnchoredText> origin = new ArrayList<>();
-        origin.add(new AnchoredText("e|-3-2-2-0----|",0,0));
-        origin.add(new AnchoredText("a|-3-2-2-0----|",0,0));
-        origin.add(new AnchoredText("d|-3-2-2-0----|",0,0));
-        origin.add(new AnchoredText("g|-3-2-2-0----|",0,0));
-        origin.add(new AnchoredText("b|-3-2-2-0----|",0,0));
-        origin.add(new AnchoredText("e|-3-2-2-0----|",0,0));
+        origin.add(new AnchoredText("E|-3-2-2-0----|",0,0));
+        origin.add(new AnchoredText("A|-3-2-2-0----|",0,0));
+        origin.add(new AnchoredText("D|-3-2-2-0----|",0,0));
+        origin.add(new AnchoredText("G|-3-2-2-0----|",0,0));
+        origin.add(new AnchoredText("B|-3-2-2-0----|",0,0));
+        origin.add(new AnchoredText("E|-3-2-2-0----|",0,0));
         TabRow mg = new TabRow(origin);
         List<ValidationError> errors = mg.validate();
         assertTrue(errors.isEmpty());

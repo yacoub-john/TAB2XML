@@ -74,7 +74,7 @@ public class GuitarMeasure extends TabMeasure{
         if (this.changesTimeSignature)
             attributes.setTime(new Time(this.beatCount, this.beatType));
 
-        String[][] tuning = Settings.getInstance().guitarTuning;
+        String[][] tuning = Settings.getInstance().getGuitarTuning();
         if (this.measureCount == 1) {
             attributes.setClef(new Clef("TAB", 5));
             List<StaffTuning> staffTunings = new ArrayList<>();

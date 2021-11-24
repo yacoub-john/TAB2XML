@@ -29,8 +29,8 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     public int voice;
     public boolean isGrace;
     //public static boolean SLASHED_GRACE = true;
-    protected Map<NoteModelDecorator, String> noteDecorMap = new LinkedHashMap<>();
-    int divisions = 0;
+    protected Map<NoteModelDecorator, String> decorators = new LinkedHashMap<>();
+    public int divisions = 0;
     int beatType;
     int beatCount;
     protected int tuplet = 1;
@@ -68,7 +68,10 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
         this.voice = voice;
     }
     
-    // Copy constructor used for tied notes
+    
+    /** Copy constructor used for tied notes. Does not copy duration or decorators
+     * @param n - The note to copy
+     */
     public TabNote(TabNote n) {
         this.startsWithPreviousNote = n.startsWithPreviousNote;
         this.text = n.text;
@@ -82,12 +85,11 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
         this.sign = n.sign;
         this.voice = n.voice;
         this.isGrace = n.isGrace;
-        //TODO Look into this, probably must copy decorations
-        noteDecorMap = new LinkedHashMap<>();
+        // Decorators are not copied
+        setDecorators(new LinkedHashMap<>());
         this.divisions = n.divisions;
         this.beatType = n.beatType;
         this.beatCount = n.beatCount;
-        //boolean isTriplet;
         this.mustSplit = n.mustSplit;
         this.stretch = n.stretch;
     }
@@ -146,7 +148,7 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     }
 
     public void addDecorator(NoteModelDecorator noteDecor, String message) {
-        this.noteDecorMap.put(noteDecor, message);
+        this.getDecorators().put(noteDecor, message);
     }
 
     protected void setType() {
@@ -203,6 +205,14 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
     
     protected abstract void setStems(models.measure.note.Note noteModel);
     
+	public Map<NoteModelDecorator, String> getDecorators() {
+		return decorators;
+	}
+
+	public void setDecorators(Map<NoteModelDecorator, String> decorators) {
+		this.decorators = decorators;
+	}
+
 	public models.measure.note.Note getModel() {
 		
 		models.measure.note.Note noteModel = new models.measure.note.Note();
@@ -227,8 +237,8 @@ public abstract class TabNote extends ScoreComponent implements Comparable<TabNo
 	
 	    setStems(noteModel);
 	    
-	    for (NoteModelDecorator noteDecor : this.noteDecorMap.keySet()) {
-	        if (noteDecorMap.get(noteDecor).equals("success"))
+	    for (NoteModelDecorator noteDecor : this.getDecorators().keySet()) {
+	        if (getDecorators().get(noteDecor).equals("success"))
 	            noteDecor.applyTo(noteModel);
 	    }
 	

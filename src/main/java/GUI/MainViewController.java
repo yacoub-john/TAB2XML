@@ -99,7 +99,6 @@ public class MainViewController extends Application {
 	private void handleUserManual() throws URISyntaxException  {
 		URL resource = getClass().getClassLoader().getResource("org.openjfx/UserManual.pdf");
 		File file = new File(resource.toURI());
-
 		HostServices hostServices = getHostServices();
 		hostServices.showDocument(file.getAbsolutePath());
 	}

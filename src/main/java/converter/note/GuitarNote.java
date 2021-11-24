@@ -165,8 +165,8 @@ public class GuitarNote extends TabNote {
 	public List<ValidationError> validate() {
 	    super.validate();
 	    
-	    for (NoteModelDecorator noteDecor : this.noteDecorMap.keySet()) {
-	        String resp = noteDecorMap.get(noteDecor);
+	    for (NoteModelDecorator noteDecor : this.getDecorators().keySet()) {
+	        String resp = getDecorators().get(noteDecor);
 	        if (resp.equals("success")) continue;
 	        Matcher matcher = Pattern.compile("(?<=^\\[)[0-9](?=\\])").matcher(resp);
 	        matcher.find();

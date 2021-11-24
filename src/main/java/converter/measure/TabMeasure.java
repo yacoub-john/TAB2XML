@@ -65,7 +65,7 @@ public abstract class TabMeasure extends ScoreComponent {
         createTabStringList();
         this.voiceSortedNoteList = this.getVoiceSortedNoteList();
         setChords();
-        setDurations();
+        setInitialDurations();
     }
 
 	/**
@@ -100,7 +100,11 @@ public abstract class TabMeasure extends ScoreComponent {
 		}
 	}
 
-	protected void setDurations() {
+	/**
+	 * Sets initial durations for the notes based on the number of characters they span.
+	 * setDivisions() will modify these later
+	 */
+	protected void setInitialDurations() {
 		for (List<List<TabNote>> chordList : getVoiceSortedChordList()) {
 			// Handle all but last chord
 			for (int i = 0; i < chordList.size() - 1; i++) {
@@ -216,6 +220,7 @@ public abstract class TabMeasure extends ScoreComponent {
 						// having divisions be a .5
 						if (beatType == 2)
 							factor = 2;
+						//TODO Should this be *= 2? Test!
 						// We multiply by beatCount to compensate for divisions
 						// multiplied by beatCount also
 						note.setDuration(note.getDuration() * factor);

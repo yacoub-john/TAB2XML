@@ -23,7 +23,9 @@ public class Notations {
     @JacksonXmlProperty(localName = "slide")
     List<Slide> slides;
     
-    private Tied tied;
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "tied")
+    private List<Tied> tieds;
     
     private Ornaments ornaments;
 
@@ -51,19 +53,19 @@ public class Notations {
         this.technical = technical;
     }
 
-	public Tied getTied() {
-		return tied;
-	}
-
-	public void setTied(Tied tied) {
-		this.tied = tied;
-	}
-
 	public Ornaments getOrnaments() {
 		return ornaments;
 	}
 
 	public void setOrnaments(Ornaments ornaments) {
 		this.ornaments = ornaments;
+	}
+
+	public List<Tied> getTieds() {
+		return tieds;
+	}
+
+	public void setTieds(List<Tied> tieds) {
+		this.tieds = tieds;
 	}
 }

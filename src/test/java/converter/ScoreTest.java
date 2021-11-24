@@ -22,11 +22,13 @@ public class ScoreTest {
     @BeforeEach
     void init() {
     	Settings.getInstance().setInstrumentSetting(InstrumentSetting.AUTO);
+    	Settings.getInstance().setDefaultTuning();
     }
     
 	@AfterEach
 	void tearDown() throws Exception {
 		Settings.getInstance().setInstrumentSetting(InstrumentSetting.AUTO);
+		Settings.getInstance().setDefaultTuning();
 	}
 
     /**

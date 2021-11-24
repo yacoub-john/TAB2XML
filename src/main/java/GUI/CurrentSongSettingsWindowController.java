@@ -119,7 +119,8 @@ public class CurrentSongSettingsWindowController extends Application {
 			@SuppressWarnings("unchecked")
 			ComboBox<String> cb = ( ComboBox<String> ) n;
 			String newValue = cb.getValue().toString();
-			Settings.getInstance().guitarTuning[GridPane.getRowIndex(n)][GridPane.getColumnIndex(n)] = newValue;
+			//TODO Update as this only affects a copy of the tuning now
+			Settings.getInstance().getGuitarTuning()[GridPane.getRowIndex(n)][GridPane.getColumnIndex(n)] = newValue;
 	    }
 		//System.out.println(GuitarUtils.toOneString(Settings.getInstance().guitarTuning));
 	}
@@ -134,7 +135,7 @@ public class CurrentSongSettingsWindowController extends Application {
 		    	@SuppressWarnings("unchecked")
 				ComboBox<String> cb = ( ComboBox<String> ) n;
 		    	cb.getItems().addAll(GuitarUtils.KEY_LIST);
-		    	cb.getSelectionModel().select(Settings.getInstance().guitarTuning[string][0]);
+		    	cb.getSelectionModel().select(Settings.getInstance().getGuitarTuning()[string][0]);
 		    }
 		}
 		for ( int string=0; string < 6; string++ )
@@ -146,7 +147,7 @@ public class CurrentSongSettingsWindowController extends Application {
 				ComboBox<String> cb = ( ComboBox<String> ) n;
 		    	for (int i= 0; i < 10; i++)
 		    		cb.getItems().add(i+"");
-		    	cb.getSelectionModel().select(Settings.getInstance().guitarTuning[string][1]);
+		    	cb.getSelectionModel().select(Settings.getInstance().getGuitarTuning()[string][1]);
 		    }
 		}
 	}

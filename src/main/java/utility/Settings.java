@@ -1,5 +1,7 @@
 package utility;
 
+import java.util.Arrays;
+
 import converter.Instrument;
 import converter.InstrumentSetting;
 
@@ -19,8 +21,11 @@ public class Settings {
     public String title = "";
     public String artist = "";
     
-    public String[][] guitarTuning = {{"E","4"},{"B","3"},{"G","3"},{"D","3"},{"A","2"},{"E","2"}};
-    public String[][] bassTuning = {{"G","2"},{"D","2"},{"A","1"},{"E","1"}};
+    private String[][] defaultGuitarTuning = {{"E","4"},{"B","3"},{"G","3"},{"D","3"},{"A","2"},{"E","2"}};
+    private String[][] defaultBassTuning = {{"G","2"},{"D","2"},{"A","1"},{"E","1"}};
+    
+    private String[][] guitarTuning = defaultGuitarTuning;
+    private String[][] bassTuning = defaultBassTuning;
     
     public DoubleDigitStyle ddStyle = DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_STRETCH;
     
@@ -39,6 +44,11 @@ public class Settings {
     	default: return Instrument.GUITAR;
     	}
     }
+    
+    public void setDefaultTuning() {
+    	guitarTuning = defaultGuitarTuning;
+        bassTuning = defaultBassTuning;
+    }
 
 	public InstrumentSetting getInstrumentSetting() {
 		return instrumentSetting;
@@ -56,4 +66,31 @@ public class Settings {
 	public void setDetectedInstrument(Instrument detectedInstrument) {
 		this.detectedInstrument = detectedInstrument;
 	}
+
+	public String[][] getGuitarTuning() {
+		return Arrays.copyOf(guitarTuning, guitarTuning.length);
+	}
+
+	public void setGuitarTuning(int string, String pitch, int octave) {
+		guitarTuning[string][0] = pitch;
+		guitarTuning[string][1] = octave + "";
+	}
+	
+	public void setGuitarTuning(int string, String pitch) {
+		guitarTuning[string][0] = pitch;
+	}
+
+	public String[][] getBassTuning() {
+		return Arrays.copyOf(bassTuning, bassTuning.length);
+	}
+
+	public void setBassTuning(int string, String pitch, int octave) {
+		bassTuning[string][0] = pitch;
+		bassTuning[string][1] = octave + "";
+	}
+	
+	public void setBassTuning(int string, String pitch) {
+		bassTuning[string][0] = pitch;
+	}
+	
 }

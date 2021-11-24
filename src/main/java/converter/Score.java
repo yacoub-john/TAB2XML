@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 import converter.measure.TabMeasure;
 import converter.measure_line.TabDrumString;
-import converter.note.RestNote;
 import converter.note.StartTieDecorator;
 import converter.note.StopTieDecorator;
 import converter.note.TabNote;
@@ -175,6 +174,7 @@ public class Score extends ScoreComponent {
 	}
 
 	private void createTiedNotes() {
+		// Create tied notes within a measure
 		boolean noSplit = false;
 		while (!noSplit) {
 			noSplit = true;
@@ -183,30 +183,38 @@ public class Score extends ScoreComponent {
 					noSplit = false;
 			}
 		}
+		// Create tied notes between measures
 		String message = "success";
 		for (int i=0; i < tabMeasureList.size() - 1; i++) {
-
 			TabMeasure secondMeasure = tabMeasureList.get(i+1);
 			if (secondMeasure.voiceSortedNoteList.size() > 0) {
 				List<TabNote> firstVoice = secondMeasure.voiceSortedNoteList.get(0);
 
-				if (firstVoice.get(0) instanceof TieNote) {				
+				if (firstVoice.get(0) instanceof TieNote) {
+					// Assumption: TieNote objects will only be at the beginning of the measure
+					long tieCount = firstVoice.stream().filter(n -> n instanceof TieNote).count();
 					TabMeasure firstMeasure = tabMeasureList.get(i);
 					if (!firstMeasure.getVoiceSortedChordList().isEmpty()) {
 						int numberOfChords = firstMeasure.getVoiceSortedChordList().get(0).size();
 						if (numberOfChords > 0) {
 							List<TabNote> lastChord = firstMeasure.getVoiceSortedChordList().get(0).get(numberOfChords - 1);
-							int tieDuration = firstVoice.get(0).duration;
-							int tieDistance = firstVoice.get(0).distance;
-							firstVoice.remove(0); // remove the fake tie note
 							for (TabNote n: lastChord) {
-								TabNote newNote = n.copy();
 								n.addDecorator(new StartTieDecorator(), message);
-								newNote.setDuration(tieDuration);
-								newNote.distance = tieDistance;
-								newNote.addDecorator(new StopTieDecorator(), message);
-								firstVoice.add(0,newNote);
 							}
+							List<TabNote> newNotes = new ArrayList<>();
+							for (int j = 0; j < tieCount; j++) {
+								TabNote tn = firstVoice.remove(0); // remove this fake note
+								for (TabNote n: lastChord) {
+									TabNote newNote = n.copy();
+									newNote.setDivisions(tn.divisions);
+									newNote.setDuration(tn.duration);
+									newNote.distance = tn.distance;
+									newNote.addDecorator(new StopTieDecorator(), message);
+									if (j < tieCount - 1) newNote.addDecorator(new StartTieDecorator(), message);
+									newNotes.add(newNote);
+								}
+							} 
+							firstVoice.addAll(0, newNotes);							
 						}
 					}
 				}
