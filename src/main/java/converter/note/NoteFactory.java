@@ -84,10 +84,13 @@ public abstract class NoteFactory {
 	    if (remainingNotes.isEmpty())
 	        return noteList;
 	    TabNote note2 = remainingNotes.get(0);
-	    noteList.addAll(remainingNotes);
+	    
 	
 	    if (!connectorAT.text.isBlank())
 	        addRelationship(note1, note2, connectorAT.text);
+	    
+	    if (!connectorAT.text.equals("b")) noteList.addAll(remainingNotes);
+	    
 	    return noteList;
 	}
 

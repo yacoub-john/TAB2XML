@@ -85,6 +85,23 @@ public class GuitarNoteFactory extends NoteFactory {
 		return result;
 	}
 	
+	protected TabNote createHarmonic(String origin, int position, int distanceFromMeasureStart) {
+		TabNote note;
+		if (!origin.matches(Patterns.HARMONIC))
+			return null;
+	
+		Matcher fretMatcher = Pattern.compile("(?<=\\[)[0-9]+(?=\\])").matcher(origin);
+		fretMatcher.find();
+		note = createFret(fretMatcher.group(), position + fretMatcher.start(), distanceFromMeasureStart);
+		note.addDecorator((noteModel) -> {
+			Technical technical = getNonNullTechnical(noteModel);
+			technical.setHarmonic(new Harmonic(new Natural()));
+			return true;
+		}, "success");
+	
+		return note;
+	}
+
 	protected List<TabNote> createGrace(String origin, int position, int distanceFromMeasureStart) {
 		List<TabNote> noteList = new ArrayList<>();
 		if (!origin.matches(Patterns.GRACE)) return noteList;
@@ -130,6 +147,27 @@ public class GuitarNoteFactory extends NoteFactory {
 	@Override
 	protected void setGraceType(Note noteModel) {
 		noteModel.setType("16th");
+	}
+
+	@Override
+	protected void addRelationship(TabNote note1, TabNote note2, String relationship) {
+		switch (relationship.toLowerCase()) {
+		case "h" -> hammerOn((GuitarNote) note1, (GuitarNote) note2, false);
+		case "p" -> pullOff((GuitarNote) note1, (GuitarNote) note2, false);
+		case "b" -> bend((GuitarNote) note1, (GuitarNote) note2);
+		case "/", "\\", "s" -> slide((GuitarNote) note1, (GuitarNote) note2, relationship, false);
+		}
+	}
+
+	private void bend(GuitarNote note1, GuitarNote note2) {
+		String message = "success";
+		if (note1.getFret() > note2.getFret()) {
+			int startIdx = note1.position;
+			int endIdx = note2.position + note2.text.length();
+			message = "[2][" + startIdx + "," + endIdx + "]A bend should go from a lower to a higher note.";
+		}
+		int width = note2.getFret() - note1.getFret();
+		note1.addDecorator(new BendDecorator(width), message);
 	}
 
 	private boolean hammerOn(GuitarNote note1, GuitarNote note2, boolean onlyMessage) {
@@ -208,32 +246,6 @@ public class GuitarNoteFactory extends NoteFactory {
 		if (success)
 			success = slur(note1, note2);
 		return success;
-	}
-
-	protected TabNote createHarmonic(String origin, int position, int distanceFromMeasureStart) {
-		TabNote note;
-		if (!origin.matches(Patterns.HARMONIC))
-			return null;
-
-		Matcher fretMatcher = Pattern.compile("(?<=\\[)[0-9]+(?=\\])").matcher(origin);
-		fretMatcher.find();
-		note = createFret(fretMatcher.group(), position + fretMatcher.start(), distanceFromMeasureStart);
-		note.addDecorator((noteModel) -> {
-			Technical technical = getNonNullTechnical(noteModel);
-			technical.setHarmonic(new Harmonic(new Natural()));
-			return true;
-		}, "success");
-
-		return note;
-	}
-
-	@Override
-	protected void addRelationship(TabNote note1, TabNote note2, String relationship) {
-		switch (relationship.toLowerCase()) {
-		case "h" -> hammerOn((GuitarNote) note1, (GuitarNote) note2, false);
-		case "p" -> pullOff((GuitarNote) note1, (GuitarNote) note2, false);
-		case "/", "\\", "s" -> slide((GuitarNote) note1, (GuitarNote) note2, relationship, false);
-		}
 	}
 
 	private boolean slide(GuitarNote note1, GuitarNote note2, String symbol, boolean onlyMessage) {

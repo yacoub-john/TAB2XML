@@ -9,12 +9,11 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Technical {
     
-	public Technical() {
-		
-	}
+	public Technical() {}
 
 	int string;
     int fret;
+    private Bend bend;
 
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "hammer-on")
@@ -64,4 +63,12 @@ public class Technical {
     public void setPullOffs(List<PullOff> pullOffs) {
         this.pullOffs = pullOffs;
     }
+
+	public Bend getBend() {
+		return bend;
+	}
+
+	public void setBend(Bend bend) {
+		this.bend = bend;
+	}
 }
