@@ -109,7 +109,7 @@ public class GuitarMeasure extends TabMeasure{
 		// Validate Aggregates unless there are already critical errors
 
 		for (ValidationError error : errors) {
-			if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
+			if (error.getPriority() <= Settings.getInstance().criticalErrorCutoff) {
 				return errors;
 			}
 		}

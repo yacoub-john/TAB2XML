@@ -1,6 +1,7 @@
 package converter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import converter.measure.TabMeasure;
-import converter.measure_line.TabDrumString;
 import converter.note.StartTieDecorator;
 import converter.note.StopTieDecorator;
 import converter.note.TabNote;
@@ -23,7 +23,6 @@ import models.part_list.PartList;
 import models.part_list.ScoreInstrument;
 import models.part_list.ScorePart;
 import utility.AnchoredText;
-import utility.DrumPiece;
 import utility.DrumPieceInfo;
 import utility.DrumUtils;
 import utility.GuitarUtils;
@@ -35,7 +34,6 @@ public class Score extends ScoreComponent {
 
 	private Map<Integer, String> scoreTextFragments;
 	private List<TabSection> tabSectionList;
-    public static int CRITICAL_ERROR_CUTOFF = 1;
     public List<TabMeasure> tabMeasureList;
 
     public Score(String textInput) {
@@ -139,7 +137,6 @@ public class Score extends ScoreComponent {
         boolean isFirstTabSection = true;
         for (Map.Entry<Integer, String> fragment : stringFragments.entrySet()) {
         	String tabSectionRegexPattern = TabSection.getRegexPattern();
-        	//String tabRowLinePattern = TabSection.tabRowLinePattern();
 			Matcher matcher = Pattern.compile(tabSectionRegexPattern, Pattern.MULTILINE).matcher(fragment.getValue());
 			while (matcher.find()) {
 				AnchoredText at = new AnchoredText(matcher.group(), fragment.getKey() + matcher.start(), 0);
@@ -163,7 +160,6 @@ public class Score extends ScoreComponent {
 	                }
 	                measure.setTimeSignature(currBeatCount, currBeatType);
 	            }
-	        
 	    }
 	}
 
@@ -281,10 +277,7 @@ public class Score extends ScoreComponent {
         return new PartList(scoreParts);
     }
     
-    // TODO synchronized because the ScorePartwise model has an instance counter which has to remain the same for all
-	// which has to remain the same for all the sub-elements it has as they use that counter. this may turn out to be
-	// a bad idea cuz it might clash with the NotePlayer class
-	synchronized public ScorePartwise getModel() throws TXMLException {
+	public ScorePartwise getModel() throws TXMLException {
 	
 	    List<models.measure.Measure> measures = new ArrayList<>();
 	    for (TabMeasure tabMeasure : this.tabMeasureList) {
@@ -303,17 +296,14 @@ public class Score extends ScoreComponent {
 	        partList = this.getBassPartList();
 	
 	    ScorePartwise scorePartwise = new ScorePartwise("3.1", partList, parts);
-	   // if (this.title!=null && !this.title.isBlank())
-	        scorePartwise.setMovementTitle(Settings.getInstance().title);
-	   // if (this.artist!=null && !this.artist.isBlank())
-	        scorePartwise.setIdentification(new Identification(new Creator("composer", Settings.getInstance().artist)));
+	    scorePartwise.setMovementTitle(Settings.getInstance().title);
+	    scorePartwise.setIdentification(new Identification(new Creator("composer", Settings.getInstance().artist)));
 	    return scorePartwise;
 	}
 
 	@Override
 	public List<Range> getRanges() {
-		// TODO Should return 0 to length
-		return null;
+		return new ArrayList<>(Collections.singletonList(new Range(0, at.text.length())));
 	}
 
 	/** 

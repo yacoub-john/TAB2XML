@@ -11,6 +11,7 @@ import converter.note.NoteFactory;
 import converter.note.TabNote;
 import utility.AnchoredText;
 import utility.Range;
+import utility.Settings;
 import utility.ValidationError;
 
 public abstract class TabString extends ScoreComponent {
@@ -36,7 +37,7 @@ public abstract class TabString extends ScoreComponent {
     public List<TabNote> getNoteList() {
         List<TabNote> noteList = new ArrayList<>();
         for (ValidationError error : this.validate()) {
-            if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
+            if (error.getPriority() <= Settings.getInstance().criticalErrorCutoff) {
                 return noteList;
             }
         }
@@ -44,7 +45,7 @@ public abstract class TabString extends ScoreComponent {
             List<ValidationError> errors = note.validate();
             boolean criticalError = false;
             for (ValidationError error : errors) {
-                if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
+                if (error.getPriority() <= Settings.getInstance().criticalErrorCutoff) {
                     criticalError = true;
                     break;
                 }

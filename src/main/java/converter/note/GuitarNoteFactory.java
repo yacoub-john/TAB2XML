@@ -35,7 +35,6 @@ public class GuitarNoteFactory extends NoteFactory {
 			if (endNote < endIdx)
 				noteList.add(new InvalidNote(stringNumber, noteText.substring(endNote, endIdx), position + endNote,
 						lineName, distanceFromMeasureStart + idx));
-			// TODO Did commenting this affect errors with connectors? return noteList;
 		} else {
 			connectorAT.text = connectorMatcher.group();
 			connectorAT.positionInLine = connectorMatcher.end();

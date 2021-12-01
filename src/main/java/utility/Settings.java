@@ -13,6 +13,7 @@ public class Settings {
         return instance;
     }
     
+    public int criticalErrorCutoff = 1;
     public int errorSensitivity = 4;
     public String outputFolder = System.getProperty("user.home");
     public String inputFolder = System.getProperty("user.home");

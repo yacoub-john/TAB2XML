@@ -8,6 +8,7 @@ import converter.note.NoteFactory;
 import converter.note.TabNote;
 import utility.AnchoredText;
 import utility.DrumUtils;
+import utility.Settings;
 import utility.ValidationError;
 
 public class TabDrumString extends TabString {
@@ -28,7 +29,7 @@ public class TabDrumString extends TabString {
         }
 
         for (ValidationError error : errors) {
-            if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
+            if (error.getPriority() <= Settings.getInstance().criticalErrorCutoff) {
                 return errors;
             }
         }

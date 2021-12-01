@@ -8,6 +8,7 @@ import converter.note.NoteFactory;
 import converter.note.TabNote;
 import utility.AnchoredText;
 import utility.GuitarUtils;
+import utility.Settings;
 import utility.ValidationError;
 
 public class TabGuitarString extends TabString {
@@ -25,7 +26,7 @@ public class TabGuitarString extends TabString {
         }
 
         for (ValidationError error : errors) {
-            if (error.getPriority() <= Score.CRITICAL_ERROR_CUTOFF) {
+            if (error.getPriority() <= Settings.getInstance().criticalErrorCutoff) {
                 return errors;
             }
         }
