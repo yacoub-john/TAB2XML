@@ -451,19 +451,6 @@ public abstract class TabMeasure extends ScoreComponent {
             Repeat repeat = new Repeat();
             repeat.setDirection("forward");
             barLine.setRepeat(repeat);
-
-            Direction direction = new Direction();
-            direction.setPlacement("above");
-            measureModel.setDirection(direction);
-
-            DirectionType directionType = new DirectionType();
-            direction.setDirectionType(directionType);
-
-            Words words = new Words();
-            words.setRelativeX(256.17);
-            words.setRelativeX(16.01);
-            words.setRepeatText("Repeat "+this.repeatCount+" times");
-            directionType.setWords(words);
         }
 
         if (this.isRepeatEnd()) {
@@ -474,7 +461,19 @@ public abstract class TabMeasure extends ScoreComponent {
 
             Repeat repeat = new Repeat();
             repeat.setDirection("backward");
+            repeat.setTimes("" + this.repeatCount);
             barLine.setRepeat(repeat);
+            
+            Direction direction = new Direction();
+            direction.setPlacement("above");
+            measureModel.setDirection(direction);
+
+            DirectionType directionType = new DirectionType();
+            direction.setDirectionType(directionType);
+
+            Words words = new Words();
+            words.setRepeatText("x" + this.repeatCount);
+            directionType.setWords(words);
         }
 
         if (!barLines.isEmpty())

@@ -28,10 +28,8 @@ public class MainApp extends Application {
         stage.show();
     }
 
-    public static void exit() {
-    	
+    public static void exit() {   	
         MainViewController.executor.shutdown();
-        NotePlayer.kill();
     }
 
     public static void main(String[] args) {
