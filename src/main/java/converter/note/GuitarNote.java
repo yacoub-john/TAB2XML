@@ -40,12 +40,11 @@ public class GuitarNote extends TabNote {
         this.instrument = Instrument.GUITAR;
         this.fret = Integer.parseInt(origin);
         this.noteDetails = noteDetails(this.lineName, this.fret);
-        if (noteDetails==null) return;
+        if (noteDetails == null) return;
         this.step = this.step(noteDetails);
         this.alter = this.alter(noteDetails);
         this.octave = this.octave(noteDetails);
         this.sign = this.fret + "";
-        //this.stringNumber = stringNumber;
     }
 
     public GuitarNote(GuitarNote n) {
@@ -173,8 +172,7 @@ public class GuitarNote extends TabNote {
 	        int priority = Integer.parseInt(matcher.group());
 	        String message = resp.substring(matcher.end()+1);;
 	        int startIdx = this.position;
-	        int endIdx = this.position+this.text.length();
-	
+	        int endIdx = this.position + this.text.length();
 	
 	        matcher = Pattern.compile("(?<=^\\[)[0-9]+,[0-9]+(?=\\])").matcher(message);
 	        if (matcher.find()) {
@@ -185,17 +183,13 @@ public class GuitarNote extends TabNote {
 	            message = message.substring(matcher.end()+2);
 	        }
 	
-	        addError(message, priority,  new ArrayList<>(Collections.singleton(new Range(startIdx, endIdx))));
+	        addError(message, priority, new ArrayList<>(Collections.singleton(new Range(startIdx, endIdx))));
 	        
 	    }
 	
-	    if (this.noteDetails==null) {
-	        addError(
-	                "this note could not be identified",
-	                1,
-	                getRanges());
-	       
-	    }
+	    if (this.noteDetails == null)
+	        addError("this note could not be identified", 1, getRanges());
+
 	    return errors;
 	}
 }

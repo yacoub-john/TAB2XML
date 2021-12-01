@@ -254,8 +254,8 @@ public class Score extends ScoreComponent {
         List<ScoreInstrument> scoreInstruments = new ArrayList<>();
         List<MIDIInstrument> midiInstruments = new ArrayList<>();
         
-        for (DrumPiece d : TabDrumString.USED_DRUM_PARTS) {
-        	DrumPieceInfo drumPieceInfo = DrumUtils.drumSet.get(d);
+
+        for (DrumPieceInfo drumPieceInfo : DrumUtils.drumSet.values()) {
         	String partID = drumPieceInfo.getMidiID();
             scoreInstruments.add(new ScoreInstrument(partID, drumPieceInfo.getFullName()));
             // Assumption: partID is of the form P1-IXX, where XX are digits

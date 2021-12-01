@@ -1,11 +1,8 @@
 package converter.note;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import converter.Instrument;
-import converter.measure_line.TabDrumString;
 import models.measure.note.Note;
 import models.measure.note.Notehead;
 import models.measure.note.Unpitched;
@@ -23,8 +20,6 @@ public class DrumNote extends TabNote{
         super(stringNumber, origin, position, lineName, distanceFromMeasure);
         this.instrument = Instrument.DRUMS;
         drumPiece = DrumUtils.getDrumPiece(lineName.strip(), origin.strip());
-        if (drumPiece != null)
-            TabDrumString.USED_DRUM_PARTS.add(drumPiece);
         //TODO Debug voice 2 issues
         //if ((drumPiece == DrumPiece.Bass_Drum_1) || (drumPiece == DrumPiece.Bass_Drum_2))
         //    this.voice = 2;
@@ -58,29 +53,6 @@ public class DrumNote extends TabNote{
 
     public List<ValidationError> validate() {
         super.validate();
-
-        for (NoteModelDecorator noteDecor : this.getDecorators().keySet()) {
-            String resp = getDecorators().get(noteDecor);
-            if (resp.equals("success")) continue;
-            Matcher matcher = Pattern.compile("(?<=^\\[)[0-9](?=\\])").matcher(resp);
-            matcher.find();
-            int priority = Integer.parseInt(matcher.group());
-            String message = resp.substring(matcher.end()+1);;
-            int startIdx = this.position;
-            int endIdx = this.position+this.text.length();
-
-            matcher = Pattern.compile("(?<=^\\[)[0-9]+,[0-9]+(?=\\])").matcher(message);
-            if (matcher.find()) {
-                String positions = matcher.group();
-                matcher = Pattern.compile("[0-9]+").matcher(positions); matcher.find();
-                startIdx = Integer.parseInt(matcher.group()); matcher.find();
-                endIdx = Integer.parseInt(matcher.group());
-                message = message.substring(matcher.end()+2);
-            }
-            System.out.println("Validate of Drum Note:" + message);
-            addError(message, priority, getRanges());
-        }
-
         return errors;
     }
 

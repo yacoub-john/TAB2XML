@@ -1,27 +1,19 @@
 package converter.measure_line;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import converter.Score;
 import converter.note.DrumNoteFactory;
-import converter.note.GuitarNoteFactory;
 import converter.note.NoteFactory;
 import converter.note.TabNote;
 import utility.AnchoredText;
-import utility.DrumPiece;
 import utility.DrumUtils;
 import utility.ValidationError;
 
 public class TabDrumString extends TabString {
-    public static Set<DrumPiece> USED_DRUM_PARTS = new HashSet<>();
-    private DrumPiece drumPiece;
 
     public TabDrumString(int stringNumber, AnchoredText dataAT, AnchoredText nameAT) {
         super(stringNumber, dataAT, nameAT);    
-        drumPiece = DrumUtils.getDrumPiece(name.strip(), line.strip());
-        if (drumPiece != null) USED_DRUM_PARTS.add(drumPiece);
     }
     
 	@Override
