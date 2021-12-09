@@ -3,7 +3,6 @@ package converter.measure;
 import java.util.ArrayList;
 import java.util.List;
 
-import converter.Score;
 import converter.measure_line.TabGuitarString;
 import converter.measure_line.TabString;
 import converter.note.TabNote;
@@ -21,12 +20,14 @@ import utility.ValidationError;
 public class GuitarMeasure extends TabMeasure{
     protected int MIN_LINE_COUNT;
     protected int MAX_LINE_COUNT;
+    String [][] tuning;
 
     public GuitarMeasure(List<AnchoredText> inputData, List<AnchoredText> inputNameData, boolean isFirstMeasure) {
         super(inputData, inputNameData, isFirstMeasure);
         allowedPadding = Settings.getInstance().guitarMeasureStartPadding;
         MIN_LINE_COUNT = 6;
         MAX_LINE_COUNT = 6;
+        tuning = Settings.getInstance().getGuitarTuning();
     }
 
     @Override
@@ -34,8 +35,7 @@ public class GuitarMeasure extends TabMeasure{
 		for (List<List<TabNote>> chordList : getVoiceSortedChordList()) {
 			int start = 0;
 			// Start at 1 to ignore first chord
-			// If it is longer than one digit, it has not been counted in
-			// usefulMeasureLength
+			// If it is longer than one digit, it has not been counted in usefulMeasureLength
 			// Applies only for NOTE ON SECOND DIGIT
 			if (Settings.getInstance().ddStyle == DoubleDigitStyle.NOTE_ON_SECOND_DIGIT_STRETCH)
 				start = 1;
@@ -73,20 +73,15 @@ public class GuitarMeasure extends TabMeasure{
         attributes.setKey(new Key(0));
         if (this.changesTimeSignature)
             attributes.setTime(new Time(this.beatCount, this.beatType));
-
-        String[][] tuning = Settings.getInstance().getGuitarTuning();
         if (this.measureCount == 1) {
             attributes.setClef(new Clef("TAB", 5));
             List<StaffTuning> staffTunings = new ArrayList<>();
-            for (int string = 0; string < 6; string++)
-            	staffTunings.add(new StaffTuning(string + 1, tuning[5-string][0], Integer.parseInt(tuning[5-string][1])));
-            attributes.setStaffDetails(new StaffDetails(6, staffTunings));
+            for (int string = 0; string < MAX_LINE_COUNT; string++)
+            	staffTunings.add(new StaffTuning(string + 1, tuning[MAX_LINE_COUNT-1-string][0], Integer.parseInt(tuning[MAX_LINE_COUNT-1-string][1])));
+            attributes.setStaffDetails(new StaffDetails(MAX_LINE_COUNT, staffTunings));
         }
-
         return attributes;
     }
-
-
 	
 	/**
 	 * Validates that the guitar has a supported number of strings. Validates its
