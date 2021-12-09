@@ -1,17 +1,13 @@
 package GUI;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 
-import converter.Score;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import utility.MusicXMLCreator;
 import utility.Settings;
 
 public class SaveMXLController extends Application {
@@ -29,20 +25,16 @@ public class SaveMXLController extends Application {
     
     public void initialize() {
 		Settings s = Settings.getInstance();
-		
 		titleField.setText(s.title);
 		artistField.setText(s.artist);
 	}
     
     @FXML
     private void saveButtonClicked() {
-    	//Score score = new Score(mvc.mainText.getText());
-       // MusicXMLCreator mxlc = new MusicXMLCreator(score);
         if (!titleField.getText().isBlank())
             Settings.getInstance().title = titleField.getText();
         if (!artistField.getText().isBlank())
         	Settings.getInstance().artist = artistField.getText();
-       // String generatedOutput = mxlc.generateMusicXML();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save As");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MusicXML files", "*.musicxml", "*.xml", "*.mxl");
@@ -76,7 +68,6 @@ public class SaveMXLController extends Application {
 
         if (file != null) {
             mvc.converter.saveMusicXMLFile(file);
-            
             mvc.saveFile = file;
             cancelButtonClicked();
         }
@@ -88,7 +79,5 @@ public class SaveMXLController extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-
-    }
+    public void start(Stage primaryStage) throws Exception {}
 }

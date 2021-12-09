@@ -2,7 +2,6 @@ package converter.measure_line;
 
 import java.util.List;
 
-import converter.Score;
 import converter.note.DrumNoteFactory;
 import converter.note.NoteFactory;
 import converter.note.TabNote;

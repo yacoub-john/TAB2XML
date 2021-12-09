@@ -64,7 +64,7 @@ public class ScoreTest {
     @Disabled
     @Test
     void repeatInlineTest() {
-        int expectedRepeatCount = 5;
+        //int expectedRepeatCount = 5;
         String[] inlineRepeatMeasures = {
                 """
                 e||--------------------5|

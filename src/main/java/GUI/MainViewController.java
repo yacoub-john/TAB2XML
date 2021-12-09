@@ -44,7 +44,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import utility.DrumUtils;
 import utility.Range;
 import utility.Settings;
 
@@ -323,6 +322,7 @@ public class MainViewController extends Application {
 		
 		converter.saveMusicXMLFile(new File("/Users/bil/Desktop/sv.musicxml"));
 		Runtime r = Runtime.getRuntime();
+		@SuppressWarnings("unused")
 		Process p = r.exec("open /Users/bil/Desktop/sv.musicxml");
 		System.out.println("Preview Button Clicked!");
 	}
@@ -361,12 +361,6 @@ public class MainViewController extends Application {
         int pos = linePositions.get(0).getStart();
     	mainText.moveTo(pos);
         mainText.requestFollowCaret();
-//        Pattern newLinePattern = Pattern.compile("\\R");
-//    	Matcher newLineMatcher = newLinePattern.matcher(mainText.getText().substring(pos));
-//    	for (int i = 0; i < 8; i++) newLineMatcher.find();
-//    	int endPos = newLineMatcher.start();
-//    	mainText.moveTo(pos+endPos);
-//    	mainText.requestFollowCaret();
         mainText.requestFocus();
         return true;
     }

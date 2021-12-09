@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import converter.Score;
 import converter.ScoreComponent;
 import converter.note.NoteFactory;
 import converter.note.TabNote;
@@ -21,7 +20,6 @@ public abstract class TabString extends ScoreComponent {
     int position;
     public List<TabNote> noteList;
     public int padding;
-    
 
     protected TabString(int stringNumber, AnchoredText dataAT, AnchoredText nameAT) {
         this.line = dataAT.text;

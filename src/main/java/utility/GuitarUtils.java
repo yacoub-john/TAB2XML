@@ -2,16 +2,12 @@ package utility;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import converter.note.NoteFactory;
-
 public class GuitarUtils {
     public static String[] KEY_LIST = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
-
 
     public static boolean isValidName(String name) {
         return getValidGuitarNames().contains(name.strip());
@@ -36,45 +32,6 @@ public class GuitarUtils {
 	    result.add("");
 	    return result;
 	}
-    
-//	public static String toOneString(String[][] tuning)
-//	{
-//		String result = "";
-//		Settings s = Settings.getInstance();
-//		for (int i=0; i< 6; i++)
-//		{
-//			for (int j=0; j< 2; j++)
-//				result += s.getGuitarTuning()[i][j];
-//			if (i < 5)result += ",";
-//		}
-//		return result;
-//	}
-	
-	public static double isGuitarMeasureLikelihood(List<String> lineList, List<String[]> lineNameList) {
-	    double score = 0;
-	    int lineCount = lineList.size();
-	    for (int i=0; i<lineCount; i++) {
-	        score += isGuitarLineLikelihood(lineNameList.get(i)[0], lineList.get(i));
-	    }
-	    if (lineCount==0)
-	    	//TODO This should really be an exception
-	        score += 1; //if there is risk of zero division error, assign the full weight
-	    else
-	        score += (score/lineCount);
-	
-	    return score;
-	}
-	
-//	public static double isBassMeasureLikelihood(List<String> lineList, List<String[]> lineNameList) {
-//	    double withinSizeBias = 0.1;  //weight for if the number of lines in this measure is within the size cap of Bass measures
-//	
-//	    //---------this code block must be the exact same as isGuitarMeasureLikelihood (except the PREV_MEASURE_TYPE part)
-//	    double guitarScore = isGuitarMeasureLikelihood(lineList, lineNameList);
-//	    double bassScore = guitarScore;
-//	    if (lineList.size()>=BassMeasure.MIN_LINE_COUNT && lineList.size()<=BassMeasure.MAX_LINE_COUNT)
-//	        bassScore += withinSizeBias;
-//	    return bassScore;
-//	}
 	
 	public static double isGuitarLineLikelihood(String name, String line) {
 	    double lineNameWeight = 0.5;  // weight attached when the line name is a guitar line name

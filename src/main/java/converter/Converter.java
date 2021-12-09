@@ -7,7 +7,6 @@ import java.util.List;
 
 import GUI.MainViewController;
 import utility.MusicXMLCreator;
-import utility.Settings;
 import utility.ValidationError;
 
 public class Converter {
@@ -18,8 +17,6 @@ public class Converter {
 	
 	public Converter(MainViewController mvc) {
 		this.mvc = mvc;
-		//score = new Score(mvc.mainText.getText());
-		//mxlc = new MusicXMLCreator(score);
 	}
 	
 	public void update() {

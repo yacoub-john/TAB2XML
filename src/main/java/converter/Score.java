@@ -80,11 +80,9 @@ public class Score extends ScoreComponent {
 			}
 			if (guitarScore > drumScore) {
 				Settings.getInstance().setDetectedInstrument(Instrument.GUITAR);
-				System.out.println("guitar");
 			}
 			else {
 				Settings.getInstance().setDetectedInstrument(Instrument.DRUMS);
-				System.out.println("drums");
 			}
 		}
 	}

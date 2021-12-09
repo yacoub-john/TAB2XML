@@ -1,7 +1,6 @@
 package utility;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ValidationError {
@@ -13,8 +12,6 @@ public class ValidationError {
         this.message = message;
         this.priority = priority;
         this.positions = positions;
-//        for (Integer[] position : positions)
-//            this.positions.add(Arrays.copyOf(position, position.length));
     }
     
     public int getPriority() {
@@ -22,9 +19,6 @@ public class ValidationError {
     }
     
     public List<Range> getPositions() {
-//    	List<Integer[]> positions= new ArrayList<>();
-//    	for (Integer[] position : this.positions)
-//            positions.add(Arrays.copyOf(position, position.length));
     	return positions;
     }
     

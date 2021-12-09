@@ -1,5 +1,10 @@
 package converter;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -9,15 +14,8 @@ import utility.AnchoredText;
 import utility.Settings;
 import utility.ValidationError;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-
-public class MeasureGroupTest {
-    public TabRow measureGroupInstance;
+public class TabRowTest {
+    public TabRow tabRowInstance;
 
 	@BeforeEach
 	void init() {
@@ -35,14 +33,14 @@ public class MeasureGroupTest {
     @Test
     void testValidate_validInput1() {
     	Settings.getInstance().setInstrumentSetting(InstrumentSetting.GUITAR);
-        List<AnchoredText> origin = new ArrayList<>();
-        origin.add(new AnchoredText("E|-3-2-2-0----|",0,0));
-        origin.add(new AnchoredText("A|-3-2-2-0----|",0,0));
-        origin.add(new AnchoredText("D|-3-2-2-0----|",0,0));
-        origin.add(new AnchoredText("G|-3-2-2-0----|",0,0));
-        origin.add(new AnchoredText("B|-3-2-2-0----|",0,0));
-        origin.add(new AnchoredText("E|-3-2-2-0----|",0,0));
-        TabRow mg = new TabRow(origin);
+        List<AnchoredText> lineList = new ArrayList<>();
+        lineList.add(new AnchoredText("E|-3-2-2-0----|",0,0));
+        lineList.add(new AnchoredText("A|-3-2-2-0----|",0,0));
+        lineList.add(new AnchoredText("D|-3-2-2-0----|",0,0));
+        lineList.add(new AnchoredText("G|-3-2-2-0----|",0,0));
+        lineList.add(new AnchoredText("B|-3-2-2-0----|",0,0));
+        lineList.add(new AnchoredText("E|-3-2-2-0----|",0,0));
+        TabRow mg = new TabRow(lineList);
         List<ValidationError> errors = mg.validate();
         assertTrue(errors.isEmpty());
     }

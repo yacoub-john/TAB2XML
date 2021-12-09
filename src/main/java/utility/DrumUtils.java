@@ -8,8 +8,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import converter.note.NoteFactory;
-
 public class DrumUtils {
 	
 	public static HashMap<DrumPiece, DrumPieceInfo> drumSet = new HashMap<>();
@@ -143,20 +141,5 @@ public static void createDrumSet() {
 	        score += ((double) noteGroups/(double) charGroups)*noteGroupWeight;
 	    return score;
 	}
-
-	public static double isDrumMeasureLikelihood(List<String> lineList, List<String[]> lineNameList) {
-	    double score = 0;
-	    int lineCount = lineList.size();
-	    for (int i=0; i<lineCount; i++) {
-	        score += isDrumLineLikelihood(lineNameList.get(i)[0], lineList.get(i));
-	    }
-	    if (lineCount==0)
-	        score += 1; //if there is risk of zero division error, assign the full weight
-	    else
-	        score += (score/lineCount);
-	
-	    return score;
-	}
-
 
 }

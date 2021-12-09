@@ -4,8 +4,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import converter.note.NoteFactory;
-
 public class Patterns {
     public static final String SPACEORTAB = "[^\\S\\n\\r]";
     //public static final String SPACEORTAB = "[ \t]";
@@ -30,8 +28,6 @@ public class Patterns {
 
     //|--------------------- when it is in between other measures
     public static String MIDDLE_OF_LINE = "("+Patterns.DIVIDER+"+" + insidesPattern()+")";
-
-    //public static String INSIDES_PATTERN = insidesPattern();
 
     private static String INSIDES_PATTERN_SPECIAL_CASE = "$a"; // doesn't match anything
     
@@ -103,7 +99,6 @@ public class Patterns {
     private static String actualName() {
         Iterator<String> measureLineNames = getValidNames().iterator();
         StringBuilder pattern = new StringBuilder();
-        //pattern.append("(?:[a-zA-Z]{1,3}|(?:"+measureLineNames.next());
         pattern.append("(?:"+measureLineNames.next());
         while(measureLineNames.hasNext()) {
             pattern.append("|"+measureLineNames.next());

@@ -1,6 +1,11 @@
 package GUI;
 
-import javafx.application.Application;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,16 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SplashFXMLController implements Initializable {
     @FXML
@@ -54,7 +50,7 @@ public class SplashFXMLController implements Initializable {
                     Scene scene = new Scene(root);
                     scene.getStylesheets().add(getClass().getClassLoader().getResource("GUI/styles.css").toExternalForm());
 
-                    stage.setTitle("TAB 2 XML");
+                    stage.setTitle("TAB 2 MXL");
                     stage.setMinWidth(700);
                     stage.setMinHeight(500);
                     stage.setScene(scene);

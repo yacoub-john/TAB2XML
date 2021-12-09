@@ -1,14 +1,11 @@
 package converter.instruction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,16 +15,14 @@ import converter.TabSection;
 import converter.measure.TabMeasure;
 import converter.note.TabNote;
 import utility.AnchoredText;
-import utility.Patterns;
 import utility.Range;
-import utility.Settings;
 import utility.ValidationError;
 
 public class Timing extends Instruction {
 	private static String supportedTimings = "whqestg";
     public static String PATTERN = "(?<=^|\\n)XQ.*(?=$|\\n)";
     private Map<Integer, String> timings = new TreeMap<>();
-    private Map<Integer, String> unrecognized = new TreeMap<>();
+    //private Map<Integer, String> unrecognized = new TreeMap<>();
     private boolean tab = false;
     private int divisions = 1;
     Set<Integer> divFactors = new HashSet<>();
@@ -162,7 +157,7 @@ public class Timing extends Instruction {
 	    while (b > 0)
 	    {
 	        int temp = b;
-	        b = a % b; // % is remainder
+	        b = a % b;
 	        a = temp;
 	    }
 	    return a;

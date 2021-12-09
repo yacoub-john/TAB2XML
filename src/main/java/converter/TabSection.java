@@ -67,10 +67,6 @@ public class TabSection extends ScoreComponent {
 			if (tabRowMatcher.find()) {
 				isTop = false;
 				assert line.charAt(0) != '\n';
-//				if (line.charAt(0) == '\n') {
-//					line = line.substring(1);
-//					start++;
-//				}
 				AnchoredText tabRowAT = new AnchoredText(line, at.positionInScore + start, 0);
 				tabRowData.add(tabRowAT);
 			}
@@ -152,12 +148,5 @@ public class TabSection extends ScoreComponent {
 		}
 		return errors;
 	}
-
-//	@Override
-//    public String toString() {
-//        StringBuilder outStr = new StringBuilder();    
-//        outStr.append(this.tabRow.toString());
-//        return outStr.toString();
-//    }
 
 }

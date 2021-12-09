@@ -1,27 +1,17 @@
 package converter.notes;
 
-import converter.Instrument;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import converter.InstrumentSetting;
 import converter.Score;
 import converter.measure.TabMeasure;
 import converter.note.TabNote;
-import converter.note.NoteFactory;
-import models.measure.note.notations.Notations;
-import models.measure.note.notations.Slide;
-import models.measure.note.notations.technical.HammerOn;
-import models.measure.note.notations.technical.PullOff;
 import utility.Settings;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class NoteFactoryTest {
 	

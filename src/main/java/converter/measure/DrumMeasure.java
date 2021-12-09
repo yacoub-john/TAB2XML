@@ -2,7 +2,6 @@ package converter.measure;
 
 import java.util.List;
 
-import converter.Score;
 import converter.measure_line.TabDrumString;
 import converter.measure_line.TabString;
 import converter.note.TabNote;
@@ -55,8 +54,7 @@ public class DrumMeasure extends TabMeasure {
 
         if (this.measureCount == 1) {
         	attributes.setKey(new Key(0));
-            attributes.setClef(new Clef("percussion", 2));
-            
+            attributes.setClef(new Clef("percussion", 2));  
         }
         return attributes;
     }
