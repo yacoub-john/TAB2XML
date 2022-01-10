@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -32,33 +31,17 @@
                         <MenuItem mnemonicParsing="false" onAction="#handleSystemDefaultSettings" text="System Default Settings" />
                     </items>
                 </Menu>
-            <Menu mnemonicParsing="false" text="Help">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#handleUserManual" text="User Manual" />
-               </items>
-            </Menu>
             </menus>
         </MenuBar>
     </top>
     <center>
         <AnchorPane prefHeight="200.0" prefWidth="666.0" BorderPane.alignment="CENTER">
             <children>
-                <VirtualizedScrollPane layoutX="693.0" layoutY="70.0" prefHeight="507.0" prefWidth="898.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="32.0" BorderPane.alignment="CENTER">
+                <VirtualizedScrollPane layoutX="693.0" layoutY="70.0" prefHeight="522.0" prefWidth="898.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="13.0" BorderPane.alignment="CENTER">
                     <content>
-                        <CodeArea fx:id="mainText" stylesheets="@text_input_styles.css" />
+                        <CodeArea fx:id="mainText" prefHeight="644.0" prefWidth="974.0" stylesheets="@text_input_styles.css" />
                     </content>
                 </VirtualizedScrollPane>
-                <AnchorPane layoutX="13.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="0.0">
-                    <children>
-                        <Label fx:id="mainViewState" alignment="CENTER" text="Empty" AnchorPane.leftAnchor="0.0" />
-                  <HBox alignment="CENTER" spacing="5.0" AnchorPane.rightAnchor="0.0">
-                     <children>
-                        <Label alignment="CENTER" text="Detected Instrument" />
-                        <TextField fx:id="instrumentMode" prefWidth="60.0" text="None" />
-                     </children>
-                  </HBox>
-                    </children>
-                </AnchorPane>
                 <AnchorPane layoutX="12.0" layoutY="614.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
                     <children>
                   <HBox alignment="CENTER" spacing="5.0" AnchorPane.rightAnchor="0.0">
@@ -81,11 +64,6 @@
                            </HBox.margin>
                         </TextField>
                         <Button fx:id="gotoMeasureButton" mnemonicParsing="false" onAction="#handleGotoMeasure" text="Go" />
-                              <CheckBox fx:id="wrapCheckbox" mnemonicParsing="false" onMouseClicked="#setWrapProperty" text="Wrap text" textFill="WHITE">
-                           <HBox.margin>
-                              <Insets left="20.0" />
-                           </HBox.margin>
-                        </CheckBox>
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

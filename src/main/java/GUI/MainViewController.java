@@ -3,8 +3,6 @@ package GUI;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -24,7 +22,6 @@ import org.fxmisc.richtext.model.StyleSpans;
 import converter.Converter;
 import converter.measure.TabMeasure;
 import javafx.application.Application;
-import javafx.application.HostServices;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -34,7 +31,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
@@ -66,7 +62,6 @@ public class MainViewController extends Application {
 	@FXML public CodeArea mainText;
 
 	@FXML  TextField gotoMeasureField;
-	@FXML  CheckBox wrapCheckbox;
 	@FXML  BorderPane borderPane;
 	@FXML  Button saveTabButton;
 	@FXML  Button saveMXLButton;
@@ -92,14 +87,6 @@ public class MainViewController extends Application {
 		converter = new Converter(this);
 		highlighter = new Highlighter(this, converter);
     	listenforTextAreaChanges();
-	}
-
-	@FXML
-	private void handleUserManual() throws URISyntaxException  {
-		URL resource = getClass().getClassLoader().getResource("org.openjfx/UserManual.pdf");
-		File file = new File(resource.toURI());
-		HostServices hostServices = getHostServices();
-		hostServices.showDocument(file.getAbsolutePath());
 	}
 
 	@FXML
@@ -319,24 +306,7 @@ public class MainViewController extends Application {
 
 	@FXML
 	private void previewButtonHandle() throws IOException {
-		
-		converter.saveMusicXMLFile(new File("/Users/bil/Desktop/sv.musicxml"));
-		Runtime r = Runtime.getRuntime();
-		@SuppressWarnings("unused")
-		Process p = r.exec("open /Users/bil/Desktop/sv.musicxml");
 		System.out.println("Preview Button Clicked!");
-	}
-
-	@FXML
-	private void setWrapProperty() {
-		mainText.setWrapText(this.wrapCheckbox.isSelected());
-	}
-
-	@FXML
-	private void handleScoreType() {
-//		InstrumentSetting = cmbScoreType.getValue().toString().strip();
-//		Score.INSTRUMENT_MODE = MusicXMLCreator.getInstrumentEnum(InstrumentSetting);
-//		refresh();
 	}
 
 	public void refresh() {
@@ -412,11 +382,5 @@ public class MainViewController extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
-	}
-
-	public void setDetectedInstrument(String detectedInstrument) {
-		
-		System.out.println(detectedInstrument);
-		
 	}
 }

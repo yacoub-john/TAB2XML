@@ -202,13 +202,13 @@ public abstract class TabMeasure extends ScoreComponent {
 					divisions -= adjustment;
 
 				if (adjustment > 0) {
-					System.out.println(
-							"Measure " + measureCount + ": Length of measure not good for divisions. Adjusted from "
-									+ (divisions + adjustment) + " to " + divisions);
+//					System.out.println(
+//							"Measure " + measureCount + ": Length of measure not good for divisions. Adjusted from "
+//									+ (divisions + adjustment) + " to " + divisions);
 					nonIntegerDivisions = true;
 				}
 				if (!Arrays.stream(supportedDivisions).anyMatch(i -> i == divisions / beatCount)) {
-					System.out.println("Measure " + measureCount + ": Unsupported divisions: " + divisions);
+					//System.out.println("Measure " + measureCount + ": Unsupported divisions: " + divisions);
 					unSupportedDivisions = true;
 				}
 

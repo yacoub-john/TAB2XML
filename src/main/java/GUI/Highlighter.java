@@ -56,7 +56,7 @@ public class Highlighter {
     }
     
     public StyleSpans<Collection<String>> computeHighlighting(String text) {
-    	System.out.println(text.length());
+    	//System.out.println(text.length());
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         activeErrors = this.filterOverlappingRanges(this.createErrorRangeMap(converter.validate()));
         if (activeErrors.isEmpty()) {
