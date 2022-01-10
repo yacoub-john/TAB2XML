@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import converter.InstrumentSetting;
@@ -40,10 +41,11 @@ class SampleInputs {
 		Settings.getInstance().setDefaultTuning();
 	}
 
+	@Disabled
 	@Test
 	void test() throws IOException, URISyntaxException {
 		
-		URL outDirURL = this.getClass().getClassLoader().getResource("../../resources/test/system/outputs");
+		URL outDirURL = this.getClass().getClassLoader().getResource("../../resources/test/outputs");
 		Path outDirPath = Path.of(outDirURL.toURI());
 		File outDir= outDirPath.toFile();
 		File[] outputFiles = outDir.listFiles();
