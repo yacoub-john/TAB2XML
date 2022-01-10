@@ -13,6 +13,7 @@ repositories {
     maven { url 'https://jitpack.io' }
     jcenter()
 }
+
 jacoco {
     toolVersion = "0.8.6"
 }
