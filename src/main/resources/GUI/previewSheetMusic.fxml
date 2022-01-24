@@ -11,7 +11,7 @@
       <Button fx:id="playMusic" layoutX="14.0" layoutY="346.0" mnemonicParsing="false" onAction="#handleMusic" prefHeight="26.0" prefWidth="105.0" text="Play Music" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" />
       <ImageView fx:id="image" fitHeight="242.0" fitWidth="639.0" layoutX="14.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="120.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="45.0">
          <image>
-            <Image url="/image_assets/ExamplePic.PNG" />
+            <!--  Image url="/image_assets/ExamplePic.PNG" /> -->
          </image>
       </ImageView>
    </children>
