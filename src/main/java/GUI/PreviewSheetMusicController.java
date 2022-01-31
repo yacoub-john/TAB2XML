@@ -15,7 +15,7 @@ public class PreviewSheetMusicController extends Application{
 
 	
     @FXML  private Button Save;
-    @FXML  private ImageView image;
+    @FXML  private ImageView image ;
     @FXML private AnchorPane musicPane;
     @FXML private Button playMusic;
 
