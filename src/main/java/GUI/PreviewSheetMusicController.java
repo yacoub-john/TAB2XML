@@ -43,7 +43,9 @@ public class PreviewSheetMusicController extends Application{
     	
     	 FileChooser fileChooser = new FileChooser();
          fileChooser.setTitle("Save As");
-         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MusicXML files", "*.musicxml", "*.xml", "*.mxl");
+        // FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MusicXML files", "*.musicxml", "*.xml", "*.mxl");
+         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PDF Document", "*.pdf");
+
          fileChooser.getExtensionFilters().add(extFilter);
 
          File initialDir = new File(Settings.getInstance().outputFolder);
