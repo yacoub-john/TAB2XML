@@ -18,6 +18,7 @@ public class PreviewSheetMusicController extends Application{
     @FXML  private ImageView image;
     @FXML private AnchorPane musicPane;
     @FXML private Button playMusic;
+    @FXML private Button Edit;
 
     public PreviewSheetMusicController() {}
     
@@ -33,6 +34,12 @@ public class PreviewSheetMusicController extends Application{
     @FXML
     void handleSave(ActionEvent event) {
 
+    }
+    
+    @FXML 
+    void  editInput(ActionEvent event) {
+     	mvc.convertWindow.hide();
+    	
     }
 
     
