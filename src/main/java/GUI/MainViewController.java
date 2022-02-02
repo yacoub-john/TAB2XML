@@ -1,5 +1,6 @@
 package GUI;
 
+import XMLParser.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -308,7 +309,12 @@ public class MainViewController extends Application {
 	@FXML
 	private void previewButtonHandle() throws IOException {
 		System.out.println("Preview Button Clicked!");
-		// converter.getMusicXML() returns the MusicXML output as a String
+		try {
+			XMLParser.loadXMLFromString(converter.getMusicXML());
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		} //  inputs to parser as string
+		
 		
 		Parent root;
 		try {
