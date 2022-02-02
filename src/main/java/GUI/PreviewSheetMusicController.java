@@ -19,8 +19,9 @@ public class PreviewSheetMusicController extends Application{
 	public Highlighter highlighter;
 	
 	public Window convertWindow;
-
 	
+	//I made a change and its ready for merging.
+
     @FXML  private Button Save;
     @FXML  private ImageView image ;
     @FXML private AnchorPane musicPane;
