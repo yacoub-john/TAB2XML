@@ -13,6 +13,8 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import utility.Settings;
 
+
+
 public class PreviewSheetMusicController extends Application{
 
     private MainViewController mvc;
@@ -20,8 +22,6 @@ public class PreviewSheetMusicController extends Application{
 	
 	public Window convertWindow;
 	
-	//I made a change and its ready for merging.
-
     @FXML  private Button Save;
     @FXML  private ImageView image ;
     @FXML private AnchorPane musicPane;
