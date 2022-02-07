@@ -150,16 +150,18 @@ import java.io.StringReader;
 //          } 
 //      } 
             
+        
+
+      
+            	
             	NodeList scorePart = doc.getElementsByTagName("score-part");
                 System.out.println("Number of score parts: " + scorePart.getLength());
                 
                 
        
                 NodeList creatorList  =  doc.getElementsByTagName("creator");
-                System.out.println("Number of creators: " + scorePart.getLength());
-                Element child = (Element)creatorList.item(0);    
-                short  st = child.getNodeType();
-                System.out.println(st);
+                System.out.println("Number of creators: " + creatorList.getLength());
+            
                   
                 
                 NodeList partNameList  =  doc.getElementsByTagName("part-name");
@@ -167,7 +169,7 @@ import java.io.StringReader;
                 
                 for(int i = 0; i < partNameList.getLength(); i++) {
                 	
-                    child = (Element) partNameList.item(i);    
+                    Element child = (Element) partNameList.item(i);    
                     String  st1 = child.getTextContent();
                     System.out.println("Part " + i + ": " + st1);
                     
@@ -177,14 +179,22 @@ import java.io.StringReader;
                 NodeList measures = doc.getElementsByTagName("measure");
                 System.out.println("Amount of Measures is: " + measures.getLength());
                 
-                
-                
-                
+                	
                 for(int i = 0; i < measures.getLength(); i++) {
                 	
-                	
-                	
+                    NodeList divisions  =  doc.getElementsByTagName("divisions");
+                    Element division = (Element) divisions.item(i);    
+                    String  NOD = division.getTextContent();
+                    System.out.println("Number of divisions in measure " + i + ": " + NOD);
                 }
+                
+       
+//                	
+//                	NodeList measure = measures.item(0).getChildNodes();
+//                	NodeList attributes = measure.item(1).getChildNodes();
+//                	Element	divisions = (Element)attributes.item(0);
+//                	String NOD = divisions.getTextContent();
+//                	System.out.println("Number of divisions in " + "measure " + 0 + "is " + NOD);
                 
                 
                 
