@@ -41,31 +41,53 @@ import java.io.StringReader;
 
             // Get all the element by the tag name
 
-            NodeList laptopList = document.getElementsByTagName("score-partwise");
-            for(int i = 0; i <laptopList.getLength(); i++) {
-                Node laptop = laptopList.item(i);
-                if(laptop.getNodeType() == Node.ELEMENT_NODE) {
+            NodeList creatorList  = document.getElementsByTagName("creator");
+            System.out.println(creatorList.getLength());
+            
+           // Node creator = creatorList.item(0);
+            //System.out.println(creator.toString());
+            
+            
+            Element child = (Element) creatorList.item(0);
+           
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+           
+//            for(int i = 0; i <laptopList.getLength(); i++) {
+//                Node laptop = laptopList.item(i);
+//            if(laptop.getNodeType() == Node.ELEMENT_NODE) {
+//
+//                 Element laptopElement = (Element) laptop;
+//                  System.out.println("Laptop Name: " + laptopElement.getAttribute("identification"));
+//               
+//
+//                   NodeList laptopDetails =  laptop.getChildNodes();
+//                   for(int j = 0; j < laptopDetails.getLength(); j++){
+//                       Node detail = laptopDetails.item(j);
+//                       if(detail.getNodeType() == Node.ELEMENT_NODE) {
+//                           Element detailElement = (Element) detail;
+//                           System.out.println("     " + detailElement.getTagName() + ": " + detailElement.getAttribute("identification"));
+//                       }
+//
+//                  }
+//
+//                }
+//           }
 
-                    Element laptopElement = (Element) laptop;
-                    System.out.println("Laptop Name: " + laptopElement.getAttribute("name"));
 
-                    NodeList laptopDetails =  laptop.getChildNodes();
-                    for(int j = 0; j < laptopDetails.getLength(); j++){
-                        Node detail = laptopDetails.item(j);
-                        if(detail.getNodeType() == Node.ELEMENT_NODE) {
-                            Element detailElement = (Element) detail;
-                            System.out.println("     " + detailElement.getTagName() + ": " + detailElement.getAttribute("value"));
-                        }
-
-                    }
-
-                }
-            }
-
-
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
+     } catch (ParserConfigurationException e) {
+          e.printStackTrace();
+      }
 	}
 	
 	
@@ -77,4 +99,13 @@ import java.io.StringReader;
 	    getXml( builder.parse(is) );
 	    
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
