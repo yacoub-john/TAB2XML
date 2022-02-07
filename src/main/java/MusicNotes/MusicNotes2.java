@@ -10,14 +10,32 @@ import javax.swing.SwingUtilities;
 
 
 public class MusicNotes2 {
-	 public static int x=40;
+	 public static int x=80;
+	 public static int y=268;
 	
-	 public static void SimpleBlackNote() {
+	 public static void SimpleBlackNote(Graphics g) {
+		 Graphics2D g2 = (Graphics2D) g;
+		    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+		        RenderingHints.VALUE_ANTIALIAS_ON);
+
+		    Font font = new Font("Bravura", Font.PLAIN, 60);
+		   
+		    g2.setFont(font);
+		 g2.drawString("\u266A", x, y);
+		 if(x<880) {
+			 x+=50;
+		 }
+		 else
+		 {
+			 x=80;
+			 y+=100;
+		 }
+		 
 		 
 	 }
 	 
 	public static void main(String[] args) {
-	
+	MusicNotes2 mn=new MusicNotes2();
 		
 	JFrame f = new JFrame() {
 	  public void paint(Graphics g) {
@@ -33,8 +51,9 @@ public class MusicNotes2 {
 	    g2.setFont(font);
 	    g2.drawString("\uD834\uDD1E", 40, 268);// Gclef
 	    g2.drawString("\uD834\uDD22", 40, 370);// Fclef
-	    g2.drawString("\u266A", 40, 470);
-	    
+	    //g2.drawString("\u266A", 40, 470);
+	    mn.SimpleBlackNote(g);
+	    mn.SimpleBlackNote(g);
 	    
 	    
 	    // Vertical lines
