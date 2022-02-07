@@ -61,8 +61,8 @@ public class MusicNotes2 {
 	    
 	    g2.drawString("\uD834\uDD22", 40, 370);// Fclef
 	    //g2.drawString("\u266A", 40, 470);
-	    mn.SimpleBlackNote(g);
-	    mn.SimpleBlackNote(g);
+	    MusicNotes2.SimpleBlackNote(g);
+	    MusicNotes2.SimpleBlackNote(g);
 	    
 	    
 	    // Vertical lines
