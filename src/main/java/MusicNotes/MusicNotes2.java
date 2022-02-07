@@ -20,7 +20,12 @@ public class MusicNotes2 {
 	
 		
 	JFrame f = new JFrame() {
-	  public void paint(Graphics g) {
+		
+		 
+
+	private static final long serialVersionUID = 1L;
+
+	public void paint(Graphics g) {
 		  
 		  
 		  //
@@ -32,17 +37,28 @@ public class MusicNotes2 {
 	   
 	    g2.setFont(font);
 	    g2.drawString("\uD834\uDD1E", 40, 268);// Gclef
-	    g2.drawString("\uD834\uDD22", 40, 370);// Fclef
 	    g2.drawString("\u266A", 40, 470);
+	    g2.drawString("\uD834\uDD61", 40,570);
 	    
 	    
 	    
 	    // Vertical lines
 		g2.drawLine(0,268,960,268);
-		g2.drawLine(0,368,960,368);
 		g2.drawLine(0,468,960,468);
 		g2.drawLine(0,568,960,568);
-	  }
+	 
+		 
+		 Graphics2D g3 = (Graphics2D) g;
+		    g3.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+		        RenderingHints.VALUE_ANTIALIAS_ON);
+
+		    Font font1 = new Font("Bravura", Font.PLAIN, 60);
+		    g3.setFont(font1);
+		    g3.drawString("\uD834\uDD22", 40, 370);// Fclef
+		    
+		    g3.drawLine(0,368,960,368);
+	}
+	 
 	};
 	SwingUtilities.updateComponentTreeUI(f);
 	f.setSize(960,960);
