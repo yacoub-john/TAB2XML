@@ -186,7 +186,32 @@ import java.io.StringReader;
                     Element division = (Element) divisions.item(i);    
                     String  NOD = division.getTextContent();
                     System.out.println("Number of divisions in measure " + i + ": " + NOD);
+                    
+                    
+                    NodeList fifths =  doc.getElementsByTagName("fifths");
+                    Element fifth = (Element) fifths.item(i);    
+                    String  NOF = fifth.getTextContent();
+                    System.out.println("Number of fifths in measure " + i + ": " + NOF);
+                    
+                 
+                    NodeList signs =  doc.getElementsByTagName("sign");
+                    String  NOS = "";
+                    
+                    if ( signs.item(i) != null ) {
+                    Element sign = (Element) signs.item(i);    
+                      NOS = sign.getTextContent();
+                    System.out.println("sign of the measure " + i + ": " + NOS);
+                    }
+                    
+                    NOD = "";
+                    NOF = "";
+                    NOS = "";
+                    
+                    
+                    
                 }
+                
+                
                 
        
 //                	
