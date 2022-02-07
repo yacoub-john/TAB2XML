@@ -105,8 +105,33 @@ import java.io.StringReader;
             	NodeList scorePart = doc.getElementsByTagName("score-part");
                 System.out.println("Number of score parts: " + scorePart.getLength());
                 
-                Node partName = scorePart.item(0);
-                System.out.println(partName.ELEMENT_NODE);
+                
+       
+                NodeList creatorList  =  doc.getElementsByTagName("creator");
+                System.out.println("Number of creators: " + scorePart.getLength());
+                Element child = (Element)creatorList.item(0);    
+                short  st = child.getNodeType();
+                System.out.println(st);
+                  
+                
+                NodeList partNameList  =  doc.getElementsByTagName("part-name");
+                System.out.println("Number of parts: " + scorePart.getLength());
+                
+                for(int i = 0; i < partNameList.getLength(); i++) {
+                	
+                    child = (Element) partNameList.item(i);    
+                    String  st1 = child.getTextContent();
+                    System.out.println("Part " + i + ": " + st1);
+                }
+
+                
+                
+                for(int i = 0; i < scorePart.getLength(); i++) {
+                	
+                	Node partname = scorePart.item(i);
+                	System.out.println(partname.getAttributes());
+                	
+                }
 
                 
                 NodeList measures = doc.getElementsByTagName("measure");
@@ -122,52 +147,11 @@ import java.io.StringReader;
                 }
                 
                 
-        		System.setProperty("ExecutionEnv", "part-list");
-        		String creator = getTestData("score-partwise","score-part",doc);
-                System.out.println(creator);
+        		
 	}
 	
-	
-	private static String getTestData(String SectionName, String NodeName, Document doc) 
-	{
 	
 
-		
-		String env =System.getProperty("ExecutionEnv");
-		//System.out.println("Environment is :" + env );
-		String path ="object/"+SectionName+"/"+env+"/"+NodeName;
-		System.out.println("Path is : " +path );
-		
-		String final_value = null;
-		NodeList nodeList;
-		Node node;
-		XPath xPath;
-		
-		try
-		{
-				xPath= XPathFactory.newInstance().newXPath();
-				nodeList=(NodeList) xPath.compile(path).evaluate(doc, XPathConstants.NODESET);
-		}
-		catch(Exception e)
-		{
-			return null;
-		}
-		
-		for(int temp=0;temp<nodeList.getLength();temp++)
-		{
-			node=nodeList.item(temp);
-			if(node.getNodeName().equals(NodeName))
-			{
-				final_value=node.getTextContent().trim();
-			}
-		}
-		
-		
-		
-		return final_value;
-	}
-	
-	
 	public static void loadXMLFromString(String xml) throws Exception
 	{
 	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
