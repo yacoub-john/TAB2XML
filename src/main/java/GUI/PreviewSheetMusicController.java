@@ -40,7 +40,7 @@ public class PreviewSheetMusicController extends Application{
     }
 
     @FXML
-    void handleSave(ActionEvent event) {
+    void handleSave() {
     	
     	 FileChooser fileChooser = new FileChooser();
          fileChooser.setTitle("Save As");
@@ -74,10 +74,17 @@ public class PreviewSheetMusicController extends Application{
          fileChooser.setInitialDirectory(initialDir);
 
          File file = fileChooser.showSaveDialog(convertWindow);
+
+         if (file != null) {
+             mvc.converter.saveMusicXMLFile(file);
+             mvc.saveFile = file;
+          	 mvc.convertWindow.hide();
+
+         }
     }
     
     @FXML 
-    void  editInput(ActionEvent event) {
+    void  editInput() {
      	mvc.convertWindow.hide();
     	
     }
