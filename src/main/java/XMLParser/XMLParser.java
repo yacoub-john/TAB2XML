@@ -51,9 +51,12 @@ public class XMLParser {
 
 		NodeList measures = doc.getElementsByTagName("measure");
 		System.out.println("Amount of Measures is: " + measures.getLength());
+		int numberOfMeasures = 0;
 	
 
 		for(int i = 0; i < measures.getLength(); i++) {
+			
+			numberOfMeasures ++;
 
 			NodeList divisions  =  doc.getElementsByTagName("divisions");
 			Element division = (Element) divisions.item(i);    
@@ -80,6 +83,43 @@ public class XMLParser {
 			}
 			
 			
+			NodeList staffLines  =  doc.getElementsByTagName("staff-lines");
+			Element staffLine = (Element) staffLines.item(0);    
+			String  NOST = staffLine.getTextContent();
+			
+			
+			NodeList tuningSteps =  doc.getElementsByTagName("tuning-step");
+			
+			if (numberOfMeasures == 1) {
+				System.out.println("Number of staff Lines" + ": " + NOST);
+				System.out.println("Staff detals: ");
+				
+			}
+			
+			
+			for (int k = 0; k < tuningSteps.getLength(); k++) {
+				
+				if (numberOfMeasures == 1) {
+				
+				Element tuningStep = (Element) tuningSteps.item(k);    
+				String  NOTS = tuningStep.getTextContent();
+				
+				NodeList tuningOctaves =  doc.getElementsByTagName("tuning-octave");
+				Element tuningOctave = (Element) tuningOctaves.item(k);    
+				String  NOTO = tuningOctave.getTextContent();
+	            
+				int x = k + 1;
+				
+				System.out.println("Line = " + x );
+				System.out.println("tuning-step: " +  NOTS);
+				System.out.println("tuning-octave: " +  NOTO);
+				
+				}
+				
+				
+			}
+			
+			
 			
 			NodeList notes = doc.getElementsByTagName("note");
 			System.out.println("Amount of notes is: " + notes.getLength());
@@ -92,8 +132,7 @@ public class XMLParser {
 			NodeList strings= doc.getElementsByTagName("string");
 			NodeList frets = doc.getElementsByTagName("fret");
 
-
-
+ 
 
 			for(int j = 0; j < notes.getLength(); j++) {
 				
@@ -174,14 +213,6 @@ public class XMLParser {
 
 
 	}
-
-
-
-
-
-
-
-
 
 	public static void loadXMLFromString(String xml) throws Exception
 	{
