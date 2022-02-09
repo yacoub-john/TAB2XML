@@ -61,7 +61,7 @@ public class XMLParser {
 			NodeList divisions  =  doc.getElementsByTagName("divisions");
 			Element division = (Element) divisions.item(i);    
 			String  NOD = division.getTextContent();
-			System.out.println("Number of divisions in measure " + i + ": " + NOD);
+			System.out.println("Number of divisions in measure " + numberOfMeasures + ": " + NOD);
 
 
 			NodeList fifths =  doc.getElementsByTagName("fifths");
@@ -70,7 +70,7 @@ public class XMLParser {
 			
 				Element fifth = (Element) fifths.item(i);    
 				NOF = fifth.getTextContent();
-				System.out.println("Fifth of measure " + i + ": " + NOF);
+				System.out.println("Fifth of measure " + numberOfMeasures + ": " + NOF);
 			}
 			
 			NodeList signs =  doc.getElementsByTagName("sign");
