@@ -9,6 +9,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import MusicNotes.MusicNotes2;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -208,7 +209,7 @@ public class XMLParser {
 			
 		}
 
-
+		MusicNotes2.getNotes("");
 	}
 
 	public static void loadXMLFromString(String xml) throws Exception

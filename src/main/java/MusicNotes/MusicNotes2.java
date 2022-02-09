@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 public class MusicNotes2 {
 	 public static int x=80;
 	 public static int y=268;
+	 public static String notes;
 	
 	 public static void SimpleBlackNote(Graphics g) {
 		 Graphics2D g2 = (Graphics2D) g;
@@ -125,5 +126,11 @@ public class MusicNotes2 {
 	f.setVisible(true);
 	
 	
+	}
+	
+	public static void getNotes(String RecievedNotes) {
+		
+		notes = RecievedNotes;
+		main(null);
 	}
 	}
