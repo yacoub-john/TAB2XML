@@ -44,15 +44,14 @@ public class XMLParser {
 
 			Element child = (Element) partNameList.item(i);    
 			String  st1 = child.getTextContent();
-			System.out.println("Part " + i + ": " + st1);
+			System.out.println("Part " + (i + 1)  + ": " + st1);
 
 
 		}
 
 		NodeList measures = doc.getElementsByTagName("measure");
 		System.out.println("Amount of Measures is: " + measures.getLength());
-		
-		int note = 0;
+	
 
 		for(int i = 0; i < measures.getLength(); i++) {
 
@@ -68,7 +67,7 @@ public class XMLParser {
 			
 				Element fifth = (Element) fifths.item(i);    
 				NOF = fifth.getTextContent();
-				System.out.println("Number of fifths in measure " + i + ": " + NOF);
+				System.out.println("Fifth of measure " + i + ": " + NOF);
 			}
 			
 			NodeList signs =  doc.getElementsByTagName("sign");
@@ -77,7 +76,7 @@ public class XMLParser {
 			if ( signs.item(i) != null ) {
 				Element sign = (Element) signs.item(i);    
 				NOS = sign.getTextContent();
-				System.out.println("Sign Measure " + i + ": " + NOS);
+				System.out.println("Sign: " + NOS);
 			}
 			
 			
@@ -86,42 +85,91 @@ public class XMLParser {
 			System.out.println("Amount of notes is: " + notes.getLength());
 			
 			NodeList steps =  doc.getElementsByTagName("step");
-			System.out.println("Amount of steps is: " + steps.getLength());
+			NodeList octaves = doc.getElementsByTagName("octave");
+			NodeList durations = doc.getElementsByTagName("duration");
+			NodeList voices = doc.getElementsByTagName("voice");
+			NodeList types = doc.getElementsByTagName("type");
+			NodeList strings= doc.getElementsByTagName("string");
+			NodeList frets = doc.getElementsByTagName("fret");
+
+
+
 
 			for(int j = 0; j < notes.getLength(); j++) {
 				
-			
+				String note = " ";
+				
+				System.out.println("Note: " + ( j+1));
+				
 				if(steps.item(j) != null) {
 				
 					Element step = (Element) steps.item(j);    
 					String  stepValue= step.getTextContent();
-					System.out.println("Step " + (j+1) + ": " +  stepValue);
+					System.out.println("Step: " +  stepValue);
 				
 				}
 				
+				
+				if(octaves.item(j) != null) {
+					
+					Element octave = (Element) octaves.item(j);    
+					String  octaveValue = octave.getTextContent();
+					System.out.println("Octave: " +  octaveValue);
+				
+				}
+				
+				if(durations.item(j) != null) {
+
+					Element duration = (Element) durations.item(j);    
+					String  durationValue = duration.getTextContent();
+					System.out.println("Duration: " +  durationValue);
+
+				}
+				
+				if(voices.item(j) != null) {
+
+					Element voice = (Element) voices.item(j);    
+					String  voiceValue = voice.getTextContent();
+					System.out.println("Voice: " +  voiceValue);
+
+				}
+				
+				if(types.item(j) != null) {
+
+					Element type = (Element) types.item(j);    
+					String  typeValue = type.getTextContent();
+					System.out.println("Type: " +  typeValue);
+
+				}
+				
+				if(strings.item(j) != null) {
+
+					Element string = (Element) strings.item(j);    
+					String  stringValue = string.getTextContent();
+					System.out.println("String: " +  stringValue);
+
+				}
+				
+				if(frets.item(j) != null) {
+
+					Element fret = (Element) frets.item(j);    
+					String  fretValue = fret.getTextContent();
+					System.out.println("Fret: " +  fretValue);
+
+				}
+				
+				System.out.println("--------------------");
+				
+				
 			}
+			
+			
+			
 
 			NOD = "";
 			NOF = "";
 			NOS = "";
 			
-			
-			
-
-		}
-
-
-
-
-
-
-
-
-		for(int i = 0; i < scorePart.getLength(); i++) {
-
-			Node partname = scorePart.item(i);
-			System.out.println(partname.getAttributes());
-
 		}
 
 
