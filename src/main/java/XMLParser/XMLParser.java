@@ -87,6 +87,8 @@ public class XMLParser {
 			Element staffLine = (Element) staffLines.item(0);    
 			String  NOST = staffLine.getTextContent();
 			
+			System.out.println("*********************");
+
 			
 			NodeList tuningSteps =  doc.getElementsByTagName("tuning-step");
 			
@@ -119,7 +121,8 @@ public class XMLParser {
 				
 			}
 			
-			
+			System.out.println("*********************");
+
 			
 			NodeList notes = doc.getElementsByTagName("note");
 			System.out.println("Amount of notes is: " + notes.getLength());
@@ -201,9 +204,6 @@ public class XMLParser {
 				
 				
 			}
-			
-			
-			
 
 			NOD = "";
 			NOF = "";
