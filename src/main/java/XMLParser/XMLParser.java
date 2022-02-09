@@ -1,6 +1,5 @@
 package XMLParser;
 
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -138,9 +137,7 @@ public class XMLParser {
  
 
 			for(int j = 0; j < notes.getLength(); j++) {
-				
-				String note = " ";
-				
+								
 				System.out.println("Note: " + ( j+1));
 				
 				if(steps.item(j) != null) {
