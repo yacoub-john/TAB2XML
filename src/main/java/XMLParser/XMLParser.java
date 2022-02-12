@@ -53,6 +53,21 @@ public class XMLParser {
 		System.out.println("Amount of Measures is: " + measures.getLength());
 		int numberOfMeasures = 0;
 	
+		NodeList zero = measures.item(0).getChildNodes();
+		System.out.println("Zero Length: " + zero.getLength());
+		
+		NodeList noteZero = zero.item(1).getChildNodes();
+		System.out.println("Note 0 Length: " + noteZero.getLength());		
+			
+		NodeList one = measures.item(1).getChildNodes();
+		
+		System.out.println("One Length: " + one.getLength());
+		
+		NodeList noteOne = one.item(1).getChildNodes();
+		System.out.println("Note 1 Length: " + noteOne.getLength());		
+			
+		
+		
 
 		for(int i = 0; i < measures.getLength(); i++) {
 			
