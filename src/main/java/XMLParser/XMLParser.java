@@ -1,6 +1,5 @@
 package XMLParser;
 
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -10,6 +9,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import MusicNotes.MusicNotes2;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -53,6 +53,21 @@ public class XMLParser {
 		System.out.println("Amount of Measures is: " + measures.getLength());
 		int numberOfMeasures = 0;
 	
+		NodeList zero = measures.item(0).getChildNodes();
+		System.out.println("Zero Length: " + zero.getLength());
+		
+		NodeList noteZero = zero.item(1).getChildNodes();
+		System.out.println("Note 0 Length: " + noteZero.getLength());		
+			
+		NodeList one = measures.item(1).getChildNodes();
+		
+		System.out.println("One Length: " + one.getLength());
+		
+		NodeList noteOne = one.item(1).getChildNodes();
+		System.out.println("Note 1 Length: " + noteOne.getLength());		
+			
+		
+		
 
 		for(int i = 0; i < measures.getLength(); i++) {
 			
@@ -87,6 +102,8 @@ public class XMLParser {
 			Element staffLine = (Element) staffLines.item(0);    
 			String  NOST = staffLine.getTextContent();
 			
+			System.out.println("*********************");
+
 			
 			NodeList tuningSteps =  doc.getElementsByTagName("tuning-step");
 			
@@ -119,7 +136,8 @@ public class XMLParser {
 				
 			}
 			
-			
+			System.out.println("*********************");
+
 			
 			NodeList notes = doc.getElementsByTagName("note");
 			System.out.println("Amount of notes is: " + notes.getLength());
@@ -141,11 +159,16 @@ public class XMLParser {
 //				note1 ++;
 //			}
 
+
 			for(int j = 0; j < notes.getLength() ; j++) {
 				
 				
 				String note = " ";
 				
+
+			for(int j = 0; j < notes.getLength(); j++) {
+								
+
 				System.out.println("Note: " + ( j+1));
 				
 				if(steps.item(j) != null) {
@@ -209,9 +232,6 @@ public class XMLParser {
 				
 				
 			}
-			
-			
-			
 
 			NOD = "";
 			NOF = "";
@@ -219,7 +239,8 @@ public class XMLParser {
 			
 		}
 
-
+		MusicNotes2.getNotes("");
+	}
 	}
 
 	public static void loadXMLFromString(String xml) throws Exception
