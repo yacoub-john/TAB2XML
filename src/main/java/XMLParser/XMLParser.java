@@ -12,14 +12,10 @@ import org.xml.sax.InputSource;
 import MusicNotes.MusicNotes2;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-
 
 
 public class XMLParser {
 	
-	private ArrayList<String> notes = new ArrayList<>();
-
 
 	public static void getXml(Document doc) {
 
@@ -49,10 +45,29 @@ public class XMLParser {
 
 		}
 
-		NodeList measures = doc.getElementsByTagName("measure");
+		NodeList measures = doc.getElementsByTagName("measure"); //List of Measures
 		System.out.println("Amount of Measures is: " + measures.getLength());
 		int numberOfMeasures = 0;
-	
+		
+		NodeList measure0 = (NodeList) measures.item(0); // First Measure 
+		System.out.println("Measure 0 length" + measure0.getLength());
+		
+		for(int i = 0; i < measure0.getLength(); i++) {
+			Node notesMeasure = (Node) measure0.item(i); // Note of First Measure
+			System.out.println("Notes measure 0" + notesMeasure);
+
+		}
+		
+		NodeList measure1 = (NodeList) measures.item(1); // First Measure 
+		System.out.println("Measure 1 length" + measure1.getLength());
+		
+		for(int i = 0; i < measure1.getLength(); i++) {
+			Node notesMeasure = (Node) measure1.item(i); // Note of First Measure
+			System.out.println("Notes measure 1" + notesMeasure);
+
+		}
+		
+		
 		NodeList zero = measures.item(0).getChildNodes();
 		System.out.println("Zero Length: " + zero.getLength());
 		
@@ -174,7 +189,7 @@ public class XMLParser {
 				}
 				
 				if(durations.item(j) != null) {
-
+  
 					Element duration = (Element) durations.item(j);    
 					String  durationValue = duration.getTextContent();
 					System.out.println("Duration: " +  durationValue);
