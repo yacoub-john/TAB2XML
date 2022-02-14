@@ -132,9 +132,17 @@ public class XMLParser {
 			NodeList strings= doc.getElementsByTagName("string");
 			NodeList frets = doc.getElementsByTagName("fret");
 
- 
+//			int note1 = 0;
+//			
+//			for (int a = 0; a<)
+//			
+//			if (numberOfMeasures == 1) {
+//				
+//				note1 ++;
+//			}
 
-			for(int j = 0; j < notes.getLength(); j++) {
+			for(int j = 0; j < notes.getLength() ; j++) {
+				
 				
 				String note = " ";
 				
