@@ -14,12 +14,6 @@ public class GuitarParser {
 
 	public static void parseGuitar(NodeList measures, ArrayList<Integer> nNPM, Document doc) {
 		
-		
-		for(int k = 0; k < nNPM.size(); k++ ) {
-			
-			System.out.println("Measure: " + k + "number of notes: " + nNPM.get(k));
-		}
-
 		for(int i = 0; i < measures.getLength(); i++) {
 
 
