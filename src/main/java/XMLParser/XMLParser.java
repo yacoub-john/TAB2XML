@@ -57,6 +57,7 @@ public class XMLParser {
 			System.out.println("Notes measure 0" + notesMeasure);
 
 		}
+		System.out.println("Total number of notes in measure 0 is: " + (measure0.getLength()-3)/2);
 		
 		NodeList measure1 = (NodeList) measures.item(1); // First Measure 
 		System.out.println("Measure 1 length" + measure1.getLength());
@@ -67,6 +68,8 @@ public class XMLParser {
 
 		}
 		
+		System.out.println("Total number of notes in measure 1 is: " + (measure1.getLength()-3)/2);
+
 		
 		NodeList zero = measures.item(0).getChildNodes();
 		System.out.println("Zero Length: " + zero.getLength());
