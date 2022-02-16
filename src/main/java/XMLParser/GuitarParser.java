@@ -9,8 +9,8 @@ import org.w3c.dom.NodeList;
 public class GuitarParser {
 
 
-	private ArrayList<String> notes = new ArrayList<>();
-	private ArrayList<String> divisions = new ArrayList<>();
+	private ArrayList<String> fret = new ArrayList<>();
+	private ArrayList<String> string = new ArrayList<>();
 
 	public static void parseGuitar(NodeList measures, ArrayList<Integer> nNPM, Document doc) {
 		

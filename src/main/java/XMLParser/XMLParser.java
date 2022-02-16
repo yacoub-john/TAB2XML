@@ -72,12 +72,4 @@ public class XMLParser {
 
 	}
 
-
-
-
-
-
-
-
-
 }
