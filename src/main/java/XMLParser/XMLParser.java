@@ -50,8 +50,7 @@ public class XMLParser {
 			nNPM.add((measure.getLength()-3)/2);
 		}
 		
-	
-		
+
 		if(partName.equals("Guitar")) {
 		
 			GuitarParser.parseGuitar(measures, nNPM, doc);

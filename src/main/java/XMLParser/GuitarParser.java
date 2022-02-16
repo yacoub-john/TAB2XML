@@ -8,7 +8,7 @@ import org.w3c.dom.NodeList;
 
 public class GuitarParser {
 
-
+	private ArrayList<String> notes = new ArrayList<>();
 	private ArrayList<String> fret = new ArrayList<>();
 	private ArrayList<String> string = new ArrayList<>();
 
@@ -99,14 +99,16 @@ public class GuitarParser {
 
 			for(int j = 0; j < notes.getLength(); j++) {
 
+				String note = "";
+				
 				System.out.println("Note: " + ( j+1));
-
+			
 				if(steps.item(j) != null) {
 
 					Element step = (Element) steps.item(j);    
-					String  stepValue= step.getTextContent();
+					String  stepValue = step.getTextContent();
 					System.out.println("Step: " +  stepValue);
-
+					note += stepValue;
 				}
 
 
@@ -115,7 +117,7 @@ public class GuitarParser {
 					Element octave = (Element) octaves.item(j);    
 					String  octaveValue = octave.getTextContent();
 					System.out.println("Octave: " +  octaveValue);
-
+					note += octaveValue;
 				}
 
 				if(durations.item(j) != null) {
