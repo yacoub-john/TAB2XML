@@ -8,6 +8,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import MusicNotes.MusicNoteEffects;
+import javafx.stage.Stage;
+
 import java.io.StringReader;
 import java.util.ArrayList;
 
@@ -56,6 +59,9 @@ public class XMLParser {
 			GuitarParser.parseGuitar(measures, nNPM, doc);
 			
 		}
+		
+		//MusicNotes.MusicNoteEffects.start();
+	
 		
 
 	}

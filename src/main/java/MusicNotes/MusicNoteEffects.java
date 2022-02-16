@@ -1,4 +1,5 @@
 package MusicNotes;
+import GUI.PreviewSheetMusicController;
 //Java Program to create a canvas with specified
 //width and height(as arguments of constructor),
 //add it to the stage and also add a circle and
@@ -14,21 +15,21 @@ import javafx.scene.canvas.*;
 import javafx.scene.paint.Color;
 import javafx.scene.Group;
 
-public class MusicNoteEffects extends Application {
+public class MusicNoteEffects {
 
 	// launch the application
-	public void start(Stage stage)
+	public static void start()
 	{
 
 		// set title for the stage
-		stage.setTitle("creating canvas");
+	//	stage.setTitle("creating canvas");
 
 		// create a canvas
-		Canvas canvas = new Canvas(100.0f, 100.0f);
+	//	Canvas canvas = new Canvas(100.0f, 100.0f);
 
 		// graphics context
 		GraphicsContext graphics_context =
-			canvas.getGraphicsContext2D();
+			PreviewSheetMusicController.canvas.getGraphicsContext2D();
 
 		// set fill for rectangle
 		graphics_context.setFill(Color.RED);
@@ -38,23 +39,23 @@ public class MusicNoteEffects extends Application {
 //		graphics_context.setFill(Color.BLUE);
 //		graphics_context.fillOval(30, 30, 70, 70);
 //
-//		// create a Group
-		Group group = new Group(canvas);
+//		
+		Group group = new Group(PreviewSheetMusicController.canvas);
 
 		// create a scene
-		Scene scene = new Scene(group, 200, 200);
+	//	Scene scene = new Scene(group, 200, 200);
 
 		// set the scene
-		stage.setScene(scene);
-
-		stage.show();
+//		stage.setScene(scene);
+//
+//		stage.show();
 	}
 
 	// Main Method
-	public static void main(String args[])
-	{
-
-		// launch the application
-		launch(args);
-	}
+//	public static void main(String args[])
+//	{
+//
+//		// launch the application
+//		launch(args);
+//	}
 }
