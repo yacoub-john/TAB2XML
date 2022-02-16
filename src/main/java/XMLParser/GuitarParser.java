@@ -178,7 +178,7 @@ public class GuitarParser {
 
 		}
 		
-		PlayNotes.JfugueTest.GetNotes(notesList);
+		PlayNotes.JfugueTest.getNotes(notesList);
 		
 	}
 	
