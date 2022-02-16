@@ -15,6 +15,13 @@ import java.io.StringReader;
 import java.util.ArrayList;
 
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+
+
 
 public class XMLParser {
 	
@@ -135,6 +142,21 @@ public class XMLParser {
 				
 				
 			}
+			
+			
+			 XPath xpath = XPathFactory.newInstance().newXPath();
+	          NodeList nodes = doc.getElementsByTagName("measure");
+	          Node notes = nodes.item(0);
+	          
+			try {
+				nodes = (NodeList)
+				          xpath.evaluate("measure", doc, XPathConstants.NODESET);
+			} catch (XPathExpressionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	          int count = nodes.getLength();
+              System.out.println(  "number of measures try" + count);
 			
 			System.out.println("*********************");
 
