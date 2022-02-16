@@ -37,7 +37,7 @@ public class PreviewSheetMusicController extends Application{
     
     @FXML
     void handleMusic(ActionEvent event) {
-
+    	PlayNotes.JfugueTest.playNotes();
     }
 
     @FXML
