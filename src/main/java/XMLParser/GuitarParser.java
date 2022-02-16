@@ -8,7 +8,7 @@ import org.w3c.dom.NodeList;
 
 public class GuitarParser {
 
-	private ArrayList<String> notes = new ArrayList<>();
+	private static ArrayList<String> notesList = new ArrayList<>();
 	private ArrayList<String> fret = new ArrayList<>();
 	private ArrayList<String> string = new ArrayList<>();
 
@@ -131,7 +131,6 @@ public class GuitarParser {
 					Element duration = (Element) durations.item(j);    
 					String  durationValue = duration.getTextContent();
 					System.out.println("Duration: " +  durationValue);
-
 				}
 
 				if(voices.item(j) != null) {
@@ -139,7 +138,7 @@ public class GuitarParser {
 					Element voice = (Element) voices.item(j);    
 					String  voiceValue = voice.getTextContent();
 					System.out.println("Voice: " +  voiceValue);
-
+					
 				}
 
 				if(types.item(j) != null) {
@@ -147,6 +146,7 @@ public class GuitarParser {
 					Element type = (Element) types.item(j);    
 					String  typeValue = type.getTextContent();
 					System.out.println("Type: " +  typeValue);
+					note += typeValue.substring(0,1);
 
 				}
 
@@ -165,10 +165,11 @@ public class GuitarParser {
 					System.out.println("Fret: " +  fretValue);
 
 				}
-
+	
+				System.out.println(note);
+				notesList.add(note);
 				System.out.println("--------------------");
-
-
+				
 			}
 
 			NOD = "";
@@ -176,6 +177,8 @@ public class GuitarParser {
 			NOS = "";
 
 		}
-
+	
 	}
+	
+	
 }
