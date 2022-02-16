@@ -10,7 +10,7 @@ import org.jfugue.player.Player;
 			Player player = new Player();
 			String str="V0 I[Guitar]";
 			for(int i=0;i<NotesReceived.size();i++) {
-				 player.play(str+NotesReceived.get(i));
+				 player.play(str+ " " + NotesReceived.get(i));
 			}
 				
 		}
