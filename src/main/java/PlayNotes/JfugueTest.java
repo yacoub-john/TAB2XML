@@ -1,13 +1,19 @@
 package PlayNotes;
 
-	import org.jfugue.player.Player;
+import java.util.ArrayList;
+
+import org.jfugue.player.Player;
+	
 
 	public class JfugueTest {
-		public static void main(String[] args) {
-	        Player player = new Player();
-	        String str="V0 I[Flute]";
-	        
-	        player.play(str+" Eq Ch. | Eq Ch. | Dq Eq Dq Cq   ");
-	    };
+		public static void GetNotes(ArrayList<String>NotesReceived) {
+			Player player = new Player();
+			String str="V0 I[Guitar]";
+			for(int i=0;i<NotesReceived.size();i++) {
+				 player.play(str+NotesReceived.get(i));
+			}
+				
+		}
+		
 	  }
 
