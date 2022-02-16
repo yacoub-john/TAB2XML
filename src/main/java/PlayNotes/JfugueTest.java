@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.jfugue.player.Player;
 	
-
+	
 	public class JfugueTest {
 		public static void GetNotes(ArrayList<String>NotesReceived) {
 			Player player = new Player();
