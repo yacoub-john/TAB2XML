@@ -2,9 +2,12 @@ package XMLParser;
 
 import java.util.ArrayList;
 
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+
 
 public class GuitarParser {
 
@@ -13,7 +16,7 @@ public class GuitarParser {
 	private static ArrayList<String> stringF = new ArrayList<>();
 
 	public static void parseGuitar(NodeList measures, ArrayList<Integer> nNPM, Document doc) {
-		
+		// Find a way to count number of attributes for each note, for each notes with three technical attributes this marks that they have an alter value
 		
 		
 		for(int i = 0; i < measures.getLength(); i++) {
@@ -90,19 +93,27 @@ public class GuitarParser {
 			System.out.println("Amount of notes is: " + notes.getLength());
 
 			NodeList steps =  doc.getElementsByTagName("step");
+			NodeList alters = doc.getElementsByTagName("alter");
 			NodeList octaves = doc.getElementsByTagName("octave");
 			NodeList durations = doc.getElementsByTagName("duration");
 			NodeList voices = doc.getElementsByTagName("voice");
 			NodeList types = doc.getElementsByTagName("type");
 			NodeList strings= doc.getElementsByTagName("string");
-			NodeList frets = doc.getElementsByTagName("fret");
-
+			NodeList frets = doc.getElementsByTagName("fret");	
+			
+			NodeList note1 = (NodeList) notes.item(0);
+			NodeList technical = (NodeList) note1.item(1); //1: Technical  3: Number of Notes 
+			
+			for(int k = 0; k < technical.getLength(); k++) {
+				
+				Node technicalInfo = (Node) technical.item(k);
+				System.out.println("Node type: " + technicalInfo);
+			}
 
 
 			for(int j = 0; j < notes.getLength(); j++) {
 				
-			
-
+				
 				System.out.println("Note: " + ( j+1));
 
 				if(steps.item(j) != null) {
@@ -112,7 +123,15 @@ public class GuitarParser {
 					System.out.println("Step: " +  stepValue);
 
 				}
+				
+				if(alters.item(j) != null) {
 
+					Element alter = (Element) alters.item(j);    
+					String  alterValue= alter.getTextContent();
+					System.out.println("Alter: " +  alterValue);
+
+				}
+				
 
 				if(octaves.item(j) != null) {
 
