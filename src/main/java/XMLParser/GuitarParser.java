@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class GuitarParser {
@@ -94,38 +95,55 @@ public class GuitarParser {
 			System.out.println("Amount of notes is: " + notes.getLength());
 
 			NodeList steps =  doc.getElementsByTagName("step");
+			NodeList alters = doc.getElementsByTagName("alter");
 			NodeList octaves = doc.getElementsByTagName("octave");
 			NodeList durations = doc.getElementsByTagName("duration");
 			NodeList voices = doc.getElementsByTagName("voice");
 			NodeList types = doc.getElementsByTagName("type");
 			NodeList strings= doc.getElementsByTagName("string");
 			NodeList frets = doc.getElementsByTagName("fret");
+			String note = "";
 
+			NodeList note1 = (NodeList) notes.item(0);
+			NodeList technical = (NodeList) note1.item(1); //1: Technical  3: Number of Notes 
+			
+			for(int k = 0; k < technical.getLength(); k++) {
+				
+				Node technicalInfo = (Node) technical.item(k);
+				System.out.println("Node type: " + technicalInfo);
+			}
 
 
 			for(int j = 0; j < notes.getLength(); j++) {
-
-				String note = "";
+				
 				
 				System.out.println("Note: " + ( j+1));
-			
+
 				if(steps.item(j) != null) {
 
 					Element step = (Element) steps.item(j);    
-					String  stepValue = step.getTextContent();
+					String  stepValue= step.getTextContent();
 					System.out.println("Step: " +  stepValue);
-					note += stepValue;
-				}
 
+				}
+				
+				if(alters.item(j) != null) {
+
+					Element alter = (Element) alters.item(j);    
+					String  alterValue= alter.getTextContent();
+					System.out.println("Alter: " +  alterValue);
+
+				}
+				
 
 				if(octaves.item(j) != null) {
 
 					Element octave = (Element) octaves.item(j);    
 					String  octaveValue = octave.getTextContent();
 					System.out.println("Octave: " +  octaveValue);
-					note += octaveValue;
-				}
 
+				}
+				
 				if(durations.item(j) != null) {
 
 					Element duration = (Element) durations.item(j);    
