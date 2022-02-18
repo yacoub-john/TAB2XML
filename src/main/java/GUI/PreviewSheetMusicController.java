@@ -12,7 +12,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import utility.Settings;
-
+import javafx.scene.canvas.Canvas;
 
 
 public class PreviewSheetMusicController extends Application{
@@ -22,6 +22,7 @@ public class PreviewSheetMusicController extends Application{
 	
 	public Window convertWindow;
 	
+	@FXML  private Canvas canvas;
     @FXML  private Button Save;
     @FXML  private ImageView image ;
     @FXML private AnchorPane musicPane;
@@ -36,7 +37,7 @@ public class PreviewSheetMusicController extends Application{
     
     @FXML
     void handleMusic(ActionEvent event) {
-
+    	PlayNotes.JfugueTest.playNotes();
     }
 
     @FXML
