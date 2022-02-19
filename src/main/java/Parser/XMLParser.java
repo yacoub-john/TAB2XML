@@ -1,4 +1,4 @@
-package XMLParser;
+package Parser;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class XMLParser {
 	
 
-	public static void getXml(Document doc) {
+	public void getXml(Document doc) {
 
 
 		doc.getDocumentElement().normalize();
@@ -53,14 +53,15 @@ public class XMLParser {
 
 		if(partName.equals("Guitar")) {
 			
-			GuitarParser.parseGuitar(measures, nNPM, doc);
+			GuitarParser guitarParser = new GuitarParser();
+			guitarParser.parseGuitar(measures, nNPM, doc);
 			
 		}
 		
 
 	}
 
-	public static void loadXMLFromString(String xml) throws Exception
+	public void loadXMLFromString(String xml) throws Exception
 	{
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
