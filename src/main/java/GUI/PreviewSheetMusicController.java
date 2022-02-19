@@ -26,9 +26,9 @@ public class PreviewSheetMusicController extends Application{
 
 	public Window convertWindow;
 	
-	@FXML  public static Canvas canvas;
-    @FXML  private Button Save;
-    @FXML  private ImageView image ;
+	@FXML public  Canvas canvas;
+    @FXML private Button Save;
+    @FXML private ImageView image ;
     @FXML private AnchorPane musicPane;
     @FXML private Button playMusic;
     @FXML private Button Edit;
