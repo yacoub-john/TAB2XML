@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -12,7 +13,7 @@ import javax.swing.SwingUtilities;
 public class MusicNotes2 {
 	 public static int x=80;
 	 public static int y=268;
-	 public static String notes;
+	 public static ArrayList<String> notes;
 	
 	 public static void SimpleBlackNote(Graphics g) {
 		 Graphics2D g2 = (Graphics2D) g;
@@ -128,7 +129,7 @@ public class MusicNotes2 {
 	
 	}
 	
-	public static void getNotes(String RecievedNotes) {
+	public static void getNotes(ArrayList<String> RecievedNotes) {
 		
 		notes = RecievedNotes;
 		main(null);

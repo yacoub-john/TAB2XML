@@ -1,4 +1,4 @@
-package XMLParser;
+package Parser;
 
 public class MXMLParser {
 

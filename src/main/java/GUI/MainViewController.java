@@ -1,7 +1,6 @@
 
 package GUI;
 
-import XMLParser.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,6 +20,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 
+import Parser.*;
 import converter.Converter;
 import converter.measure.TabMeasure;
 import javafx.application.Application;
@@ -311,7 +311,8 @@ public class MainViewController extends Application {
 	private void previewButtonHandle() throws IOException {
 		System.out.println("Preview Button Clicked!");
 		try {
-			XMLParser.loadXMLFromString(converter.getMusicXML());
+			XMLParser xmlParser = new XMLParser();
+			xmlParser.loadXMLFromString(converter.getMusicXML());
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		} //  inputs to parser as string
