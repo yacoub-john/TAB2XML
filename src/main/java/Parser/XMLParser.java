@@ -1,4 +1,4 @@
-package XMLParser;
+package Parser;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -8,9 +8,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import MusicNotes.MusicNoteEffects;
-import javafx.stage.Stage;
-
 import java.io.StringReader;
 import java.util.ArrayList;
 
@@ -18,7 +15,7 @@ import java.util.ArrayList;
 public class XMLParser {
 	
 
-	public static void getXml(Document doc) {
+	public void getXml(Document doc) {
 
 
 		doc.getDocumentElement().normalize();
@@ -56,17 +53,15 @@ public class XMLParser {
 
 		if(partName.equals("Guitar")) {
 			
-			GuitarParser.parseGuitar(measures, nNPM, doc);
+			GuitarParser guitarParser = new GuitarParser();
+			guitarParser.parseGuitar(measures, nNPM, doc);
 			
 		}
-		
-		//MusicNotes.MusicNoteEffects.start();
-	
 		
 
 	}
 
-	public static void loadXMLFromString(String xml) throws Exception
+	public void loadXMLFromString(String xml) throws Exception
 	{
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
