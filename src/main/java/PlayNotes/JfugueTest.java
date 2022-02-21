@@ -16,11 +16,6 @@ public class JfugueTest {
 		notes = NotesReceived;	
 		nNPM = nNPMRecieved;
 
-		for(int i = 0; i< nNPMRecieved.size(); i++) {
-			if(i != 0) {
-				nNPM.set(i, (nNPM.get(i) + nNPM.get(i-1)));
-			}
-		}
 
 	}
 
