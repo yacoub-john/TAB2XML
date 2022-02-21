@@ -13,6 +13,7 @@ public class GuitarParser {
 
 	private ArrayList<String> notesList = new ArrayList<>();
 	private ArrayList<String> alterList = new ArrayList<>();
+	private ArrayList<Integer> chordList = new ArrayList<>();
 	private ArrayList<String> fretList = new ArrayList<>();
 	private ArrayList<String> stringList = new ArrayList<>();
 	private ArrayList<String> noteLengthList = new ArrayList<>();
@@ -50,48 +51,43 @@ public class GuitarParser {
 			}
 
 
-			NodeList staffLines  =  doc.getElementsByTagName("staff-lines");
-			Element staffLine = (Element) staffLines.item(0);    
-			String  NOST = staffLine.getTextContent();
-
-			System.out.println("*********************");
-
-
-			NodeList tuningSteps =  doc.getElementsByTagName("tuning-step");
-
-			if (i == 1) {
-				System.out.println("Number of staff Lines" + ": " + NOST);
-				System.out.println("Staff detals: ");
-
-			}
-
-
-			for (int k = 0; k < tuningSteps.getLength(); k++) {
-
-				if (i == 1) {
-
-					Element tuningStep = (Element) tuningSteps.item(k);    
-					String  NOTS = tuningStep.getTextContent();
-
-					NodeList tuningOctaves =  doc.getElementsByTagName("tuning-octave");
-					Element tuningOctave = (Element) tuningOctaves.item(k);    
-					String  NOTO = tuningOctave.getTextContent();
-
-					int x = k + 1;
-
-					System.out.println("Line = " + x );
-					System.out.println("tuning-step: " +  NOTS);
-					System.out.println("tuning-octave: " +  NOTO);
-
-				}
-
-			}
-
 			NOD = "";
 			NOF = "";
 			NOS = "";
 		}
 
+		
+		NodeList tuningSteps =  doc.getElementsByTagName("tuning-step");
+		NodeList staffLines  =  doc.getElementsByTagName("staff-lines");
+		Element staffLine = (Element) staffLines.item(0);    
+		String  NOST = staffLine.getTextContent();
+
+		System.out.println();
+		System.out.println("*********************");
+		System.out.println("Number of staff Lines" + ": " + NOST);
+		System.out.println("Staff detals: ");
+
+		for (int k = 0; k < tuningSteps.getLength(); k++) {
+
+			if ( tuningSteps.item(k) != null) {
+
+				Element tuningStep = (Element) tuningSteps.item(k);    
+				String  NOTS = tuningStep.getTextContent();
+
+				NodeList tuningOctaves =  doc.getElementsByTagName("tuning-octave");
+				Element tuningOctave = (Element) tuningOctaves.item(k);    
+				String  NOTO = tuningOctave.getTextContent();
+
+				int x = k + 1;
+
+				System.out.println("Line = " + x );
+				System.out.println("tuning-step: " +  NOTS);
+				System.out.println("tuning-octave: " +  NOTO);
+
+			}
+
+		}
+		
 		System.out.println("*********************");
 
 
@@ -125,7 +121,17 @@ public class GuitarParser {
 
 			NodeList singleNote = (NodeList) notes.item(j);
 			NodeList technical = (NodeList) singleNote.item(1); //1: Technical  3: Number of Notes 
+			
+			
+			if(singleNote.getLength() == 13) {
+				chordList.add(0);
+			}
+			
+			else {
+				chordList.add(1);
 
+			}
+			
 			/*
 			 * When cord exits move the technical section one below
 			 * Technical shows the details of each note
@@ -134,6 +140,7 @@ public class GuitarParser {
 			if(technical.getLength() == 0) { 
 
 				technical = (NodeList) singleNote.item(3);
+				
 			}
 
 			if(technical.getLength() == 5) {
@@ -264,8 +271,14 @@ public class GuitarParser {
 			
 
 		}
-
-		PreviewSheetMusicController.canvasNote.getNotes(stringList, fretList, nNPM, alterList, noteLengthList);
+		
+		for(int i = 0; i< nNPM.size(); i++) {
+			if(i != 0) {
+				nNPM.set(i, (nNPM.get(i) + nNPM.get(i-1)));
+			}
+		}
+		
+		PreviewSheetMusicController.canvasNote.getNotes("Guitar",stringList, fretList, nNPM, alterList, noteLengthList, chordList);
 		jfugueTester.getNotes(notesList, nNPM);
 
 	}

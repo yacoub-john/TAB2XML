@@ -23,7 +23,7 @@ public class MainApp extends Application {
         SPLASH_STAGE.initStyle(StageStyle.UNDECORATED);
         stage.setResizable(false);
 
-        stage.setTitle("TAB 2 XML");
+        stage.setTitle("TAB 2 MUSIC");
         stage.setScene(scene);
         stage.show();
     }
