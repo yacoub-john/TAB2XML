@@ -40,7 +40,6 @@ public class PreviewSheetMusicController extends Application{
 
 	public void setMainViewController(MainViewController mvcInput) {
 		mvc = mvcInput;
-		
 		canvasNote.printNotes(canvas);
 
 	}
