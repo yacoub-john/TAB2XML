@@ -15,6 +15,8 @@ public class CanvasNotes {
 	private ArrayList<Integer> chordList;
 	private ArrayList<Integer> notesPerMeasure;
 //	private ArrayList<String> alterList;
+	private ArrayList<Integer> xPlacments = new ArrayList<>();
+	private ArrayList<Integer> yPlacements = new ArrayList<>();
 	private ArrayList<String> noteLenghtList;
 
 	private int nNPMCounter = 0;
@@ -71,8 +73,14 @@ public class CanvasNotes {
 		//		graphics_context.fillText("2", 20, 40); // Number 2
 
 		// Notes
-		printNotes(graphics_context);
+		
+		if(instrumentName.equals("Guitar")) {
+			printNotesGuitar(graphics_context);
+		}
+		else if (instrumentName.equals("Drumset")) {
+			printNotesDrums(graphics_context);
 
+		}
 
 		// Border
 		graphics_context.setStroke(Color.BLACK);
@@ -82,7 +90,7 @@ public class CanvasNotes {
 		
 	}
 
-
+	// Prints type of Sheet Music
 	public void printType(GraphicsContext graphics_context) {
 		
 		if(instrumentName.equals("Guitar")) {
@@ -99,6 +107,9 @@ public class CanvasNotes {
 			graphics_context.fillText("A",54,currentY+80);
 			graphics_context.fillText("B",55,currentY+114);
 		}
+		
+		else if (instrumentName.equals("Drumset")) {
+		}
 	}
 	
 	//Horizontal Lines
@@ -106,13 +117,16 @@ public class CanvasNotes {
 
 		graphics_context.setStroke(Color.BLACK);
 		graphics_context.setLineWidth(1);
-
 		graphics_context.strokeLine(50, currentY, canvasWidth - 50, currentY);
 		graphics_context.strokeLine(50, currentY+25, canvasWidth - 50, currentY+25);
 		graphics_context.strokeLine(50, currentY+50, canvasWidth - 50, currentY+50);
 		graphics_context.strokeLine(50, currentY+75, canvasWidth - 50, currentY+75);
 		graphics_context.strokeLine(50, currentY+100, canvasWidth - 50, currentY+100);
-		graphics_context.strokeLine(50, currentY+125, canvasWidth - 50, currentY+125);
+		
+		if(instrumentName.equals("Guitar")) {
+			graphics_context.strokeLine(50, currentY+125, canvasWidth - 50, currentY+125);
+		}
+		
 	}
 
 	// Vertical/Measure Lines
@@ -125,20 +139,16 @@ public class CanvasNotes {
 	}
 
 
-
-	public void printNotes(GraphicsContext graphics_context) {
+	// Prints Guitar Notes
+	public void printNotesGuitar(GraphicsContext graphics_context) {
 		Font font = new Font("Arial", 20);
 		graphics_context.setFont(font);
-		
-		System.out.println(notesPerMeasure);
-		
+				
 		for(int i = 0; i < fretList.size(); i++) {
-			
 			
 			if(notesPerMeasure.get(nNPMCounter) == i) {
 				
 				printVertical(graphics_context);
-				System.out.println(i);
 				nNPMCounter ++;
 				currentX += 30;
 			}
@@ -155,7 +165,10 @@ public class CanvasNotes {
 
 				graphics_context.setFill(Color.BLACK);
 				graphics_context.fillText(fretList.get(i), currentX, currentY+5); 
-
+				
+				xPlacments.add(currentX);
+				yPlacements.add(currentY+5);
+				
 			}
 
 			else if(stringList.get(i).equals("2")) {
@@ -165,6 +178,9 @@ public class CanvasNotes {
 				graphics_context.setFill(Color.BLACK);
 				graphics_context.fillText(fretList.get(i), currentX, currentY+30); 
 				
+				xPlacments.add(currentX);
+				yPlacements.add(currentY+30);
+				
 			}
 
 			else if(stringList.get(i).equals("3")) {
@@ -173,6 +189,9 @@ public class CanvasNotes {
 
 				graphics_context.setFill(Color.BLACK);
 				graphics_context.fillText(fretList.get(i), currentX, currentY+55); 
+				
+				xPlacments.add(currentX);
+				yPlacements.add(currentY+55);
 
 			}
 			else if(stringList.get(i).equals("4")) {
@@ -181,6 +200,9 @@ public class CanvasNotes {
 
 				graphics_context.setFill(Color.BLACK);
 				graphics_context.fillText(fretList.get(i), currentX, currentY+80); 
+				
+				xPlacments.add(currentX);
+				yPlacements.add(currentY+80);
 
 			}
 			else if(stringList.get(i).equals("5")) {
@@ -189,6 +211,9 @@ public class CanvasNotes {
 
 				graphics_context.setFill(Color.BLACK);
 				graphics_context.fillText(fretList.get(i), currentX, currentY+105); 
+				
+				xPlacments.add(currentX);
+				yPlacements.add(currentY+105);
 
 			}
 			else if(stringList.get(i).equals("6")) {
@@ -197,6 +222,9 @@ public class CanvasNotes {
 
 				graphics_context.setFill(Color.BLACK);
 				graphics_context.fillText(fretList.get(i), currentX, currentY+130); 
+				
+				xPlacments.add(currentX);
+				yPlacements.add(currentY+130);
 
 			}
 			
@@ -206,7 +234,7 @@ public class CanvasNotes {
 				graphics_context.setLineWidth(1.1);
 				graphics_context.strokeLine(currentX+6, currentY+135, currentX+6, currentY+165);
 				
-				if(noteLenghtList.get(i+1).equals("eighth")) {
+				if(i+1 < noteLenghtList.size() && noteLenghtList.get(i+1).equals("eighth")) {
 					// Vertical Line under the note
 					graphics_context.setStroke(Color.BLACK);
 					graphics_context.setLineWidth(3);
@@ -231,8 +259,12 @@ public class CanvasNotes {
 		
 		currentX = (int) (canvasWidth-50);
 		printVertical(graphics_context);
+		Parser.GuitarParser.jfugueTester.getCanvas(graphics_context, xPlacments, yPlacements);
+
 	}
 
-
-
+	public void printNotesDrums(GraphicsContext graphics_context) {
+		
+	}
+	
 }
