@@ -16,6 +16,7 @@ public class JfugueTest {
 	private  ArrayList<String> notes = new ArrayList<>();
 	private ArrayList<String> stringList;
 	private ArrayList<String> fretList;
+	private ArrayList<Integer> chordList;
 	private  ArrayList<Integer> nNPM = new ArrayList<Integer>();
 	private  ArrayList<Integer> xPlacement;
 	private  ArrayList<Integer> yPlacement;
@@ -26,13 +27,13 @@ public class JfugueTest {
 	GraphicsContext graphics_context;
 
 
-	public void getNotes(ArrayList<String>NotesReceived, ArrayList<Integer> nNPMRecieved, ArrayList<String> recievedString, ArrayList<String> recievedFret) {
+	public void getNotes(ArrayList<String>NotesReceived, ArrayList<Integer> nNPMRecieved, ArrayList<String> recievedString, ArrayList<String> recievedFret, ArrayList<Integer> chordRecieved) {
 
 		notes = NotesReceived;	
 		nNPM = nNPMRecieved;
 		stringList = recievedString;
 		fretList = recievedFret;
-
+		chordList = chordRecieved;
 	}
 
 	public void getCanvas(GraphicsContext graphicsRecieved, ArrayList<Integer> xRecieved, ArrayList<Integer> yRecieved) {
