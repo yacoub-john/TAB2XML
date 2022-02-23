@@ -7,12 +7,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class DrumParser {
+	
+	private static ArrayList<String> instrument = new ArrayList<>();
 
 
 	public void parseDrums(NodeList measures, ArrayList<Integer> nNPM, Document doc) {
 
 		NodeList instrumentNames =  doc.getElementsByTagName("instrument-name");
-
+        
 
 
 		for (int j = 0; j<instrumentNames.getLength(); j++) {
@@ -20,8 +22,13 @@ public class DrumParser {
 			Element instrumentName = (Element) instrumentNames.item(j);    
 			String  NOI = instrumentName.getTextContent();
 			System.out.println("instrument name is " + NOI);
+			
+			instrument.add(NOI);
+			
 
 		}
+		
+		System.out.println("a = " + instrument);
 
 		System.out.println("==================================");
 
