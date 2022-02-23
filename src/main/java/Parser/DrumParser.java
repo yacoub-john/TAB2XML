@@ -28,7 +28,6 @@ public class DrumParser {
 
 		}
 		
-		System.out.println("a = " + instrument);
 
 		System.out.println("==================================");
 
