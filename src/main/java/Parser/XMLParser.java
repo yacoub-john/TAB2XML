@@ -58,6 +58,14 @@ public class XMLParser {
 			
 		}
 		
+		if (partName.equals("Drumset")) {
+			
+			DrumParser drumParser = new DrumParser();
+			drumParser.parseDrums(measures, nNPM, doc);
+			
+			
+		}
+		
 
 	}
 
