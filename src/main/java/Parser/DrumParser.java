@@ -39,6 +39,8 @@ public class DrumParser {
 		NodeList pans =  doc.getElementsByTagName("pan");
 
 		for (int k = 0; k<midiChannels.getLength(); k++) {
+			
+			String instrumentID = "P1-I";
 
 			Element midiChannel = (Element) midiChannels.item(k);    
 			String  NOC = midiChannel.getTextContent();
@@ -47,9 +49,11 @@ public class DrumParser {
 			Element midiProgram = (Element) midiPrograms.item(k);    
 			String  NOP = midiProgram.getTextContent();
 			System.out.println("midi-Program: " + NOP);
+			
 
 			Element midiUnpitched = (Element) midiUnpitcheds.item(k);    
 			String  NOU = midiUnpitched.getTextContent();
+			instrumentID += NOU;
 			System.out.println("midi-Unpitched: " + NOU);
 
 			Element volume= (Element) volumes.item(k);    
@@ -59,8 +63,10 @@ public class DrumParser {
 			Element pan = (Element) pans.item(k);    
 			String  NOPA = pan.getTextContent();
 			System.out.println("Pam: " + NOPA);
+			
+			
 
-
+            System.out.println("instrument ID is " + instrumentID);
 			System.out.println("==================================");
 
 		}
