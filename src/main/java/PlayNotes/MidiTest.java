@@ -23,12 +23,12 @@ public class MidiTest {
 
 	private List<String> notes = Arrays.asList("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B");
 	private MidiChannel[] channels;
-	private int INSTRUMENT = 0; // 0 is a piano, 9 is percussion, other channels are for other instruments
-	private int VOLUME = 80; // between 0 et 127
+	private int INSTRUMENT = 15; // 0 is a piano, 9 is percussion, 25 is guitar, other channels are for other instruments
+	private int VOLUME = 79; // between 0 & 127
 	
 	
 	
-	//Receive note from Drum Parser
+	//Receive notes from Drum Parser
 	public void getNotes(ArrayList<String> notesRecieved, ArrayList<Integer> chordsRecieved, ArrayList<String> noteHeadsRecieved, ArrayList<Integer> noteLengthRecieved, ArrayList<String> stemRecieved, ArrayList<String> noteInstrumIDRecieved) {
 		
 		notesList = notesRecieved;
@@ -40,22 +40,7 @@ public class MidiTest {
 		
 	}
 	
-	public void playNote() {
-		
-		/*
-		 * BPM/Tempo = 60
-		 * 1/4   1000 ms	        
-		 * 1/8   500 ms	
-		 * 1/8 Triple  333 ms	
-		 * 1/16  250 ms	
-		 * 1//32 125 ms	
-		 * 1/64  63 ms	
-		 * 1/128 31 ms
-		 * 1/256 15 ms
-		 * 1/512 8 ms
-		 * 1/1024 4 ms
-			
-		 */
+	public void playNotes() {
 		
 		try {
 			// * Open a synthesizer
@@ -64,22 +49,26 @@ public class MidiTest {
 			channels = synth.getChannels();
 
 			// * Play some notes
-			play("6D",  1000);
-			rest(500);
+//			play("6D",  1000);
+//			rest(500);
+//			
+//			play("6D",  300);
+//			play("6C#", 300);
+//			play("6D",  1000);
+//			rest(500);
+//			
+//			play("6D",  300);
+//			play("6C#", 300);
+//			play("6D",  1000);
+//			play("6E",  300);
+//			play("6E",  600);
+//			play("6G",  300);
+//			play("6G",  600);
+//			rest(500);
 			
-			play("6D",  300);
-			play("6C#", 300);
-			play("6D",  1000);
-			rest(500);
-			
-			play("6D",  300);
-			play("6C#", 300);
-			play("6D",  1000);
-			play("6E",  300);
-			play("6E",  600);
-			play("6G",  300);
-			play("6G",  600);
-			rest(500);
+			for(int i = 0; i < notesList.size(); i++) {
+				play(notesList.get(i), getDuration(noteLengthList.get(i)));
+			}
 			
 			
 			// * finish up
@@ -90,11 +79,35 @@ public class MidiTest {
 		}
 	}
 	
+	
+	/**
+	 * Calculates the MIDI duration based on the length of the note
+	 */
+	private int getDuration(int noteDuration){
+		
+		/*
+		 * BPM/Tempo = 60
+		 * 1  -> 64 ->  4000 ms
+		 * 1/2  -> 32 -> 2000 ms
+		 * 1/4 -> 16 -> 1000 ms	        
+		 * 1/8 -> 8 -> 500 ms	
+		 * 1/16 -> 4 -> 250 ms	
+		 * 1//32 -> 2 -> 125 ms	
+		 * 1/64  -> 1 -> 63 ms	
+		 * 1/128 -> 1/2 -> 31 ms
+		 * 1/256 -> 1/4 -> 15 ms
+		 * 1/512  -> 1/8 -> 8 ms
+		 * 1/1024 -> 1/16 - > 4 ms
+		 */
+		return (int) (noteDuration * 62.5);
+			
+	}
+	
+	
 	/**
 	 * Plays the given note for the given duration
 	 */
-	private void play(String note, int duration) throws InterruptedException
-	{
+	private void play(String note, int duration) throws InterruptedException{
 			// * start playing a note
 			channels[INSTRUMENT].noteOn(id(note), VOLUME );
 			// * wait
@@ -106,8 +119,7 @@ public class MidiTest {
 	/**
 	 * Plays nothing for the given duration
 	 */
-	private void rest(int duration) throws InterruptedException
-	{
+	private void rest(int duration) throws InterruptedException{
 		Thread.sleep(duration);
 	}
 	
@@ -115,8 +127,7 @@ public class MidiTest {
 	 * Returns the MIDI id for a given note: eg. 4C -> 60
 	 * @return
 	 */
-	private int id(String note)
-	{
+	private int id(String note){
 		int octave = Integer.parseInt(note.substring(0, 1));
 		return notes.indexOf(note.substring(1)) + 12 * octave + 12;	
 	}

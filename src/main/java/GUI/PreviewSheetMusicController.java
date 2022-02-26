@@ -51,8 +51,8 @@ public class PreviewSheetMusicController extends Application{
 			Parser.GuitarParser.jfugueTester.playNotes();
 		}
 		
-		if(Parser.XMLParser.instrument.equals("Drumset")) {
-			
+		else if(Parser.XMLParser.instrument.equals("Drumset")) {
+			Parser.DrumParser.midiTester.playNotes();
 		}
 	}
 
