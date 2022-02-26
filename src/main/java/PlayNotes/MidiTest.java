@@ -1,5 +1,7 @@
 package PlayNotes;
 
+import java.util.ArrayList;
+
 import javax.sound.midi.Instrument;
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
@@ -23,7 +25,7 @@ public class MidiTest {
 	        Instrument[] instr = midiSynth.getDefaultSoundbank().getInstruments();
 	        MidiChannel[] mChannels = midiSynth.getChannels();
 	        
-	        midiSynth.loadInstrument(instr[0]);//load an instrument
+	        midiSynth.loadInstrument(instr[1]);//load an instrument
 	    
 	    
 	        mChannels[0].noteOn(60, 100);//On channel 0, play note number 60 with velocity 100 
@@ -32,7 +34,8 @@ public class MidiTest {
 	            e.printStackTrace();
 	        }
 	        mChannels[0].noteOff(60);//turn of the note
-	    
+	        
+
 	    
 	      } catch (MidiUnavailableException e) {
 	         e.printStackTrace();
