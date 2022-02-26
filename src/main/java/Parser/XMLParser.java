@@ -14,7 +14,8 @@ import java.util.ArrayList;
 
 public class XMLParser {
 	
-
+	public static String instrument = "";
+	
 	public void getXml(Document doc) {
 
 
@@ -52,18 +53,15 @@ public class XMLParser {
 		
 
 		if(partName.equals("Guitar")) {
-			
 			GuitarParser guitarParser = new GuitarParser();
+			instrument = "Guitar";
 			guitarParser.parseGuitar(measures, nNPM, doc);
-			
 		}
 		
-		if (partName.equals("Drumset")) {
-			
+		else if (partName.equals("Drumset")) {
 			DrumParser drumParser = new DrumParser();
+			instrument = "Drumset";
 			drumParser.parseDrums(measures, nNPM, doc);
-			
-			
 		}
 		
 
