@@ -1,5 +1,8 @@
 package MusicNotes;
 
+
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
 
 import javafx.scene.canvas.Canvas;
@@ -26,7 +29,7 @@ public class CanvasNotes {
 	private  double canvasWidth = 0;
 	private  double canvasHeight = 0;
 
-	public void getNotes(String recievedInstrument, ArrayList<String> recievedString, ArrayList<String> recievedFret, ArrayList<Integer> nNPM, ArrayList<String> recievedAlter, ArrayList<String> noteLengthRecieved, ArrayList<Integer> recievedChord ) {
+	public void getNotesGuitar(String recievedInstrument, ArrayList<String> recievedString, ArrayList<String> recievedFret, ArrayList<Integer> nNPM, ArrayList<String> recievedAlter, ArrayList<String> noteLengthRecieved, ArrayList<Integer> recievedChord ) {
 
 		stringList = recievedString;
 		fretList = recievedFret;
@@ -34,6 +37,17 @@ public class CanvasNotes {
 		//alterList = recievedAlter;
 		noteLenghtList = noteLengthRecieved;
 		chordList = recievedChord;
+		instrumentName = recievedInstrument;
+
+	}
+	public void getNotesDrums(String recievedInstrument, ArrayList<Integer> nNPM ) {
+
+	//	stringList = recievedString;
+		//fretList = recievedFret;
+		notesPerMeasure = nNPM;
+		//alterList = recievedAlter;
+		//noteLenghtList = noteLengthRecieved;
+		//chordList = recievedChord;
 		instrumentName = recievedInstrument;
 
 	}
@@ -109,6 +123,19 @@ public class CanvasNotes {
 		}
 		
 		else if (instrumentName.equals("Drumset")) {
+			Font font = new Font("Arial Rounded MT Bold", 80);
+			graphics_context.setFont(font);
+			graphics_context.setFill(Color.BLACK);
+			
+//			graphics_context.fillRect(55,currentY+25,10,50);
+//			graphics_context.fillRect(65,currentY+25,10,50);
+//			graphics_context.setStroke(Color.BLACK);
+//			graphics_context.setLineWidth(10);
+//			graphics_context.strokeLine(75, currentY+30, 75, currentY+70);
+//			
+//			graphics_context.strokeLine(90, currentY+30, 90, currentY+70);
+			graphics_context.fillText("\uD834\uDD25",currentX, currentY+75);
+
 		}
 	}
 	
@@ -260,10 +287,75 @@ public class CanvasNotes {
 		currentX = (int) (canvasWidth-50);
 		printVertical(graphics_context);
 		Parser.GuitarParser.jfugueTester.getCanvas(graphics_context, xPlacments, yPlacements);
-
 	}
 
 	public void printNotesDrums(GraphicsContext graphics_context) {
+		currentX+=20;
+		Font font = new Font("Bravura", 60);
+		graphics_context.setFont(font);
+		// Fisrt drum symbol
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+95); // Simple Note
+		
+		graphics_context.setFill(Color.BLACK);
+		graphics_context.setLineWidth(3.2);
+		graphics_context.fillText("\uD834\uDD66",currentX+16.5, currentY+13);  //musical symbol combining sprechgesang stem
+		graphics_context.strokeLine(currentX+16.5, currentY+13 ,currentX+16.5, currentY+60);
+		graphics_context.setLineWidth(2);
+		graphics_context.strokeLine(currentX+10, currentY-9.5 ,currentX+22.5,  currentY-9.5);
+		
+		currentX+=30;
+		graphics_context.setLineWidth(3.2);
+		graphics_context.strokeLine(currentX, currentY ,currentX+10,  currentY-9.5);
+		graphics_context.strokeLine(currentX, currentY-9.5 ,currentX+10,  currentY);
+		graphics_context.strokeLine(currentX+10, currentY-9.5 ,currentX+10,  currentY-30);
+		//graphics_context.fillText("\uD834\uDD66",currentX+16.5, currentY+15);   
+		
+		currentX+=30;
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+50); // Simple Note
+		graphics_context.strokeLine(currentX+5, currentY ,currentX+15,  currentY-9.5);
+		graphics_context.strokeLine(currentX+5, currentY-9.5 ,currentX+15,  currentY);
+		graphics_context.strokeLine(currentX+16.5, currentY+10,currentX+16.5, currentY-30);
+		
+		currentX+=30;
+		graphics_context.setLineWidth(3.2);
+		graphics_context.strokeLine(currentX, currentY ,currentX+10,  currentY-9.5);
+		graphics_context.strokeLine(currentX, currentY-9.5 ,currentX+10,  currentY);
+		graphics_context.strokeLine(currentX+10, currentY-9.5 ,currentX+10,  currentY-30);
+		
+		graphics_context.setLineWidth(5);
+		graphics_context.strokeLine(currentX-73, currentY-30,currentX+10 ,currentY-30);
+		currentX+=30;
+		
+		
+		//Second drum symbol
+		graphics_context.setLineWidth(3.2);
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+50); // Simple Note
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+95); // Simple Note
+		graphics_context.strokeLine(currentX+16.5, currentY+80,currentX+16.5, currentY);
+		graphics_context.strokeLine(currentX+16.5, currentY+10,currentX+16.5, currentY-19);
+		currentX+=30;
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+50); // Simple Note
+		graphics_context.strokeLine(currentX+16.5, currentY+10,currentX+16.5, currentY-19);
+		currentX+=30;
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+50); // Simple Note
+		graphics_context.strokeLine(currentX+16.5, currentY+10,currentX+16.5, currentY-19);
+		currentX+=30;
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+50); // Simple Note
+		graphics_context.strokeLine(currentX+16.5, currentY+10,currentX+16.5, currentY-19);
+		
+		graphics_context.setLineWidth(5);
+		graphics_context.strokeLine(currentX-73, currentY-19,currentX+16 ,currentY-19);
+		graphics_context.strokeLine(currentX-73, currentY-10,currentX+16 ,currentY-10);
+
+		
+		
+		/*
+		 * keep this for others
+		 */
+//		graphics_context.fillText("\uD834\uDD66",currentX+16.5, currentY+15);   
+//		graphics_context.strokeLine(currentX+16.5, currentY+15 ,currentX+16.5, currentY+60);
+//		
+		
 		
 	}
 	
