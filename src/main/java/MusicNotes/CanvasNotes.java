@@ -293,12 +293,68 @@ public class CanvasNotes {
 		currentX+=20;
 		Font font = new Font("Bravura", 60);
 		graphics_context.setFont(font);
+		// Fisrt drum symbol
 		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+95); // Simple Note
 		
 		graphics_context.setFill(Color.BLACK);
 		graphics_context.setLineWidth(3.2);
-		graphics_context.strokeLine(currentX+16.5, currentY+10,currentX+16.5, currentY+60);
-		//graphics_context.fillText("\uD834\uDD66",currentX+16.5 , currentY+110);
+		graphics_context.fillText("\uD834\uDD66",currentX+16.5, currentY+13);  //musical symbol combining sprechgesang stem
+		graphics_context.strokeLine(currentX+16.5, currentY+13 ,currentX+16.5, currentY+60);
+		graphics_context.setLineWidth(2);
+		graphics_context.strokeLine(currentX+10, currentY-9.5 ,currentX+22.5,  currentY-9.5);
+		
+		currentX+=30;
+		graphics_context.setLineWidth(3.2);
+		graphics_context.strokeLine(currentX, currentY ,currentX+10,  currentY-9.5);
+		graphics_context.strokeLine(currentX, currentY-9.5 ,currentX+10,  currentY);
+		graphics_context.strokeLine(currentX+10, currentY-9.5 ,currentX+10,  currentY-30);
+		//graphics_context.fillText("\uD834\uDD66",currentX+16.5, currentY+15);   
+		
+		currentX+=30;
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+50); // Simple Note
+		graphics_context.strokeLine(currentX+5, currentY ,currentX+15,  currentY-9.5);
+		graphics_context.strokeLine(currentX+5, currentY-9.5 ,currentX+15,  currentY);
+		graphics_context.strokeLine(currentX+16.5, currentY+10,currentX+16.5, currentY-30);
+		
+		currentX+=30;
+		graphics_context.setLineWidth(3.2);
+		graphics_context.strokeLine(currentX, currentY ,currentX+10,  currentY-9.5);
+		graphics_context.strokeLine(currentX, currentY-9.5 ,currentX+10,  currentY);
+		graphics_context.strokeLine(currentX+10, currentY-9.5 ,currentX+10,  currentY-30);
+		
+		graphics_context.setLineWidth(5);
+		graphics_context.strokeLine(currentX-73, currentY-30,currentX+10 ,currentY-30);
+		currentX+=30;
+		
+		
+		//Second drum symbol
+		graphics_context.setLineWidth(3.2);
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+50); // Simple Note
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+95); // Simple Note
+		graphics_context.strokeLine(currentX+16.5, currentY+80,currentX+16.5, currentY);
+		graphics_context.strokeLine(currentX+16.5, currentY+10,currentX+16.5, currentY-19);
+		currentX+=30;
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+50); // Simple Note
+		graphics_context.strokeLine(currentX+16.5, currentY+10,currentX+16.5, currentY-19);
+		currentX+=30;
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+50); // Simple Note
+		graphics_context.strokeLine(currentX+16.5, currentY+10,currentX+16.5, currentY-19);
+		currentX+=30;
+		graphics_context.fillText("\uD834\uDD5F",currentX , currentY+50); // Simple Note
+		graphics_context.strokeLine(currentX+16.5, currentY+10,currentX+16.5, currentY-19);
+		
+		graphics_context.setLineWidth(5);
+		graphics_context.strokeLine(currentX-73, currentY-19,currentX+16 ,currentY-19);
+		graphics_context.strokeLine(currentX-73, currentY-10,currentX+16 ,currentY-10);
+
+		
+		
+		/*
+		 * keep this for others
+		 */
+//		graphics_context.fillText("\uD834\uDD66",currentX+16.5, currentY+15);   
+//		graphics_context.strokeLine(currentX+16.5, currentY+15 ,currentX+16.5, currentY+60);
+//		
 		
 		
 	}
