@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import PlayNotes.JfugueForDrum;
 import PlayNotes.MidiTest;
 
 import GUI.PreviewSheetMusicController;
@@ -28,6 +29,7 @@ public class DrumParser {
 	private ArrayList<String> stemList = new ArrayList<>();
 	private ArrayList<String> noteInstrumentIDList = new ArrayList<>();
 	public static MidiTest midiTester = new MidiTest();
+	public static JfugueForDrum drumTest = new JfugueForDrum();
 
 
 	public void parseDrums(NodeList measures, ArrayList<Integer> nNPM, Document doc) {
@@ -287,7 +289,8 @@ public class DrumParser {
         System.out.println("Note Instrument ID: " + noteInstrumentIDList);
         System.out.println();
 		
-        midiTester.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList);
+        //midiTester.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList);
+        drumTest.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList, nNPM);
 		PreviewSheetMusicController.canvasNote.getNotesDrums("Drumset", nNPM);
 	}
 }

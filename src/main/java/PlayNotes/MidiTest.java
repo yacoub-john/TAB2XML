@@ -48,7 +48,7 @@ public class MidiTest {
 			synth.open();
 			MidiChannel[] allChannels = synth.getChannels();
 			midiChannel = allChannels[0];
-			midiChannel.programChange(60);
+			midiChannel.programChange(40);
 			channels = synth.getChannels();
 		
 			// * Play some notes
@@ -190,7 +190,7 @@ public class MidiTest {
 	        Instrument[] instr = midiSynth.getDefaultSoundbank().getInstruments();
 	        MidiChannel[] mChannels = midiSynth.getChannels();
 	        
-	        midiSynth.loadInstrument(instr[1]);//load an instrument
+	        midiSynth.loadInstrument(instr[115]);//load an instrument
 	    
 	    
 	        mChannels[0].noteOn(60, 100);//On channel 0, play note number 60 with velocity 100 

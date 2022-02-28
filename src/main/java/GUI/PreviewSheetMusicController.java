@@ -52,7 +52,8 @@ public class PreviewSheetMusicController extends Application{
 		}
 		
 		else if(Parser.XMLParser.instrument.equals("Drumset")) {
-			Parser.DrumParser.midiTester.playNotes();
+			//Parser.DrumParser.midiTester.playNotes();
+			Parser.DrumParser.drumTest.playNotes();
 		}
 	}
 

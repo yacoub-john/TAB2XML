@@ -71,7 +71,8 @@ public class JfugueTest {
 					//player.play(str+notes.get(i));
 					total += " ";
 				}
-							
+				
+				
 				if(nNPMCounter<nNPM.size() && i == (nNPM.get(nNPMCounter) - 1)) {
 					total += "| ";
 					//player.play("|");
