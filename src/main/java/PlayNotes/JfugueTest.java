@@ -49,6 +49,7 @@ public class JfugueTest {
 		if(notes.isEmpty() == false) {
 			Player player = new Player();
 		
+
 			String str="T100 V0 I[Guitar] | ";
 			String total = str;
 			System.out.println(xPlacement);
@@ -59,47 +60,21 @@ public class JfugueTest {
 			
 			for(int i=0;i<notes.size();i++) {
 			//	highLightNotes(i);
-				total+= notes.get(i) + " ";
+				total+= notes.get(i);
 			
-				
-				for(int j=i;j<notes.size();j++) {
-					if((i+1)<chordList.size() && chordList.get(i+1)==0) {
-						counter++;
-					}
-				}
 				
 				if((i+1)<chordList.size() && chordList.get(i+1)==0) 
 				{
-					while(counter>0) 
-					{
-						total+=notes.get(i);
-						if(counter!=1)
-						{
-							total+="+";
-						}
-						
-						i++;
-						counter--;
-					}
+					total+="+";
 				}
 				
 				else {
 					//player.play(str+notes.get(i));
+					total += " ";
 				}
-				
-			
-				
-//		if((i+1)<chordList.size() && chordList.get(i+1)==0)
-//		{
-//			total+="+";
-//			total +=  notes.get(i);
-//		}
-//		else {
-//			total+=" ";
-//		}
-//					
+							
 				if(nNPMCounter<nNPM.size() && i == (nNPM.get(nNPMCounter) - 1)) {
-					total += " | ";
+					total += "| ";
 					//player.play("|");
 					nNPMCounter ++;
 				}
