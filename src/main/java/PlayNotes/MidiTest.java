@@ -23,7 +23,8 @@ public class MidiTest {
 
 	private List<String> notes = Arrays.asList("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B");
 	private MidiChannel[] channels;
-	private int INSTRUMENT = 15; // 0 is a piano, 9 is percussion, 25 is guitar, other channels are for other instruments
+	private MidiChannel midiChannel;  // An interface to the actual Midi system.
+	private int INSTRUMENT = 100; // 0 is a piano, 9 is percussion, 25 is guitar, other channels are for other instruments
 	private int VOLUME = 79; // between 0 & 127
 	
 	
@@ -46,8 +47,11 @@ public class MidiTest {
 			// * Open a synthesizer
 			Synthesizer synth = MidiSystem.getSynthesizer();
 			synth.open();
+			MidiChannel[] allChannels = synth.getChannels();
+			midiChannel = allChannels[0];
+			midiChannel.programChange(0);
 			channels = synth.getChannels();
-
+		
 			// * Play some notes
 //			play("6D",  1000);
 //			rest(500);
@@ -104,17 +108,29 @@ public class MidiTest {
 	}
 	
 	
+//	/**
+//	 * Plays the given note for the given duration
+//	 */
+//	private void play(String note, int duration) throws InterruptedException{
+//			// * start playing a note
+//			channels[INSTRUMENT].noteOn(id(note), VOLUME );
+//			// * wait
+//			Thread.sleep( duration );
+//			// * stop playing a note
+//			channels[INSTRUMENT].noteOff(id(note));
+//	}
+	
+	
 	/**
 	 * Plays the given note for the given duration
 	 */
 	private void play(String note, int duration) throws InterruptedException{
-			// * start playing a note
-			channels[INSTRUMENT].noteOn(id(note), VOLUME );
-			// * wait
-			Thread.sleep( duration );
-			// * stop playing a note
-			channels[INSTRUMENT].noteOff(id(note));
+				
+			midiChannel.noteOn( id(notesList.get(0)), VOLUME);
+			Thread.sleep(duration);
+			midiChannel.noteOff(id(notesList.get(0)));
 	}
+	
 	
 	/**
 	 * Plays nothing for the given duration
