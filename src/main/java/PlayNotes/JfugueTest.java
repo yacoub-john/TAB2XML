@@ -49,7 +49,7 @@ public class JfugueTest {
 		if(notes.isEmpty() == false) {
 			Player player = new Player();
 		
-			String str="T60 V0 I[Guitar] | ";
+			String str="T100 V0 I[Guitar] | ";
 			String total = str;
 			System.out.println(xPlacement);
 			System.out.println(yPlacement);
