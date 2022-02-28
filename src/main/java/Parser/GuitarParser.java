@@ -194,7 +194,13 @@ public class GuitarParser {
 				note += stepValue;
 			}
 
-
+			if(hasAlter && alterList.get(j).equals("1")) {
+				note += "#";
+			}
+			
+			if(hasAlter && alterList.get(j).equals("-1")) {
+				note += "b";
+			}
 			System.out.println("Alter: " +  alterList.get(j));
 
 			if(octaves.item(j) != null) {
@@ -239,35 +245,35 @@ public class GuitarParser {
 				 */
 
 				if(typeValue.equals("whole")) {
-					note += "w";
+					note += "W";
 				}
 
 				else if(typeValue.equals("half")) {
-					note += "h";
+					note += "H";
 				}
 
 				else if(typeValue.equals("quarter")) {
-					note += "q";
+					note += "Q";
 				}
 
 				else if(typeValue.equals("eighth")) {
-					note += "i";
+					note += "I";
 				}
 
 				else if(typeValue.equals("16th")) {
-					note += "s";
+					note += "S";
 				}
 
 				else if(typeValue.equals("32nd")) {
-					note += "t";
+					note += "T";
 				}
 
 				else if(typeValue.equals("64th")) {
-					note += "x";
+					note += "X";
 				}
 
 				else if(typeValue.equals("128th")) {
-					note += "o";
+					note += "O";
 				}
 
 				else {
@@ -306,8 +312,10 @@ public class GuitarParser {
 		}
 
 		System.out.println(chordList);
-		PreviewSheetMusicController.canvasNote.getNotes("Guitar",stringList, fretList, nNPM, alterList, noteLengthList, chordList);
-		jfugueTester.getNotes(notesList, nNPM, stringList, fretList, chordList);
+		jfugueTester.getNotes(notesList, nNPM, stringList, fretList, chordList, alterList);
+		PreviewSheetMusicController.canvasNote.getNotesGuitar("Guitar",stringList, fretList, nNPM, alterList, noteLengthList, chordList);
+		
+
 
 	}
 

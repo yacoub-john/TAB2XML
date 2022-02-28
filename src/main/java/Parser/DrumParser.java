@@ -9,6 +9,7 @@ import org.w3c.dom.NodeList;
 
 import PlayNotes.MidiTest;
 
+import GUI.PreviewSheetMusicController;
 
 public class DrumParser {
 	
@@ -287,6 +288,7 @@ public class DrumParser {
         System.out.println();
 		
         midiTester.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList);
+		PreviewSheetMusicController.canvasNote.getNotesDrums("Drumset", nNPM);
 	}
 }
 

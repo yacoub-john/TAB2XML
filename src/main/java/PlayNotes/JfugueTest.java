@@ -17,6 +17,7 @@ public class JfugueTest {
 	private ArrayList<String> stringList;
 	private ArrayList<String> fretList;
 	private ArrayList<Integer> chordList;
+	private ArrayList<String> alterList;
 	private  ArrayList<Integer> nNPM = new ArrayList<Integer>();
 	private  ArrayList<Integer> xPlacement;
 	private  ArrayList<Integer> yPlacement;
@@ -27,13 +28,14 @@ public class JfugueTest {
 	GraphicsContext graphics_context;
 
 
-	public void getNotes(ArrayList<String>NotesReceived, ArrayList<Integer> nNPMRecieved, ArrayList<String> recievedString, ArrayList<String> recievedFret, ArrayList<Integer> chordRecieved) {
+	public void getNotes(ArrayList<String>NotesReceived, ArrayList<Integer> nNPMRecieved, ArrayList<String> recievedString, ArrayList<String> recievedFret, ArrayList<Integer> chordRecieved, ArrayList<String> altersRecieved) {
 
 		notes = NotesReceived;	
 		nNPM = nNPMRecieved;
 		stringList = recievedString;
 		fretList = recievedFret;
 		chordList = chordRecieved;
+		alterList = altersRecieved;
 	}
 
 	public void getCanvas(GraphicsContext graphicsRecieved, ArrayList<Integer> xRecieved, ArrayList<Integer> yRecieved) {
@@ -47,7 +49,7 @@ public class JfugueTest {
 		if(notes.isEmpty() == false) {
 			Player player = new Player();
 		
-			String str="V0 I[Guitar] | ";
+			String str="T60 V0 I[Guitar] | ";
 			String total = str;
 			System.out.println(xPlacement);
 			System.out.println(yPlacement);
@@ -57,6 +59,8 @@ public class JfugueTest {
 			
 			for(int i=0;i<notes.size();i++) {
 			//	highLightNotes(i);
+				total+= notes.get(i) + " ";
+			
 				
 				for(int j=i;j<notes.size();j++) {
 					if((i+1)<chordList.size() && chordList.get(i+1)==0) {
@@ -80,7 +84,7 @@ public class JfugueTest {
 				}
 				
 				else {
-					player.play(str+notes.get(i));
+					//player.play(str+notes.get(i));
 				}
 				
 			
@@ -95,10 +99,12 @@ public class JfugueTest {
 //		}
 //					
 				if(nNPMCounter<nNPM.size() && i == (nNPM.get(nNPMCounter) - 1)) {
-//					total += " |";
-					player.play("|");
+					total += " | ";
+					//player.play("|");
 					nNPMCounter ++;
 				}
+				
+				
 				
 			}
 
