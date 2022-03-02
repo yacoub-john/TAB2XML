@@ -23,7 +23,7 @@ public class MidiTest {
 	private List<String> notes = Arrays.asList("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B");
 	private MidiChannel[] channels;
 	private MidiChannel midiChannel;  // An interface to the actual Midi system.
-	private int INSTRUMENT = 100; // 0 is a piano, 9 is percussion, 25 is guitar, other channels are for other instruments
+	private int INSTRUMENT = 10; // 0 is a piano, 9 is percussion, 25 is guitar, other channels are for other instruments
 	private int VOLUME = 79; // between 0 & 127
 	
 	
@@ -190,7 +190,7 @@ public class MidiTest {
 	        Instrument[] instr = midiSynth.getDefaultSoundbank().getInstruments();
 	        MidiChannel[] mChannels = midiSynth.getChannels();
 	        
-	        midiSynth.loadInstrument(instr[115]);//load an instrument
+	        midiSynth.loadInstrument(instr[9]);//load an instrument
 	    
 	    
 	        mChannels[0].noteOn(60, 100);//On channel 0, play note number 60 with velocity 100 

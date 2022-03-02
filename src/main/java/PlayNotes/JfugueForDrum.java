@@ -79,7 +79,7 @@ public class JfugueForDrum {
 		
 		Player player = new Player();
 		String total = "";
-		String str="T120 V10 ";
+		String str="T120 V0 ";
 		total += str;
 		
 		for(int i = 0; i < notesList.size(); i++) {
@@ -95,7 +95,7 @@ public class JfugueForDrum {
 				
 				if(noteInstrumentIDList.get(i).equals(instrumentsID.get(j))) {
 					noteInstrum = instruments.get(j);
-					total += " I[" + noteInstrum + "] "; 
+					total += "V0 I[" + noteInstrum + "] "; 
 					break;
 				}
 				

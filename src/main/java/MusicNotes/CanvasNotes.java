@@ -21,6 +21,13 @@ public class CanvasNotes {
 	private ArrayList<Integer> xPlacments = new ArrayList<>();
 	private ArrayList<Integer> yPlacements = new ArrayList<>();
 	private ArrayList<String> noteLenghtList;
+	
+	private ArrayList<String> notesList = new ArrayList<>();
+	private ArrayList<String> noteHeadList = new ArrayList<>();
+	private ArrayList<Integer> noteLengthList = new ArrayList<>();
+	private ArrayList<String> stemList = new ArrayList<>();
+	private ArrayList<Integer> nNPM = new ArrayList<Integer>();
+	private ArrayList<String> noteInstrumentIDList = new ArrayList<>();
 
 	private int nNPMCounter = 0;
 	private int currentX = 0;
@@ -40,15 +47,15 @@ public class CanvasNotes {
 		instrumentName = recievedInstrument;
 
 	}
-	public void getNotesDrums(String recievedInstrument, ArrayList<Integer> nNPM ) {
-
-	//	stringList = recievedString;
-		//fretList = recievedFret;
-		notesPerMeasure = nNPM;
-		//alterList = recievedAlter;
-		//noteLenghtList = noteLengthRecieved;
-		//chordList = recievedChord;
+	public void getNotesDrums(String recievedInstrument, ArrayList<String> notesRecieved, ArrayList<Integer> chordsRecieved, ArrayList<String> noteHeadsRecieved, ArrayList<Integer> noteLengthRecieved, ArrayList<String> stemRecieved, ArrayList<String> noteInstrumIDRecieved, ArrayList<Integer> nNPMrecieved) {
 		instrumentName = recievedInstrument;
+		notesPerMeasure = nNPMrecieved;
+		notesList = notesRecieved;
+		chordList = chordsRecieved;
+		noteHeadList = noteHeadsRecieved;
+		noteLengthList = noteLengthRecieved;
+		stemList = stemRecieved;
+		noteInstrumentIDList = noteInstrumIDRecieved;
 
 	}
 
@@ -290,6 +297,18 @@ public class CanvasNotes {
 	}
 
 	public void printNotesDrums(GraphicsContext graphics_context) {
+		
+		for(int i = 0; i < notesList.size(); i++) {
+			
+			String note = notesList.get(i).substring(1,2);
+			
+			
+			
+			
+		}
+		
+		
+		
 		currentX+=20;
 		Font font = new Font("Bravura", 60);
 		graphics_context.setFont(font);
