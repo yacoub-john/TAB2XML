@@ -21,6 +21,13 @@ public class CanvasNotes {
 	private ArrayList<Integer> xPlacments = new ArrayList<>();
 	private ArrayList<Integer> yPlacements = new ArrayList<>();
 	private ArrayList<String> noteLenghtList;
+	
+	private ArrayList<String> notesList = new ArrayList<>();
+	private ArrayList<String> noteHeadList = new ArrayList<>();
+	private ArrayList<Integer> noteLengthList = new ArrayList<>();
+	private ArrayList<String> stemList = new ArrayList<>();
+	private ArrayList<Integer> nNPM = new ArrayList<Integer>();
+	private ArrayList<String> noteInstrumentIDList = new ArrayList<>();
 
 	private int nNPMCounter = 0;
 	private int currentX = 0;
@@ -40,15 +47,15 @@ public class CanvasNotes {
 		instrumentName = recievedInstrument;
 
 	}
-	public void getNotesDrums(String recievedInstrument, ArrayList<Integer> nNPM ) {
-
-	//	stringList = recievedString;
-		//fretList = recievedFret;
-		notesPerMeasure = nNPM;
-		//alterList = recievedAlter;
-		//noteLenghtList = noteLengthRecieved;
-		//chordList = recievedChord;
+	public void getNotesDrums(String recievedInstrument, ArrayList<String> notesRecieved, ArrayList<Integer> chordsRecieved, ArrayList<String> noteHeadsRecieved, ArrayList<Integer> noteLengthRecieved, ArrayList<String> stemRecieved, ArrayList<String> noteInstrumIDRecieved, ArrayList<Integer> nNPMrecieved) {
 		instrumentName = recievedInstrument;
+		notesPerMeasure = nNPMrecieved;
+		notesList = notesRecieved;
+		chordList = chordsRecieved;
+		noteHeadList = noteHeadsRecieved;
+		noteLengthList = noteLengthRecieved;
+		stemList = stemRecieved;
+		noteInstrumentIDList = noteInstrumIDRecieved;
 
 	}
 
@@ -288,8 +295,96 @@ public class CanvasNotes {
 		printVertical(graphics_context);
 		Parser.GuitarParser.jfugueTester.getCanvas(graphics_context, xPlacments, yPlacements);
 	}
+	
+	public String getNoteShape(int duration) {
+		
+		/*
+		 * BPM/Tempo = 60
+		 * 1  -> 64 ->  4000 ms
+		 * 1/2  -> 32 -> 2000 ms
+		 * 1/4 -> 16 -> 1000 ms	        
+		 * 1/8 -> 8 -> 500 ms	
+		 * 1/16 -> 4 -> 250 ms	
+		 * 1//32 -> 2 -> 125 ms	
+		 * 1/64  -> 1 -> 63 ms	
+		 * 1/128 -> 1/2 -> 31 ms
+		 * 1/256 -> 1/4 -> 15 ms
+		 * 1/512  -> 1/8 -> 8 ms
+		 * 1/1024 -> 1/16 - > 4 ms
+		 */
+		
+		String noteShape  = "";
+		
+		if(duration == 64) {
+			return "\uD834\uDD5D";
+		}
 
+		else if(duration == 32) {
+			return "\uD834\uDD5E";
+		}
+
+		else if(duration == 16) {
+			return "\uD834\uDD5F";
+		}
+
+		else if(duration == 8) {
+			return "\uD834\uDD60";
+		}
+
+		else if(duration == 4) {
+			return "\uD834\uDD61";
+		}
+
+		else if(duration == 2) {
+			return "\uD834\uDD62";
+		}
+
+		else if(duration == 1) {
+			return "\uD834\uDD63";
+		}
+		
+		return noteShape;
+	}
+	
 	public void printNotesDrums(GraphicsContext graphics_context) {
+		
+		for(int i = 0; i < notesList.size(); i++) {
+			
+			String note = notesList.get(i).substring(1,2);
+			int number = Integer.parseInt(notesList.get(i).substring(0,1));
+			
+			if(note.equals("E")) { //E Tells us the vertical location 
+				
+				
+				if(number == 4) { //4 Tells us it the first instance of E that goes on last line
+					
+					graphics_context.setStroke(Color.WHITE);
+					graphics_context.strokeLine(currentX, currentY+125, currentX+12,currentY+125);
+
+					graphics_context.setFill(Color.BLACK); //Note shape is from the duration
+					graphics_context.fillText(getNoteShape(Integer.parseInt(noteLenghtList.get(i))), currentX, currentY+125); 
+					
+				}
+				
+				else if(number == 5) {
+					
+					graphics_context.setStroke(Color.WHITE);
+					graphics_context.strokeLine(currentX, currentY+125, currentX+12,currentY+125);
+
+					graphics_context.setFill(Color.BLACK); //Note shape is from the duration
+					graphics_context.fillText(getNoteShape(Integer.parseInt(noteLenghtList.get(i))), currentX, currentY+125); 
+					
+					
+				}
+				
+				
+							
+		}
+			
+		}
+		
+		
+		
 		currentX+=20;
 		Font font = new Font("Bravura", 60);
 		graphics_context.setFont(font);

@@ -46,7 +46,15 @@ public class PreviewSheetMusicController extends Application{
 
 	@FXML
 	void handleMusic(ActionEvent event) {
-		Parser.GuitarParser.jfugueTester.playNotes();
+		
+		if(Parser.XMLParser.instrument.equals("Guitar")) {
+			Parser.GuitarParser.jfugueTester.playNotes();
+		}
+		
+		else if(Parser.XMLParser.instrument.equals("Drumset")) {
+			//Parser.DrumParser.midiTester.playNotes();
+			Parser.DrumParser.drumTest.playNotes();
+		}
 	}
 
 	@FXML

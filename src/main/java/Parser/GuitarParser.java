@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import GUI.PreviewSheetMusicController;
@@ -56,7 +57,7 @@ public class GuitarParser {
 			NOS = "";
 		}
 
-		
+
 		NodeList tuningSteps =  doc.getElementsByTagName("tuning-step");
 		NodeList staffLines  =  doc.getElementsByTagName("staff-lines");
 		Element staffLine = (Element) staffLines.item(0);    
@@ -87,9 +88,9 @@ public class GuitarParser {
 			}
 
 		}
-		
-		System.out.println("*********************");
 
+		System.out.println("*********************");
+		System.out.println();
 
 		NodeList notes = doc.getElementsByTagName("note");
 		System.out.println("Amount of notes is: " + notes.getLength());
@@ -122,39 +123,65 @@ public class GuitarParser {
 			NodeList singleNote = (NodeList) notes.item(j);
 			NodeList technical = (NodeList) singleNote.item(1); //1: Technical  3: Number of Notes 
 			
+			boolean hasChord = false;
+			boolean hasAlter = false;
 			
-			if(singleNote.getLength() == 13) {
+			//Checks if the current note has a chord or attribute 
+			 
+			for(int k = 0; k < singleNote.getLength(); k++) {
+
+				Node singleNoteElement = (Node) singleNote.item(k);
+				
+				if(singleNoteElement.getNodeName().equals("chord")) {
+					hasChord = true;
+				}
+			}
+			
+			if(hasChord) {
 				chordList.add(0);
 			}
 			
 			else {
 				chordList.add(1);
-
 			}
 			
+		
+
 			/*
 			 * When cord exits move the technical section one below
 			 * Technical shows the details of each note
 			 */
-
-			if(technical.getLength() == 0) { 
+			
+			if(hasChord) { 
 
 				technical = (NodeList) singleNote.item(3);
-				
+
 			}
 
-			if(technical.getLength() == 5) {
+			//Checks if the current note has a alter alter attribute (part of technical list)
+			for(int k = 0; k < technical.getLength(); k++) {
 
-				alterList.add("Non");
+				Node technicalElement = (Node) technical.item(k);
+
+				if(technicalElement.getNodeName().equals("alter")) {
+					hasAlter = true;
+				}
+
+
 			}
 
-			else if(technical.getLength() == 7) {
+			if(hasAlter) {
 
 				alterList.add(alterExistList[alterExistCounter]);
 				alterExistCounter++;
 			}
+			
+			else {
 
+				alterList.add("Non");
+			}
 
+			
 			String note = "";
 
 			System.out.println("Note: " + (j+1));
@@ -167,7 +194,13 @@ public class GuitarParser {
 				note += stepValue;
 			}
 
-
+			if(hasAlter && alterList.get(j).equals("1")) {
+				note += "#";
+			}
+			
+			if(hasAlter && alterList.get(j).equals("-1")) {
+				note += "b";
+			}
 			System.out.println("Alter: " +  alterList.get(j));
 
 			if(octaves.item(j) != null) {
@@ -201,48 +234,48 @@ public class GuitarParser {
 				noteLengthList.add(typeValue);
 
 				/*Duration 		Character
-				* whole 	   		w
-				* half 				h
-				* quarter 			q
-				* eighth 			i
-				* sixteenth 		s
-				* thirty-second 	t
-				* sixty-fourth 		x
-				* one-twenty-eighth o
-			    */
-				
+				 * whole 	   		w
+				 * half 				h
+				 * quarter 			q
+				 * eighth 			i
+				 * sixteenth 		s
+				 * thirty-second 	t
+				 * sixty-fourth 		x
+				 * one-twenty-eighth o
+				 */
+
 				if(typeValue.equals("whole")) {
-					note += "w";
+					note += "W";
 				}
-				
+
 				else if(typeValue.equals("half")) {
-					note += "h";
+					note += "H";
 				}
-				
+
 				else if(typeValue.equals("quarter")) {
-					note += "q";
+					note += "Q";
 				}
-				
+
 				else if(typeValue.equals("eighth")) {
-					note += "i";
+					note += "I";
 				}
-				
-				else if(typeValue.equals("sixteenth")) {
-					note += "s";
+
+				else if(typeValue.equals("16th")) {
+					note += "S";
 				}
-				
+
 				else if(typeValue.equals("32nd")) {
-					note += "t";
+					note += "T";
 				}
-				
+
 				else if(typeValue.equals("64th")) {
-					note += "x";
+					note += "X";
 				}
-				
+
 				else if(typeValue.equals("128th")) {
-					note += "o";
+					note += "O";
 				}
-				
+
 				else {
 					note += "";
 				}
@@ -268,20 +301,18 @@ public class GuitarParser {
 
 			notesList.add(note);
 			System.out.println("--------------------");
-			
+
 
 		}
-		
+
 		for(int i = 0; i< nNPM.size(); i++) {
 			if(i != 0) {
 				nNPM.set(i, (nNPM.get(i) + nNPM.get(i-1)));
 			}
 		}
-		
 
-		
-		jfugueTester.getNotes(notesList, nNPM, stringList, fretList, chordList);
-
+		System.out.println(chordList);
+		jfugueTester.getNotes(notesList, nNPM, stringList, fretList, chordList, alterList);
 		PreviewSheetMusicController.canvasNote.getNotesGuitar("Guitar",stringList, fretList, nNPM, alterList, noteLengthList, chordList);
 		
 
