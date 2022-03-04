@@ -76,13 +76,13 @@ public class XMLParser {
 
 
 	}
-
-
-
-
-
-
-
-
+	
+	public static String getInstrument() {
+		
+		
+		return instrument;
+		
+		
+	}
 
 }
