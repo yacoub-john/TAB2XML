@@ -16,14 +16,9 @@ class testParser {
 		
 		
 		XMLParser xmlParser = new XMLParser();
-		xmlParser.loadXMLFromString(Converter.getMusicXML());
+		// xmlParser.loadXMLFromString(Converter.getMusicXML());
 		
-		
-		
-		
-		
-		
-		
+
 	}
 
 }
