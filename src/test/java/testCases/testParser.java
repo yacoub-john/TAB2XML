@@ -6,23 +6,24 @@ import org.junit.jupiter.api.Test;
 
 import Parser.XMLParser;
 
-import converter.Converter;
 
 
 class testParser {
 
 	@Test
-	void testXMLParser1() throws Exception {
+	void testXMLParser1() {
 		
 		String parse = "<part-name>Guitar</part-name>";
 		
 		XMLParser xmlParser = new XMLParser();
-		xmlParser.loadXMLFromString(parse);
+		try {
+			xmlParser.loadXMLFromString(parse);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		assertEquals("Guitar",XMLParser.getInstrument());
-		
-	
-		
+
 
 	}
 
