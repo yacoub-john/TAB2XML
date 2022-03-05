@@ -79,7 +79,7 @@ public class JfugueForDrum {
 		
 		Player player = new Player();
 		String total = "";
-		String str="T180 V9 ";
+		String str="T120 V9 ";
 		total += str;
 		
 		for(int i = 0; i < notesList.size(); i++) {
@@ -95,7 +95,7 @@ public class JfugueForDrum {
 				
 				if(noteInstrumentIDList.get(i).equals(instrumentsID.get(j))) {
 					noteInstrum = instruments.get(j);
-					total += "[" + noteInstrum + "] "; 
+					total += "[" + noteInstrum + "]"; 
 					break;
 				}
 				
@@ -103,45 +103,43 @@ public class JfugueForDrum {
 			String letter = notesList.get(i).substring(1,2);
 			String number = notesList.get(i).substring(0,1);
 
-			total+= letter+number;
+			//total+= letter+number;
 			
-			if(noteLengthList.get(i).equals("64")) {
+			if(noteLengthList.get(i).equals(64)) {
 				total += "W";
 			}
 
-			else if(noteLengthList.get(i).equals("32")) {
+			else if(noteLengthList.get(i).equals(32)) {
 				total += "H";
 			}
 
-			else if(noteLengthList.get(i).equals("16")) {
+			else if(noteLengthList.get(i).equals(16)) {
 				total += "Q";
 			}
 
-			else if(noteLengthList.get(i).equals("8")) {
+			else if(noteLengthList.get(i).equals(8)) {
 				total += "I";
 			}
 
-			else if(noteLengthList.get(i).equals("4")) {
+			else if(noteLengthList.get(i).equals(4)) {
 				total += "S";
 			}
 
-			else if(noteLengthList.get(i).equals("2")) {
+			else if(noteLengthList.get(i).equals(2)) {
 				total += "T";
 			}
 
-			else if(noteLengthList.get(i).equals("1")) {
+			else if(noteLengthList.get(i).equals(1)) {
 				total += "X";
 			}
 
-			else if(noteLengthList.get(i).equals("1/2")) {
+			else if(noteLengthList.get(i).equals(1/2)) {
 				total += "O";
 			}
-
-			total+=" ";
 			
 			if((i+1)<chordList.size() && chordList.get(i+1)==0) 
 			{
-				//total+="+";
+				total+="+";
 			}
 			
 			else {
