@@ -50,9 +50,11 @@ public class XMLParser {
 			NodeList measure = (NodeList) measures.item(i); 
 			System.out.println("Total number of notes in measure " + i +" is: " + (measure.getLength()-3)/2);
 			nNPM.add((measure.getLength()-3)/2);
-			output = nNPM;
+			
+			
 		}
 		
+
 
 		if(partName.equals("Guitar")) {
 			GuitarParser guitarParser = new GuitarParser();
@@ -66,6 +68,7 @@ public class XMLParser {
 			instrument = "Drumset";
 			drumParser.parseDrums(measures, nNPM, doc);
 		}
+		
 		
 
 	}
