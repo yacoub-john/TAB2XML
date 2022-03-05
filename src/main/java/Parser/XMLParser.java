@@ -18,6 +18,10 @@ public class XMLParser {
 	public ArrayList<Integer> nNPM = new ArrayList<Integer>();
 	public int numOfmeasures = 0;
 	
+	public NodeList out = null;
+	public Document document = null;
+	
+	
 	
 	public void getXml(Document doc) {
 
@@ -72,7 +76,8 @@ public class XMLParser {
 			drumParser.parseDrums(measures, nNPM, doc);
 		}
 		
-		
+		out = measures;
+		document = doc;
 
 	}
 

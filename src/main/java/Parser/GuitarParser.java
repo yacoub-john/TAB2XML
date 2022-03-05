@@ -12,13 +12,14 @@ import PlayNotes.JfugueTest;
 
 public class GuitarParser {
 
-	private ArrayList<String> notesList = new ArrayList<>();
-	private ArrayList<String> alterList = new ArrayList<>();
-	private ArrayList<Integer> chordList = new ArrayList<>();
-	private ArrayList<String> fretList = new ArrayList<>();
-	private ArrayList<String> stringList = new ArrayList<>();
-	private ArrayList<String> noteLengthList = new ArrayList<>();
+	public ArrayList<String> notesList = new ArrayList<>();
+	public ArrayList<String> alterList = new ArrayList<>();
+	public ArrayList<Integer> chordList = new ArrayList<>();
+	public ArrayList<String> fretList = new ArrayList<>();
+	public ArrayList<String> stringList = new ArrayList<>();
+	public ArrayList<String> noteLengthList = new ArrayList<>();
 	public static JfugueTest jfugueTester = new JfugueTest();
+	
 
 
 	public void parseGuitar(NodeList measures, ArrayList<Integer> nNPM, Document doc) {
@@ -28,17 +29,17 @@ public class GuitarParser {
 
 			NodeList divisions  =  doc.getElementsByTagName("divisions");
 			Element division = (Element) divisions.item(i);    
-			String  NOD = division.getTextContent();
+		    String NOD = division.getTextContent();
 			System.out.println("Number of divisions in measure " + (i + 1) + ": " + NOD);
-
-
+			
+			
+            String NOF = "";
+             
 			NodeList fifths =  doc.getElementsByTagName("fifths");
-			String  NOF = "";
-
 			if(fifths.item(i) != null) {
 
 				Element fifth = (Element) fifths.item(i);    
-				NOF = fifth.getTextContent();
+				 NOF = fifth.getTextContent();
 				System.out.println("Fifth of measure " + ( i+1) + ": " + NOF);
 			}
 
@@ -314,10 +315,7 @@ public class GuitarParser {
 		System.out.println(chordList);
 		jfugueTester.getNotes(notesList, nNPM, stringList, fretList, chordList, alterList);
 		PreviewSheetMusicController.canvasNote.getNotesGuitar("Guitar",stringList, fretList, nNPM, alterList, noteLengthList, chordList);
-		
-
 
 	}
-
 
 }
