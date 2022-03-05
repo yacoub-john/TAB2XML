@@ -324,6 +324,7 @@ public class CanvasNotes {
 		}
 
 		else if(duration == 16) {
+			
 			return "\uD834\uDD5F";
 		}
 
@@ -356,7 +357,7 @@ public class CanvasNotes {
 			if(note.equals("E")) { //E Tells us the vertical location 
 				
 				
-				if(number == 4) { //4 Tells us it the first instance of E that goes on last line
+				if(number == 4) { //4 Tells us it the first instance of E that goes on the last line
 					
 					graphics_context.setStroke(Color.WHITE);
 					graphics_context.strokeLine(currentX, currentY+125, currentX+12,currentY+125);
@@ -372,7 +373,7 @@ public class CanvasNotes {
 					graphics_context.strokeLine(currentX, currentY+125, currentX+12,currentY+125);
 
 					graphics_context.setFill(Color.BLACK); //Note shape is from the duration
-					graphics_context.fillText(getNoteShape(Integer.parseInt(noteLenghtList.get(i))), currentX, currentY+125); 
+					//graphics_context.fillText(getNoteShape(Integer.parseInt(noteLenghtList.get(i))), currentX, currentY+125); 
 					
 					
 				}
