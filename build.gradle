@@ -83,4 +83,7 @@ run {
 }
 
 mainClassName = 'GUI.MainApp'
+test {
+  testLogging.showStandardStreams = true
+}
 

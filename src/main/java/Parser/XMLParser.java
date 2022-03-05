@@ -15,7 +15,9 @@ import java.util.ArrayList;
 public class XMLParser {
 	
 	public static String instrument = "";
-	public static ArrayList<Integer> output;
+	public ArrayList<Integer> nNPM = new ArrayList<Integer>();
+	public int numOfmeasures = 0;
+	
 	
 	public void getXml(Document doc) {
 
@@ -42,7 +44,8 @@ public class XMLParser {
 
 		NodeList measures = doc.getElementsByTagName("measure"); 
 		System.out.println("Amount of Measures is: " + measures.getLength());
-		ArrayList<Integer> nNPM = new ArrayList<Integer>();
+		numOfmeasures  = measures.getLength();
+		
 		
 		
 		for(int i = 0; i < measures.getLength(); i++) {
@@ -54,7 +57,7 @@ public class XMLParser {
 			
 		}
 		
-
+        
 
 		if(partName.equals("Guitar")) {
 			GuitarParser guitarParser = new GuitarParser();
@@ -83,17 +86,8 @@ public class XMLParser {
 
 	}
 	
-	public static String getInstrument() {
-		
-
-		return instrument;
-	}
 	
-	public ArrayList<Integer> getnNPM(){
-		
-		
-		return output;
-		
-	}
+	
+	
 
 }

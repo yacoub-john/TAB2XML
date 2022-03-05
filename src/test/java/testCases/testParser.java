@@ -1,6 +1,8 @@
 package testCases;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,292 +10,313 @@ import java.util.Scanner;
 import org.junit.jupiter.api.Test;
 
 import Parser.XMLParser;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 
 class testParser {
 	
-	String parse = " <identification>\n"
-			+ "    <creator type=\"composer\"></creator>\n"
-			+ "  </identification>\n"
-			+ "  <part-list>\n"
-			+ "    <score-part id=\"P1\">\n"
-			+ "      <part-name>Guitar</part-name>\n"
-			+ "    </score-part>\n"
-			+ "  </part-list>\n"
-			+ "  <part id=\"P1\">\n"
-			+ "    <measure number=\"1\">\n"
-			+ "      <attributes>\n"
-			+ "        <divisions>16</divisions>\n"
-			+ "        <key>\n"
-			+ "          <fifths>0</fifths>\n"
-			+ "        </key>\n"
-			+ "        <clef>\n"
-			+ "          <sign>TAB</sign>\n"
-			+ "          <line>5</line>\n"
-			+ "        </clef>\n"
-			+ "        <staff-details>\n"
-			+ "          <staff-lines>6</staff-lines>\n"
-			+ "          <staff-tuning line=\"1\">\n"
-			+ "            <tuning-step>E</tuning-step>\n"
-			+ "            <tuning-octave>2</tuning-octave>\n"
-			+ "          </staff-tuning>\n"
-			+ "          <staff-tuning line=\"2\">\n"
-			+ "            <tuning-step>A</tuning-step>\n"
-			+ "            <tuning-octave>2</tuning-octave>\n"
-			+ "          </staff-tuning>\n"
-			+ "          <staff-tuning line=\"3\">\n"
-			+ "            <tuning-step>D</tuning-step>\n"
-			+ "            <tuning-octave>3</tuning-octave>\n"
-			+ "          </staff-tuning>\n"
-			+ "          <staff-tuning line=\"4\">\n"
-			+ "            <tuning-step>G</tuning-step>\n"
-			+ "            <tuning-octave>3</tuning-octave>\n"
-			+ "          </staff-tuning>\n"
-			+ "          <staff-tuning line=\"5\">\n"
-			+ "            <tuning-step>B</tuning-step>\n"
-			+ "            <tuning-octave>3</tuning-octave>\n"
-			+ "          </staff-tuning>\n"
-			+ "          <staff-tuning line=\"6\">\n"
-			+ "            <tuning-step>E</tuning-step>\n"
-			+ "            <tuning-octave>4</tuning-octave>\n"
-			+ "          </staff-tuning>\n"
-			+ "        </staff-details>\n"
-			+ "      </attributes>\n"
-			+ "      <note>\n"
-			+ "        <pitch>\n"
-			+ "          <step>E</step>\n"
-			+ "          <octave>2</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>8</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>eighth</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>6</string>\n"
-			+ "            <fret>0</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <pitch>\n"
-			+ "          <step>B</step>\n"
-			+ "          <octave>2</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>8</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>eighth</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>5</string>\n"
-			+ "            <fret>2</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <pitch>\n"
-			+ "          <step>E</step>\n"
-			+ "          <octave>3</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>8</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>eighth</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>4</string>\n"
-			+ "            <fret>2</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <pitch>\n"
-			+ "          <step>G</step>\n"
-			+ "          <alter>1</alter>\n"
-			+ "          <octave>3</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>8</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>eighth</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>3</string>\n"
-			+ "            <fret>1</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <pitch>\n"
-			+ "          <step>B</step>\n"
-			+ "          <octave>3</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>8</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>eighth</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>2</string>\n"
-			+ "            <fret>0</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <pitch>\n"
-			+ "          <step>E</step>\n"
-			+ "          <octave>4</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>8</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>eighth</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>1</string>\n"
-			+ "            <fret>0</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <pitch>\n"
-			+ "          <step>B</step>\n"
-			+ "          <octave>3</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>8</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>eighth</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>2</string>\n"
-			+ "            <fret>0</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <pitch>\n"
-			+ "          <step>G</step>\n"
-			+ "          <alter>1</alter>\n"
-			+ "          <octave>3</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>8</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>eighth</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>3</string>\n"
-			+ "            <fret>1</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "    </measure>\n"
-			+ "    <measure number=\"2\">\n"
-			+ "      <attributes>\n"
-			+ "        <divisions>16</divisions>\n"
-			+ "        <key>\n"
-			+ "          <fifths>0</fifths>\n"
-			+ "        </key>\n"
-			+ "      </attributes>\n"
-			+ "      <note>\n"
-			+ "        <pitch>\n"
-			+ "          <step>E</step>\n"
-			+ "          <octave>4</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>64</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>whole</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>1</string>\n"
-			+ "            <fret>0</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <chord/>\n"
-			+ "        <pitch>\n"
-			+ "          <step>B</step>\n"
-			+ "          <octave>3</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>64</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>whole</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>2</string>\n"
-			+ "            <fret>0</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <chord/>\n"
-			+ "        <pitch>\n"
-			+ "          <step>G</step>\n"
-			+ "          <alter>1</alter>\n"
-			+ "          <octave>3</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>64</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>whole</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>3</string>\n"
-			+ "            <fret>1</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <chord/>\n"
-			+ "        <pitch>\n"
-			+ "          <step>E</step>\n"
-			+ "          <octave>3</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>64</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>whole</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>4</string>\n"
-			+ "            <fret>2</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <chord/>\n"
-			+ "        <pitch>\n"
-			+ "          <step>B</step>\n"
-			+ "          <octave>2</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>64</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>whole</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>5</string>\n"
-			+ "            <fret>2</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "      <note>\n"
-			+ "        <chord/>\n"
-			+ "        <pitch>\n"
-			+ "          <step>E</step>\n"
-			+ "          <octave>2</octave>\n"
-			+ "        </pitch>\n"
-			+ "        <duration>64</duration>\n"
-			+ "        <voice>1</voice>\n"
-			+ "        <type>whole</type>\n"
-			+ "        <notations>\n"
-			+ "          <technical>\n"
-			+ "            <string>6</string>\n"
-			+ "            <fret>0</fret>\n"
-			+ "          </technical>\n"
-			+ "        </notations>\n"
-			+ "      </note>\n"
-			+ "    </measure>\n"
-			+ "  </part>\n"
-			+ "</score-partwise>";
+public String getGuitarXML() {
+	
+	String parse  = """
+			<score-partwise version="3.1">
+<identification>
+	<creator type="composer"></creator>
+</identification>
+<part-list>
+	<score-part id="P1">
+		<part-name>Guitar</part-name>
+	</score-part>
+</part-list>
+<part id="P1">
+	<measure number="1">
+		<attributes>
+			<divisions>16</divisions>
+			<key>
+				<fifths>0</fifths>
+			</key>
+			<clef>
+				<sign>TAB</sign>
+				<line>5</line>
+			</clef>
+			<staff-details>
+				<staff-lines>6</staff-lines>
+				<staff-tuning line="1">
+					<tuning-step>E</tuning-step>
+					<tuning-octave>2</tuning-octave>
+				</staff-tuning>
+				<staff-tuning line="2">
+					<tuning-step>A</tuning-step>
+					<tuning-octave>2</tuning-octave>
+				</staff-tuning>
+				<staff-tuning line="3">
+					<tuning-step>D</tuning-step>
+					<tuning-octave>3</tuning-octave>
+				</staff-tuning>
+				<staff-tuning line="4">
+					<tuning-step>G</tuning-step>
+					<tuning-octave>3</tuning-octave>
+				</staff-tuning>
+				<staff-tuning line="5">
+					<tuning-step>B</tuning-step>
+					<tuning-octave>3</tuning-octave>
+				</staff-tuning>
+				<staff-tuning line="6">
+					<tuning-step>E</tuning-step>
+					<tuning-octave>4</tuning-octave>
+				</staff-tuning>
+			</staff-details>
+		</attributes>
+		<note>
+			<pitch>
+				<step>E</step>
+				<octave>2</octave>
+			</pitch>
+			<duration>8</duration>
+			<voice>1</voice>
+			<type>eighth</type>
+			<notations>
+				<technical>
+					<string>6</string>
+					<fret>0</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<pitch>
+				<step>B</step>
+				<octave>2</octave>
+			</pitch>
+			<duration>8</duration>
+			<voice>1</voice>
+			<type>eighth</type>
+			<notations>
+				<technical>
+					<string>5</string>
+					<fret>2</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<pitch>
+				<step>E</step>
+				<octave>3</octave>
+			</pitch>
+			<duration>8</duration>
+			<voice>1</voice>
+			<type>eighth</type>
+			<notations>
+				<technical>
+					<string>4</string>
+					<fret>2</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<pitch>
+				<step>G</step>
+				<alter>1</alter>
+				<octave>3</octave>
+			</pitch>
+			<duration>8</duration>
+			<voice>1</voice>
+			<type>eighth</type>
+			<notations>
+				<technical>
+					<string>3</string>
+					<fret>1</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<pitch>
+				<step>B</step>
+				<octave>3</octave>
+			</pitch>
+			<duration>8</duration>
+			<voice>1</voice>
+			<type>eighth</type>
+			<notations>
+				<technical>
+					<string>2</string>
+					<fret>0</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<pitch>
+				<step>E</step>
+				<octave>4</octave>
+			</pitch>
+			<duration>8</duration>
+			<voice>1</voice>
+			<type>eighth</type>
+			<notations>
+				<technical>
+					<string>1</string>
+					<fret>0</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<pitch>
+				<step>B</step>
+				<octave>3</octave>
+			</pitch>
+			<duration>8</duration>
+			<voice>1</voice>
+			<type>eighth</type>
+			<notations>
+				<technical>
+					<string>2</string>
+					<fret>0</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<pitch>
+				<step>G</step>
+				<alter>1</alter>
+				<octave>3</octave>
+			</pitch>
+			<duration>8</duration>
+			<voice>1</voice>
+			<type>eighth</type>
+			<notations>
+				<technical>
+					<string>3</string>
+					<fret>1</fret>
+				</technical>
+			</notations>
+		</note>
+	</measure>
+	<measure number="2">
+		<attributes>
+			<divisions>16</divisions>
+			<key>
+				<fifths>0</fifths>
+			</key>
+		</attributes>
+		<note>
+			<pitch>
+				<step>E</step>
+				<octave>4</octave>
+			</pitch>
+			<duration>64</duration>
+			<voice>1</voice>
+			<type>whole</type>
+			<notations>
+				<technical>
+					<string>1</string>
+					<fret>0</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<chord/>
+			<pitch>
+				<step>B</step>
+				<octave>3</octave>
+			</pitch>
+			<duration>64</duration>
+			<voice>1</voice>
+			<type>whole</type>
+			<notations>
+				<technical>
+					<string>2</string>
+					<fret>0</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<chord/>
+			<pitch>
+				<step>G</step>
+				<alter>1</alter>
+				<octave>3</octave>
+			</pitch>
+			<duration>64</duration>
+			<voice>1</voice>
+			<type>whole</type>
+			<notations>
+				<technical>
+					<string>3</string>
+					<fret>1</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<chord/>
+			<pitch>
+				<step>E</step>
+				<octave>3</octave>
+			</pitch>
+			<duration>64</duration>
+			<voice>1</voice>
+			<type>whole</type>
+			<notations>
+				<technical>
+					<string>4</string>
+					<fret>2</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<chord/>
+			<pitch>
+				<step>B</step>
+				<octave>2</octave>
+			</pitch>
+			<duration>64</duration>
+			<voice>1</voice>
+			<type>whole</type>
+			<notations>
+				<technical>
+					<string>5</string>
+					<fret>2</fret>
+				</technical>
+			</notations>
+		</note>
+		<note>
+			<chord/>
+			<pitch>
+				<step>E</step>
+				<octave>2</octave>
+			</pitch>
+			<duration>64</duration>
+			<voice>1</voice>
+			<type>whole</type>
+			<notations>
+				<technical>
+					<string>6</string>
+					<fret>0</fret>
+				</technical>
+			</notations>
+		</note>
+	</measure>
+</part>
+</score-partwise>
+
+
+			
+			""";
+	
+	return parse;
 	
 	
-//	public String getGuitarXML() throws FileNotFoundException {
-//	
-//	File file = new File("/TAB2XML_G14/GuitarXML.txt");
+	
+}
+	
+	
+	
+	
+
+	
+	
+	
+//	File file = new File("/TAB2XML_G14/src/test/java/testCases/GuitarXML.txt");
 //	
 //	Scanner scan = new Scanner(file);
 //	
@@ -319,7 +342,7 @@ class testParser {
 	@Test
 	void testXMLParser1() {
 		
-		String parse = "<part-name>Guitar</part-name>";
+		String parse = getGuitarXML();
 		
 		XMLParser xmlParser = new XMLParser();
 		try {
@@ -327,27 +350,46 @@ class testParser {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		assertEquals("Guitar",XMLParser.getInstrument());
+	
+		assertEquals("Guitar",XMLParser.instrument);
 	}
 	
-//	@Test
-//	void testXMLParser2()  {
+	@Test
+	void testXNumberOfNotes() {
 		
-//		String parse = getGuitarXML();
 		
-//		XMLParser xmlParser = new XMLParser();
-//		try {
-//			xmlParser.loadXMLFromString(this.parse);
-//		} catch (Exception e) {
-//			
-//			e.printStackTrace();
-//		}
-//		
-//		
-//		assertEquals(8,xmlParser.getnNPM().get(0),0.2);
-//		
-//	}
+		String parse = getGuitarXML();
+		
+		
+		XMLParser xmlParser = new XMLParser();
+		try {
+			xmlParser.loadXMLFromString(parse);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		assertEquals(8,xmlParser.nNPM.get(0),0.2);
+		assertEquals(14,xmlParser.nNPM.get(1),0.2);
+		
+	}
+	
+	@Test
+	void testNumberOfMeasures() {
+		
+		
+		String parse = getGuitarXML();
+		
+		
+		XMLParser xmlParser = new XMLParser();
+		try {
+			xmlParser.loadXMLFromString(parse);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		assertEquals(2,xmlParser.numOfmeasures);
+		
+	}
 
 }
 
