@@ -308,36 +308,117 @@ public String getGuitarXML() {
 	
 	
 }
+public String getXML2() {
 	
-	
-	
-	
+	String parse = """
+			
+			<score-partwise version="3.1">
+<identification>
+<creator type="composer"></creator>
+</identification>
+<part-list>
+<score-part id="P1">
+  <part-name>Guitar</part-name>
+</score-part>
+</part-list>
+<part id="P1">
+<measure number="1">
+  <attributes>
+    <divisions>4</divisions>
+    <key>
+      <fifths>0</fifths>
+    </key>
+    <clef>
+      <sign>TAB</sign>
+      <line>5</line>
+    </clef>
+    <staff-details>
+      <staff-lines>6</staff-lines>
+      <staff-tuning line="1">
+        <tuning-step>E</tuning-step>
+        <tuning-octave>2</tuning-octave>
+      </staff-tuning>
+      <staff-tuning line="2">
+        <tuning-step>A</tuning-step>
+        <tuning-octave>2</tuning-octave>
+      </staff-tuning>
+      <staff-tuning line="3">
+        <tuning-step>D</tuning-step>
+        <tuning-octave>3</tuning-octave>
+      </staff-tuning>
+      <staff-tuning line="4">
+        <tuning-step>G</tuning-step>
+        <tuning-octave>3</tuning-octave>
+      </staff-tuning>
+      <staff-tuning line="5">
+        <tuning-step>B</tuning-step>
+        <tuning-octave>3</tuning-octave>
+      </staff-tuning>
+      <staff-tuning line="6">
+        <tuning-step>E</tuning-step>
+        <tuning-octave>4</tuning-octave>
+      </staff-tuning>
+    </staff-details>
+  </attributes>
+  <note>
+    <pitch>
+      <step>A</step>
+      <octave>4</octave>
+    </pitch>
+    <duration>8</duration>
+    <voice>1</voice>
+    <type>half</type>
+    <notations>
+      <technical>
+        <string>1</string>
+        <fret>5</fret>
+      </technical>
+    </notations>
+  </note>
+  <note>
+    <pitch>
+      <step>F</step>
+      <alter>1</alter>
+      <octave>4</octave>
+    </pitch>
+    <duration>8</duration>
+    <voice>1</voice>
+    <type>half</type>
+    <notations>
+      <technical>
+        <string>2</string>
+        <fret>7</fret>
+      </technical>
+    </notations>
+  </note>
+  <note>
+    <pitch>
+      <step>C</step>
+      <alter>1</alter>
+      <octave>4</octave>
+    </pitch>
+    <duration>8</duration>
+    <voice>1</voice>
+    <type>half</type>
+    <notations>
+      <technical>
+        <string>3</string>
+        <fret>6</fret>
+      </technical>
+    </notations>
+  </note>
+</measure>
+</part>
+</score-partwise>
 
+			
+			""";
+	
+	return parse;
 	
 	
-	
-//	File file = new File("/TAB2XML_G14/src/test/java/testCases/GuitarXML.txt");
-//	
-//	Scanner scan = new Scanner(file);
-//	
-//	String parse = "";
-//	
-//	
-//	while (scan.hasNextLine()) {
-//		
-//		parse = parse.concat(scan.nextLine() + "\n");
-//		
-//	}
-//	
-//	scan.close();
-//	     
-//	return parse;
-//	}
-	
-	
-	
-	
-	
+}
+
 
 	@Test
 	void testXMLParser1() {
@@ -388,6 +469,59 @@ public String getGuitarXML() {
 			e.printStackTrace();
 		}
 		assertEquals(2,xmlParser.numOfmeasures);
+		
+	}
+	
+	
+	@Test
+	void testXMLParser2() {
+		
+		String parse = getXML2();
+		
+		XMLParser xmlParser = new XMLParser();
+		try {
+			xmlParser.loadXMLFromString(parse);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+		assertEquals("Guitar",XMLParser.instrument);
+	}
+	
+	@Test
+	void testXNumberOfNotes2() {
+		
+		
+		String parse = getXML2();
+		
+		
+		XMLParser xmlParser = new XMLParser();
+		try {
+			xmlParser.loadXMLFromString(parse);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		assertEquals(3,xmlParser.nNPM.get(0),0.2);
+	
+		
+	}
+	
+	@Test
+	void testNumberOfMeasures2() {
+		
+		
+		String parse = getXML2();
+		
+		
+		XMLParser xmlParser = new XMLParser();
+		try {
+			xmlParser.loadXMLFromString(parse);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		assertEquals(1,xmlParser.numOfmeasures);
 		
 	}
 
