@@ -349,6 +349,8 @@ public class CanvasNotes {
 	// Change the value in fill text based on the return value of the above function
 	public void printNotesDrums(GraphicsContext graphics_context) {
 		
+		int counter=0;  // For tracking when to connect 4 notes together.
+		
 		for(int i = 0; i < notesList.size(); i++) {
 			
 			String note = notesList.get(i).substring(1,2);
@@ -377,7 +379,7 @@ public class CanvasNotes {
 					
 					
 				}
-				if(note.equals("F")) { //E Tells us the vertical location 
+				if(note.equals("F")) { //F Tells us the vertical location 
 					
 					
 					if(number == 4) { //4 Tells us it the first instance of E that goes on last line
@@ -400,10 +402,55 @@ public class CanvasNotes {
 						
 						
 					}
-				
-				
-				
-							
+				if(note.equals("G")) {
+					
+					
+					graphics_context.setFill(Color.BLACK); //Note shape is from the duration
+					graphics_context.fillText("\uD834\uDD60", currentX, currentY+75); 
+					
+				}
+               if(note.equals("A")) {
+					
+					
+					graphics_context.setFill(Color.BLACK); //Note shape is from the duration
+					graphics_context.fillText("\uD834\uDD60", currentX, currentY+66);
+					
+					
+				}
+               if(note.equals("B")) {
+	
+	
+	graphics_context.setFill(Color.BLACK); //Note shape is from the duration
+	graphics_context.fillText("\uD834\uDD60", currentX, currentY+50);
+	
+	
+              }
+             if(note.equals("C")) {
+	
+	
+	graphics_context.setFill(Color.BLACK); //Note shape is from the duration
+	graphics_context.fillText("\uD834\uDD60", currentX, currentY+41);
+	
+	
+            }	
+          if(note.equals("D")) {
+	
+	
+	graphics_context.setFill(Color.BLACK); //Note shape is from the duration
+	graphics_context.fillText("\uD834\uDD60", currentX, currentY+25);
+	
+	
+}
+
+			if (chordList.get(i)!= 0 ) {
+				currentX+=30;
+				counter++;
+			}
+			if(counter%3==0) {
+				graphics_context.setLineWidth(5);
+				graphics_context.strokeLine(currentX-73, currentY-30,currentX+10 ,currentY-30);
+			}
+		
 		}
 				
 				
@@ -484,8 +531,9 @@ public class CanvasNotes {
 		 */
 //		graphics_context.fillText("\uD834\uDD66",currentX+16.5, currentY+15);   
 //		graphics_context.strokeLine(currentX+16.5, currentY+15 ,currentX+16.5, currentY+60);
-//		
-		
+//
+	
+	
 		
 	}
 	
