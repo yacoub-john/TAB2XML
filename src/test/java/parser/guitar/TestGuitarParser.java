@@ -1,4 +1,4 @@
-package testCases;
+package parser.guitar;
 
 import static org.junit.jupiter.api.Assertions.*;
 
