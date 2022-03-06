@@ -293,7 +293,7 @@ public class DrumParser {
         drumTest.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList, nNPM);
         PreviewSheetMusicController.canvasNote.getNotesDrums("Drumset", notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList, nNPM);
         
-        System.out.println(chordList);
+        
 	}
 }
 
