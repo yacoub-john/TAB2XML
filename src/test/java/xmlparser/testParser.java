@@ -1011,7 +1011,7 @@ public String getDrumXML() {
 			e.printStackTrace();
 		}
 		assertEquals(12,xmlParser.nNPM.get(0),0.2);
-		assertEquals(11,xmlParser.nNPM.get(1),0.2);
+		assertEquals(23,xmlParser.nNPM.get(1),0.2);
 	
 		
 	}
