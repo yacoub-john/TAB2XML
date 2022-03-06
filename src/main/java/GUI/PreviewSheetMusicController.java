@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
@@ -32,7 +33,8 @@ public class PreviewSheetMusicController extends Application{
     @FXML private AnchorPane musicPane;
     @FXML private Button playMusic;
     @FXML private Button Edit;
-
+    @FXML private AnchorPane anchor;
+    @FXML private ScrollPane scroll;
     @FXML private Button gotoMeasureButton;
 	@FXML private TextField gotoMeasureField;
 	public static CanvasNotes canvasNote = new CanvasNotes();
@@ -42,7 +44,9 @@ public class PreviewSheetMusicController extends Application{
 
 	public void setMainViewController(MainViewController mvcInput) {
 		mvc = mvcInput;
-		canvasNote.printNotes(canvas);
+		scroll.setFitToWidth(true);
+		scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+		canvasNote.printNotes(canvas, scroll, anchor);
 	}
 
 	

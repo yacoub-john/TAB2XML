@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -26,8 +28,10 @@ public class CanvasNotes {
 	private ArrayList<String> stemList = new ArrayList<>();
 	private ArrayList<Integer> nNPM = new ArrayList<Integer>();
 	private ArrayList<String> noteInstrumentIDList = new ArrayList<>();
-	
 	private GraphicsContext graphics_context;
+	private Canvas canvas;
+	private ScrollPane scrollPane;
+	private AnchorPane anchorPane;
 	
 	private int nNPMCounter = 0;
 	private int currentX = 0;
@@ -59,11 +63,21 @@ public class CanvasNotes {
 
 	}
 
-	public void printNotes(Canvas canv) {
-
+	public void printNotes(Canvas canv, ScrollPane scroll, AnchorPane anchor) {
+		
+		canvas = canv;
+		scrollPane = scroll;
+		anchorPane = anchor;
 		//Set starting X and Y values 
 		currentX = 100;
-		currentY=75;
+		
+		
+		if(instrumentName.equals("Guitar")) {
+			currentY = 40;
+		}
+		else {
+			currentY=75;
+		}
 		nNPMCounter = 0;
 
 		graphics_context = canv.getGraphicsContext2D();
@@ -72,8 +86,8 @@ public class CanvasNotes {
 		canvasHeight = graphics_context.getCanvas().getHeight();
 
 		//Background
-		graphics_context.setFill(Color.WHITE);
-		graphics_context.fillRect(0, 0, canvasWidth, canvasHeight);
+//		graphics_context.setFill(Color.WHITE);
+//		graphics_context.fillRect(0, 0, canvasWidth, canvasHeight);
 
 		//Horizontal Lines
 		printHorizontalLines(graphics_context);
@@ -198,7 +212,7 @@ public class CanvasNotes {
 	public void printNotesGuitar(GraphicsContext graphics_context) {
 		Font font = new Font("Arial", 20);
 		graphics_context.setFont(font);
-
+				
 		for(int i = 0; i < fretList.size(); i++) {
 
 			if(notesPerMeasure.get(nNPMCounter) == i) {
@@ -209,8 +223,17 @@ public class CanvasNotes {
 			}
 
 			if( (currentX + 40) >= canvasWidth ) {
-				currentY = currentY + 200;
-				currentX = 55;
+				
+				if(currentY+400 > canvasHeight) {
+					anchorPane.setPrefHeight(canvasHeight+500);
+					canvas.setHeight(canvasHeight+500);
+					canvasHeight = canvasHeight + 500;
+				}
+				
+					currentY = currentY + 200;
+					currentX = 55;
+				
+				
 				printHorizontalLines(graphics_context);
 			}
 
@@ -596,6 +619,13 @@ public class CanvasNotes {
 
 
 			if (currentX+50>=canvasWidth-50) {
+				
+				if(currentY+400 > canvasHeight) {
+					anchorPane.setPrefHeight(canvasHeight+500);
+					canvas.setHeight(canvasHeight+500);
+					canvasHeight = canvasHeight + 500;
+				}
+				
 				currentX=(int) (canvasWidth-50);
 				printVertical(graphics_context);
 				currentY+=160;
