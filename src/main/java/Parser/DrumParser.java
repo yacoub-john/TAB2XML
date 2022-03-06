@@ -289,7 +289,12 @@ public class DrumParser {
         System.out.println("Note Instrument ID: " + noteInstrumentIDList);
         System.out.println();
 		
-        //midiTester.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList);
+    	for(int i = 0; i< nNPM.size(); i++) {
+			if(i != 0) {
+				nNPM.set(i, (nNPM.get(i) + nNPM.get(i-1)));
+			}
+		}
+    	
         drumTest.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList, nNPM);
         PreviewSheetMusicController.canvasNote.getNotesDrums("Drumset", notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList, nNPM);
         

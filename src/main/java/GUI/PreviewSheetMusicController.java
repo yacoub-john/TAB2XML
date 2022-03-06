@@ -36,6 +36,7 @@ public class PreviewSheetMusicController extends Application{
     @FXML private Button gotoMeasureButton;
 	@FXML private TextField gotoMeasureField;
 	public static CanvasNotes canvasNote = new CanvasNotes();
+	public boolean playing = false;
 
 	public PreviewSheetMusicController() {}
 
@@ -44,19 +45,34 @@ public class PreviewSheetMusicController extends Application{
 		canvasNote.printNotes(canvas);
 	}
 
+	
 	@FXML
 	void handleMusic(ActionEvent event) {
 		
-		if(Parser.XMLParser.instrument.equals("Guitar")) {
-			Parser.GuitarParser.jfugueTester.playNotes();
+		if(playing == false) {
+
+			playMusic.setText("Pause Music");
+			playing = true;
+			
+			
+			if(Parser.XMLParser.instrument.equals("Guitar")) {
+				Parser.GuitarParser.jfugueTester.playNotes();
+			}
+			
+			else if(Parser.XMLParser.instrument.equals("Drumset")) {
+				Parser.DrumParser.drumTest.playNotes();
+			}
 		}
 		
-		else if(Parser.XMLParser.instrument.equals("Drumset")) {
-			//Parser.DrumParser.midiTester.playNotes();
-			Parser.DrumParser.drumTest.playNotes();
+		
+		if(playing) {
+			playMusic.setText("Play Music");
+			playing = false;
 		}
+		
+		
 	}
-
+	
 	@FXML
 	void handleSave() {
 

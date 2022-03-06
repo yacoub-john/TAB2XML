@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 import org.jfugue.player.Player;
 
+@SuppressWarnings("unused")
 public class JfugueForDrum {
 
 	ArrayList<String> instruments = new ArrayList<>();
@@ -27,6 +28,7 @@ public class JfugueForDrum {
 		noteHeadList = noteHeadsRecieved;
 		noteLengthList = noteLengthRecieved;
 		stemList = stemRecieved;
+		nNPM = nNPMrecieved;
 		noteInstrumentIDList = noteInstrumIDRecieved;
 		
 		getIntruments();
@@ -76,22 +78,14 @@ public class JfugueForDrum {
 	}
 	
 	public void playNotes() {
-		
 		Player player = new Player();
 		String total = "";
 		String str="T120 V9 ";
 		total += str;
 		
 		for(int i = 0; i < notesList.size(); i++) {
-			
-			
-			String noteInstrum = "";
-			//System.out.println("Note instrum: " + noteInstrumentIDList.get(i));
-			
+			String noteInstrum = "";			
 			for(int j = 0; j < instrumentsID.size(); j++) {
-				
-				//System.out.println("Instrum list " + noteInstrumentIDList.get(i));
-
 				
 				if(noteInstrumentIDList.get(i).equals(instrumentsID.get(j))) {
 					noteInstrum = instruments.get(j);
@@ -100,10 +94,6 @@ public class JfugueForDrum {
 				}
 				
 			}
-			String letter = notesList.get(i).substring(1,2);
-			String number = notesList.get(i).substring(0,1);
-
-			//total+= letter+number;
 			
 			if(noteLengthList.get(i).equals(64)) {
 				total += "W";
@@ -143,13 +133,11 @@ public class JfugueForDrum {
 			}
 			
 			else {
-				//player.play(str+notes.get(i));
 				total += " ";
 			}
 						
 			if(nNPMCounter<nNPM.size() && i == (nNPM.get(nNPMCounter) - 1)) {
 				total += "| ";
-				//player.play("|");
 				nNPMCounter ++;
 			}
 			
@@ -160,9 +148,6 @@ public class JfugueForDrum {
 		nNPMCounter = 0;
 	}
 
-	public static void main(String[] args) {
-		Player player1 = new Player();
-		player1.play("V0 I[HI_MID_TOM] Eq Ch. | Eq Ch. | Dq Eq Dq Cq   V1 I[Flute] Rw | Rw | GmajQQQ CmajQ");
-	}
+	
 }
 
