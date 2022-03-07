@@ -18,6 +18,7 @@ public class JfugueForDrum {
 	private ArrayList<String> noteInstrumentIDList = new ArrayList<>();
 	
 	private  int nNPMCounter = 0;
+	public String total = "";
 
 
 	//Receive notes from Drum Parser
@@ -79,7 +80,7 @@ public class JfugueForDrum {
 	
 	public void playNotes() {
 		Player player = new Player();
-		String total = "";
+		
 		String str="T120 V9 ";
 		total += str;
 		

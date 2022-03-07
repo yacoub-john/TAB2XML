@@ -1,4 +1,4 @@
-package testCases;
+package xmlparser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -859,7 +859,7 @@ public String getDrumXML() {
 
 
 	@Test
-	void testXMLParser1() {
+	void testInstrumentName() {
 		
 		String parse = getGuitarXML();
 		
@@ -1011,7 +1011,7 @@ public String getDrumXML() {
 			e.printStackTrace();
 		}
 		assertEquals(12,xmlParser.nNPM.get(0),0.2);
-		assertEquals(11,xmlParser.nNPM.get(1),0.2);
+		assertEquals(23,xmlParser.nNPM.get(1),0.2);
 	
 		
 	}
