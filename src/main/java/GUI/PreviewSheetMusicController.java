@@ -26,20 +26,35 @@ public class PreviewSheetMusicController extends Application{
 	public Highlighter highlighter;
 
 	public Window convertWindow;
-	
+
 	@FXML public  Canvas canvas;
-    @FXML private Button Save;
-    @FXML private ImageView image ;
-    @FXML private AnchorPane musicPane;
-    @FXML private Button playMusic;
-    @FXML private Button Edit;
-    @FXML private AnchorPane anchor;
-    @FXML private ScrollPane scroll;
-    @FXML private Button gotoMeasureButton;
+	@FXML private Button Save;
+	@FXML private ImageView image ;
+	@FXML private AnchorPane musicPane;
+	@FXML private Button playMusic;
+	@FXML private Button Edit;
+	@FXML private Button pauseMusic;
+	@FXML private AnchorPane anchor;
+	@FXML private ScrollPane scroll;
+	@FXML private Button gotoMeasureButton;
 	@FXML private TextField gotoMeasureField;
 	public static CanvasNotes canvasNote = new CanvasNotes();
 	public boolean playing = false;
+	private Thread t1 = new Thread(new Runnable() {
+		@Override
+		public void run() {
+			if(Parser.XMLParser.instrument.equals("Guitar")) {
+				Parser.GuitarParser.jfugueTester.playNotes();
+			}
 
+			else if(Parser.XMLParser.instrument.equals("Drumset")) {
+				Parser.DrumParser.drumTest.playNotes();
+			}
+			
+			playing = false;
+		}
+	}); 
+	
 	public PreviewSheetMusicController() {}
 
 	public void setMainViewController(MainViewController mvcInput) {
@@ -49,34 +64,37 @@ public class PreviewSheetMusicController extends Application{
 		canvasNote.printNotes(canvas, scroll, anchor);
 	}
 
-	
+
 	@FXML
 	void handleMusic(ActionEvent event) {
 		
 		if(playing == false) {
-
-			playMusic.setText("Pause Music");
+			//playMusic.setText("Pause Music");
 			playing = true;
 			
+			t1.start();
 			
-			if(Parser.XMLParser.instrument.equals("Guitar")) {
-				Parser.GuitarParser.jfugueTester.playNotes();
-			}
-			
-			else if(Parser.XMLParser.instrument.equals("Drumset")) {
-				Parser.DrumParser.drumTest.playNotes();
-			}
 		}
 		
-		
-		if(playing) {
-			playMusic.setText("Play Music");
-			playing = false;
+		else {
+			t1.resume();
 		}
-		
-		
 	}
 	
+	@FXML
+	void handlePause(ActionEvent event) {
+		
+		if(playing) {
+			playMusic.setText("Play Music");			
+			
+		}
+		
+		else {
+			System.out.println("Nothing Playing");
+		}
+	}
+
+
 	@FXML
 	void handleSave() {
 
@@ -128,10 +146,10 @@ public class PreviewSheetMusicController extends Application{
 	}
 
 
-    @FXML
-    void handleGotoMeasure(ActionEvent event) {
+	@FXML
+	void handleGotoMeasure(ActionEvent event) {
 
-    }
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {}
