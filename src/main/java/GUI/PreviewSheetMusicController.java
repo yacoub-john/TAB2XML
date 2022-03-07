@@ -40,21 +40,8 @@ public class PreviewSheetMusicController extends Application{
 	@FXML private TextField gotoMeasureField;
 	public static CanvasNotes canvasNote = new CanvasNotes();
 	public boolean playing = false;
-	private Thread t1 = new Thread(new Runnable() {
-		@Override
-		public void run() {
-			if(Parser.XMLParser.instrument.equals("Guitar")) {
-				Parser.GuitarParser.jfugueTester.playNotes();
-			}
+	private Thread t1;
 
-			else if(Parser.XMLParser.instrument.equals("Drumset")) {
-				Parser.DrumParser.drumTest.playNotes();
-			}
-			
-			playing = false;
-		}
-	}); 
-	
 	public PreviewSheetMusicController() {}
 
 	public void setMainViewController(MainViewController mvcInput) {
@@ -67,28 +54,42 @@ public class PreviewSheetMusicController extends Application{
 
 	@FXML
 	void handleMusic(ActionEvent event) {
-		
+
+		t1 = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if(Parser.XMLParser.instrument.equals("Guitar")) {
+					Parser.GuitarParser.jfugueTester.playNotes();
+				}
+
+				else if(Parser.XMLParser.instrument.equals("Drumset")) {
+					Parser.DrumParser.drumTest.playNotes();
+				}
+
+				playing = false;
+			}
+		}); 
+
 		if(playing == false) {
 			//playMusic.setText("Pause Music");
 			playing = true;
-			
 			t1.start();
-			
+
 		}
-		
+
 		else {
 			t1.resume();
 		}
 	}
-	
+
 	@FXML
 	void handlePause(ActionEvent event) {
-		
+
 		if(playing) {
 			playMusic.setText("Play Music");			
-			
+
 		}
-		
+
 		else {
 			System.out.println("Nothing Playing");
 		}
