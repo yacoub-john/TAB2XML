@@ -1,4 +1,4 @@
-package parser.guitar;
+package playnotes.player;
 
 import static org.junit.jupiter.api.Assertions.*;
 

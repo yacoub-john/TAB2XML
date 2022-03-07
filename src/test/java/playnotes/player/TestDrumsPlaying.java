@@ -1,4 +1,4 @@
-package parser.drums;
+package playnotes.player;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -859,7 +859,7 @@ public String getDrumXML() {
 
 
 	@Test
-	void testXMLParser1() {
+	void testInstrumentName() {
 		
 		String parse = getGuitarXML();
 		
