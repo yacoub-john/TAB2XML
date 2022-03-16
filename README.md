@@ -13,6 +13,7 @@ Firstly, make sure you have the latest version of Eclipse installed on your comp
 
 To import the project go to file -> Import -> Git -> projects from Git -> Clone URI, enter the URL for Repository to import the project.
 
+![WhatsApp Image 2022-03-16 at 1 15 21 PM](https://user-images.githubusercontent.com/90650822/158649047-3e2d1d19-457e-4efb-951e-b36d370ade4c.jpeg)
 
 
 Make sure Gradle is installed and you are version is atleast 7.3.3.
@@ -22,6 +23,9 @@ For step by step instructions on how how import the project, on github go to pro
 # Running the project
 
 Make sure to run the project throught Gradle. Go to Gradle Tasks -> TAB2XML_G14 -> Application -> run.
+
+![WhatsApp Image 2022-03-16 at 1 15 48 PM](https://user-images.githubusercontent.com/90650822/158649198-6595afd8-7b89-4793-947d-c153eee817e8.jpeg)
+
 
 A new window should pop ip, enter the tabs you want to visualize or play. Click on the preview sheet music to visualise the notes and then the play button to play them.
 
