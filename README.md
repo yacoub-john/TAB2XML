@@ -4,16 +4,16 @@ TAB2MUSIC is a tool designed to convert musical tablature into XML and sheet mus
 
 # System Requirements
 
-Available Disk Space : 55 MB
-RAM : 256 MB
-Java version : Java 17
-Operating System : Windows, MacOS, Ubuntu, any platform with Gradle
+![table](https://user-images.githubusercontent.com/90650822/158647189-2040d874-ddc6-4fc1-abb0-20e5dcd8bbb6.png)
+
 
 # Importing the project
 
 Firstly, make sure you have the latest version of Eclipse installed on your computer and you are working with JDK 17.0.2.
 
 To import the project go to file -> Import -> Git -> projects from Git -> Clone URI, enter the URL for Repository to import the project.
+
+
 
 Make sure Gradle is installed and you are version is atleast 7.3.3.
 
@@ -26,7 +26,6 @@ Make sure to run the project throught Gradle. Go to Gradle Tasks -> TAB2XML_G14 
 A new window should pop ip, enter the tabs you want to visualize or play. Click on the preview sheet music to visualise the notes and then the play button to play them.
 
 For Step by Step instructions on how to run the project on Git hub go to Project documents -> user manual.
-
 
 
 [![CC BY-SA 4.0][:]][cc-by-sa]
