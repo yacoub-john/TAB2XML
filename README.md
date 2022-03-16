@@ -27,7 +27,7 @@ Make sure to run the project throught Gradle. Go to Gradle Tasks -> TAB2XML_G14 
 ![WhatsApp Image 2022-03-16 at 1 15 48 PM](https://user-images.githubusercontent.com/90650822/158649198-6595afd8-7b89-4793-947d-c153eee817e8.jpeg)
 
 
-A new window should pop ip, enter the tabs you want to visualize or play. Click on the preview sheet music to visualise the notes and then the play button to play them.
+A new window should pop up, enter the tabs you want to visualize or play. Click on the preview sheet music to visualise the notes and then the play button to play them.
 
 For Step by Step instructions on how to run the project on Git hub go to Project documents -> user manual.
 
