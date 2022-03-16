@@ -7,27 +7,29 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import PlayNotes.JfugueForDrum;
 import PlayNotes.MidiTest;
 
 import GUI.PreviewSheetMusicController;
 
 public class DrumParser {
 	
-	private ArrayList<String> instrumentNameList = new ArrayList<>();
-	private ArrayList<String> instrumentIDList = new ArrayList<>();
-	private ArrayList<Integer> midiChannelList = new ArrayList<>();
-	private ArrayList<Integer> midiProgramList = new ArrayList<>();
-	private ArrayList<Integer> midiUnpitchList = new ArrayList<>();
-	private ArrayList<Double> midiVolumeList = new ArrayList<>();
-	private ArrayList<Integer> midiPanlist = new ArrayList<>();
+	public ArrayList<String> instrumentNameList = new ArrayList<>();
+	public ArrayList<String> instrumentIDList = new ArrayList<>();
+	public ArrayList<Integer> midiChannelList = new ArrayList<>();
+	public ArrayList<Integer> midiProgramList = new ArrayList<>();
+	public ArrayList<Integer> midiUnpitchList = new ArrayList<>();
+	public ArrayList<Double> midiVolumeList = new ArrayList<>();
+	public ArrayList<Integer> midiPanlist = new ArrayList<>();
 	
-	private ArrayList<String> notesList = new ArrayList<>();
-	private ArrayList<Integer> chordList = new ArrayList<>();
-	private ArrayList<String> noteHeadList = new ArrayList<>();
-	private ArrayList<Integer> noteLengthList = new ArrayList<>();
-	private ArrayList<String> stemList = new ArrayList<>();
-	private ArrayList<String> noteInstrumentIDList = new ArrayList<>();
+	public ArrayList<String> notesList = new ArrayList<>();
+	public ArrayList<Integer> chordList = new ArrayList<>();
+	public ArrayList<String> noteHeadList = new ArrayList<>();
+	public ArrayList<Integer> noteLengthList = new ArrayList<>();
+	public ArrayList<String> stemList = new ArrayList<>();
+	public ArrayList<String> noteInstrumentIDList = new ArrayList<>();
 	public static MidiTest midiTester = new MidiTest();
+	public static JfugueForDrum drumTest = new JfugueForDrum();
 
 
 	public void parseDrums(NodeList measures, ArrayList<Integer> nNPM, Document doc) {
@@ -287,8 +289,16 @@ public class DrumParser {
         System.out.println("Note Instrument ID: " + noteInstrumentIDList);
         System.out.println();
 		
-        midiTester.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList);
-		PreviewSheetMusicController.canvasNote.getNotesDrums("Drumset", nNPM);
+    	for(int i = 0; i< nNPM.size(); i++) {
+			if(i != 0) {
+				nNPM.set(i, (nNPM.get(i) + nNPM.get(i-1)));
+			}
+		}
+    	
+        drumTest.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList, nNPM);
+        PreviewSheetMusicController.canvasNote.getNotesDrums("Drumset", notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList, nNPM);
+        
+        
 	}
 }
 

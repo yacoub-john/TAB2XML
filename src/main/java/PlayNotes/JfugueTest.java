@@ -10,7 +10,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-
+@SuppressWarnings("unused")
 public class JfugueTest {
 
 	private  ArrayList<String> notes = new ArrayList<>();
@@ -22,6 +22,8 @@ public class JfugueTest {
 	private  ArrayList<Integer> xPlacement;
 	private  ArrayList<Integer> yPlacement;
 	private AnimationTimer loop;
+	
+	public String total = "";
 
 	public static CanvasNotes canvasNote;
 	private  int nNPMCounter = 0;
@@ -50,6 +52,7 @@ public class JfugueTest {
 			Player player = new Player();
 		
 
+
 			String str="T100 V0 I[Guitar] | ";
 			String total = str;
 			System.out.println(xPlacement);
@@ -59,7 +62,6 @@ public class JfugueTest {
 			
 			
 			for(int i=0;i<notes.size();i++) {
-			//	highLightNotes(i);
 				total+= notes.get(i);
 			
 				
@@ -69,17 +71,14 @@ public class JfugueTest {
 				}
 				
 				else {
-					//player.play(str+notes.get(i));
 					total += " ";
 				}
-							
+				
+				
 				if(nNPMCounter<nNPM.size() && i == (nNPM.get(nNPMCounter) - 1)) {
 					total += "| ";
-					//player.play("|");
 					nNPMCounter ++;
 				}
-				
-				
 				
 			}
 
@@ -95,11 +94,8 @@ public class JfugueTest {
 	}
 
 	public void highLightNotes(int index) {
-
-
 		
 		 loop = new AnimationTimer() {
-
 
 			@Override
 			public void handle(long now) {
@@ -112,9 +108,6 @@ public class JfugueTest {
 		};
 
 		loop.start();
-		
-		
-
 
 	}
 
