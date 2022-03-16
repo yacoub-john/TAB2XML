@@ -87,7 +87,7 @@ public class PreviewSheetMusicController extends Application{
 
 		if(playing) {
 			playMusic.setText("Play Music");			
-
+			t1.stop();
 		}
 
 		else {
