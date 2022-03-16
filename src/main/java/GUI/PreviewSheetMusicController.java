@@ -3,6 +3,7 @@ package GUI;
 
 import java.io.File;
 
+import org.jfugue.player.Player;
 
 import javafx.scene.control.TextField;
 import MusicNotes.CanvasNotes;
@@ -65,6 +66,8 @@ public class PreviewSheetMusicController extends Application{
 			
 			else if(Parser.XMLParser.instrument.equals("Drumset")) {
 				Parser.DrumParser.drumTest.playNotes();
+				Player player = new Player();
+				player.play(Parser.DrumParser.drumTest.total);
 			}
 		}
 		
