@@ -21,7 +21,7 @@ For step by step instructions on how how import the project, on github go to pro
 
 # Running the project
 
-Make sure to run the project throught Gradle. Go to Gradle Tasks -> TabXml_G14 -> Application -> run.
+Make sure to run the project throught Gradle. Go to Gradle Tasks -> TAB2XML_G14 -> Application -> run.
 
 A new window should pop ip, enter the tabs you want to visualize or play. Click on the preview sheet music to visualise the notes and then the play button to play them.
 
