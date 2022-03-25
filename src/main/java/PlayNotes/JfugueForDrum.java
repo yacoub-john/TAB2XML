@@ -80,7 +80,6 @@ public class JfugueForDrum {
 	
 	public void playNotes() {
 		Player player = new Player();
-		
 		String str="T120 V9 ";
 		total = str;
 		
