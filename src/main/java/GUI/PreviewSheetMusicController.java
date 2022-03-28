@@ -1,8 +1,11 @@
 package GUI;
 
 
+import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 
 import javafx.scene.control.TextField;
 import MusicNotes.CanvasNotes;
@@ -12,12 +15,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import utility.Settings;
 import javafx.scene.canvas.Canvas;
+
 
 
 public class PreviewSheetMusicController extends Application{
@@ -29,6 +34,7 @@ public class PreviewSheetMusicController extends Application{
 
 	@FXML public  Canvas canvas;
 	@FXML private Button Save;
+	@FXML private Button editStyle;
 	@FXML private ImageView image ;
 	@FXML private AnchorPane musicPane;
 	@FXML private Button playMusic;
@@ -131,7 +137,8 @@ public class PreviewSheetMusicController extends Application{
 		fileChooser.setInitialDirectory(initialDir);
 
 		File file = fileChooser.showSaveDialog(convertWindow);
-
+		
+        
 		if (file != null) {
 			mvc.converter.saveMusicXMLFile(file);
 			mvc.saveFile = file;
@@ -144,6 +151,13 @@ public class PreviewSheetMusicController extends Application{
 	void  editInput() {
 		mvc.convertWindow.hide();
 
+	}
+
+	@FXML
+	void handleStyle(ActionEvent event) {
+		
+        
+        
 	}
 
 
