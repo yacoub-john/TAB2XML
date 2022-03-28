@@ -215,7 +215,9 @@ public class PreviewSheetMusicController extends Application{
 
 			double pagePrintableWidth = layout.getPrintableWidth();
 			double pagePrintableHeight = layout.getPrintableHeight(); 
-			final double scaleX = pagePrintableWidth / (1.5*screenshot.getWidth());
+		//	final double scaleX = pagePrintableWidth / (1.5*screenshot.getWidth());
+			final double scaleX = pagePrintableWidth / (screenshot.getWidth());
+
 			final double scaleY = pagePrintableHeight / screenshot.getHeight();
 			final ImageView print_node = new ImageView(screenshot);
 			print_node.getTransforms().add(new Scale(scaleX, scaleX));
