@@ -49,6 +49,8 @@ public class JfugueTest {
 
 	public void playNotes() {
 		if(notes.isEmpty() == false) {
+
+			Player player = new Player();
 			player = new Player();
 		
 			String str="T100 V0 I[Guitar] | ";
@@ -56,6 +58,7 @@ public class JfugueTest {
 			System.out.println(xPlacement);
 			System.out.println(yPlacement);
 			int counter=0;
+			
 
 			for(int i=0;i<notes.size();i++) {
 				total+= notes.get(i);

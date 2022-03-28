@@ -144,7 +144,7 @@ public class JfugueForDrum {
 		}
 		
 		System.out.println(total);
-		player.play(total);
+//		player.play(total);
 		nNPMCounter = 0;
 	}
 
