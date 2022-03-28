@@ -12,7 +12,7 @@ public class JfugueDrumTest {
 	public static void main(String[] args) throws InterruptedException, InvalidMidiDataException, MidiUnavailableException {
 		String str= "T120 V9 A5I B51 c";
 		
-    Player player= new Player();
+     Player player= new Player();
 	    Sequence s= player.getSequence(str);
 	    ManagedPlayer mplayer = player.getManagedPlayer();
 //	  player.play(str);
@@ -22,10 +22,7 @@ public class JfugueDrumTest {
 
 	  
 
-	  mplayer.start(s);
-	  
-	  
-	  }
+	}
 }
 
 
