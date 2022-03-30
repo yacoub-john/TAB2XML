@@ -80,9 +80,8 @@ public class JfugueForDrum {
 	
 	public void playNotes() {
 		Player player = new Player();
-		
 		String str="T120 V9 ";
-		total += str;
+		total = str;
 		
 		for(int i = 0; i < notesList.size(); i++) {
 			String noteInstrum = "";			
@@ -145,7 +144,7 @@ public class JfugueForDrum {
 		}
 		
 		System.out.println(total);
-		player.play(total);
+//		player.play(total);
 		nNPMCounter = 0;
 	}
 

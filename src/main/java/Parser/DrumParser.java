@@ -30,23 +30,99 @@ public class DrumParser {
 	public ArrayList<String> noteInstrumentIDList = new ArrayList<>();
 	public static MidiTest midiTester = new MidiTest();
 	public static JfugueForDrum drumTest = new JfugueForDrum();
-
+	
+	public ArrayList<Integer> barlineList = new ArrayList<Integer>();
+	public ArrayList<Integer> directionList = new ArrayList<Integer>();
 
 	public void parseDrums(NodeList measures, ArrayList<Integer> nNPM, Document doc) {
 
+		boolean hasBarline = false;
+		boolean HasDirection = false;
+		
+		// Factor for SLUR and DOT
+		
+		NodeList barlines =  doc.getElementsByTagName("barline");
+		NodeList barStyles =  doc.getElementsByTagName("bar-style");
+		NodeList repeats =  doc.getElementsByTagName("repeat");
+		
+		NodeList directions=  doc.getElementsByTagName("direction");
+		NodeList words =  doc.getElementsByTagName("words");
+		
+		for(int i=0; i < measures.getLength(); i++) {
+			
+			NodeList measure = (NodeList) measures.item(i); 
+			
+			for(int s = 0; s<measure.getLength(); s++) {
+
+				Node notesMeasure = (Node) measure.item(s); // Note of First Measure
+				//System.out.println("Measure " + i + " Attribute: " + notesMeasure);
+
+				if(notesMeasure.getNodeName().equals("barline")) {
+					//System.out.println("Has Barline!");
+					hasBarline = true;
+				}
+
+				if(notesMeasure.getNodeName().equals("direction")) {
+					//System.out.println("Has Direction!");
+					HasDirection = true;
+				}		
+			}
+			
+			if(barlines.item(i) != null && hasBarline) {
+
+				Element barLine = (Element) barlines.item(i);    
+				String bar = barLine.getAttribute("location");
+				System.out.println("Bar location of measure " + (i+1) + ": " + bar);
+			}
+			
+			if(repeats.item(i) != null && hasBarline) {
+
+				Element repeat = (Element) repeats.item(i);    
+				String repeatDirection = repeat.getAttribute("direction");
+				
+				if(repeatDirection.equals("backward")) {
+					String repeatValue = repeat.getAttribute("times");
+					System.out.println("Repeat Direction of measure " + (i+1) + ": " + repeatDirection);
+					System.out.println("Repeat Value of measure " + (i+1) + ": " + repeatValue);
+				}
+				else {
+					System.out.println("Repeat Direction of measure " + (i+1) + ": " + repeatDirection);
+				}
+				
+			}
+			
+			if(barStyles.item(i) != null && hasBarline) {
+
+				Element barStyle = (Element) barStyles.item(i);    
+				String style = barStyle.getTextContent();
+				System.out.println("Barstyle of measure " + (i+1) + ": " + style);
+			}
+			
+			hasBarline = false;
+			HasDirection = false;
+		}
+
+
 		NodeList instrumentNames =  doc.getElementsByTagName("instrument-name");
+<<<<<<< HEAD
 
+=======
+>>>>>>> branch 'Develop' of https://github.com/yacoub-john/TAB2XML
 
-
+		
 		for (int j = 0; j<instrumentNames.getLength(); j++) {
 
 			Element instrumentName = (Element) instrumentNames.item(j);    
 			String  NOI = instrumentName.getTextContent();
 			System.out.println("Instrument " + (j+1) + ": " + NOI);
+<<<<<<< HEAD
 
 			instrumentNameList.add(NOI);
 
+=======
+>>>>>>> branch 'Develop' of https://github.com/yacoub-john/TAB2XML
 
+			instrumentNameList.add(NOI);
 		}
 
 
@@ -105,7 +181,10 @@ public class DrumParser {
 
 		for (int i=0; i<measures.getLength(); i++) {
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> branch 'Develop' of https://github.com/yacoub-john/TAB2XML
 			NodeList divisions  =  doc.getElementsByTagName("divisions");
 			Element division = (Element) divisions.item(i);    
 			String  NOD = division.getTextContent();
