@@ -249,7 +249,7 @@ public class MainViewController extends Application {
 		return userOkToGoAhead;
 	}
 
-	private Window openNewWindow(Parent root, String windowName) {
+	Window openNewWindow(Parent root, String windowName) {
 		Stage stage = new Stage();
 		stage.setTitle(windowName);
 		//stage.initModality(Modality.APPLICATION_MODAL);
