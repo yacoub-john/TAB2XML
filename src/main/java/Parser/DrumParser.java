@@ -89,6 +89,7 @@ public class DrumParser {
 			String  NOPA = pan.getTextContent();
 			System.out.println("Pan: " + NOPA);
 			midiPanlist.add(Integer.parseInt(NOPA));
+			
 
 
 			System.out.println("==================================");
