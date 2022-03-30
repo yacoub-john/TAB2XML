@@ -33,12 +33,21 @@ public class CanvasNotes {
 	private ScrollPane scrollPane;
 	private AnchorPane anchorPane;
 	
+	private static int lineSpacing = 0;
+	private static  int noteSpacing = 0;
 	private int nNPMCounter = 0;
 	private int currentX = 0;
 	private int currentY = 0;
 
 	private  double canvasWidth = 0;
 	private  double canvasHeight = 0;
+	
+	public static void setLineSpacing(int lineSpacingRecieved) {
+		lineSpacing = lineSpacingRecieved;
+	}
+	public static void setNoteSpacing(int noteSpacingRecieved) {
+		noteSpacing = noteSpacingRecieved;
+	}
 
 	public void getNotesGuitar(String recievedInstrument, ArrayList<String> recievedString, ArrayList<String> recievedFret, ArrayList<Integer> nNPM, ArrayList<String> recievedAlter, ArrayList<String> noteLengthRecieved, ArrayList<Integer> recievedChord ) {
 

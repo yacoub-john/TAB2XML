@@ -1,8 +1,11 @@
 package GUI;
 
 
+import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
@@ -12,23 +15,31 @@ import org.jfugue.player.Player;
 
 import javafx.scene.control.TextField;
 import MusicNotes.CanvasNotes;
+import Parser.XMLParser;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import utility.Settings;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -55,15 +66,17 @@ import models.measure.Measure;
 
 
 
+
 public class PreviewSheetMusicController extends Application{
 
 	private MainViewController mvc;
 	public Highlighter highlighter;
 
-	public Window convertWindow;
+	public static Window convertWindow;
 
 	@FXML public  Canvas canvas;
 	@FXML private Button Save;
+	@FXML private Button editStyle;
 	@FXML private ImageView image ;
 	@FXML private AnchorPane musicPane;
 	@FXML private Button playMusic;
@@ -95,53 +108,53 @@ public class PreviewSheetMusicController extends Application{
 		t1 = new Thread(new Runnable() {
 			@Override
 			public void run() {
-//				if(Parser.XMLParser.instrument.equals("Guitar")) {
-//					Parser.GuitarParser.jfugueTester.playNotes();
-//				}
-//
-//				else if(Parser.XMLParser.instrument.equals("Drumset")) {
-//					Parser.DrumParser.drumTest.playNotes();
-//				}
-//
-//				playing = false;
-				
+				//				if(Parser.XMLParser.instrument.equals("Guitar")) {
+				//					Parser.GuitarParser.jfugueTester.playNotes();
+				//				}
+				//
+				//				else if(Parser.XMLParser.instrument.equals("Drumset")) {
+				//					Parser.DrumParser.drumTest.playNotes();
+				//				}
+				//
+				//				playing = false;
+
 				if(Parser.XMLParser.instrument.equals("Guitar")) {
 					Parser.GuitarParser.jfugueTester.playNotes();
 					Parser.GuitarParser.jfugueTester.playNotes();
 				}
-				
+
 				else if(Parser.XMLParser.instrument.equals("Drumset")) {
 					Parser.DrumParser.drumTest.playNotes();
 					Player player = new Player();
-				    Sequence s= player.getSequence(Parser.DrumParser.drumTest.total);
+					Sequence s= player.getSequence(Parser.DrumParser.drumTest.total);
 					//player.play(Parser.DrumParser.drumTest.total);
-				     mplayer = player.getManagedPlayer();
-				    try {
-				    	if(havePlayed && playing == false) {
+					mplayer = player.getManagedPlayer();
+					try {
+						if(havePlayed && playing == false) {
 							mplayer.resume();
 						}
-						
+
 						else {
 							mplayer.start(s);
 						}
-				    	
+
 						playing=true;
 
-						
+
 					} catch (InvalidMidiDataException | MidiUnavailableException e) {
 						e.printStackTrace();
 					}
-				    
+
 				}
-				
+
 			}
 		}); 
 
-			t1.start();
-			playing=false;
-			if(t1.isAlive()) {
-				havePlayed = false;
-			}
+		t1.start();
+		playing=false;
+		if(t1.isAlive()) {
+			havePlayed = false;
+		}
 	}
 
 	@FXML
@@ -162,92 +175,82 @@ public class PreviewSheetMusicController extends Application{
 	@FXML
 	void handleSave() {
 
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Save As");
-		// FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MusicXML files", "*.musicxml", "*.xml", "*.mxl");
-		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PDF Document", "*.pdf");
 
-		fileChooser.getExtensionFilters().add(extFilter);
+		WritableImage screenshot = anchor.snapshot(null, null);
+		Printer printer = Printer.getDefaultPrinter();
+		PageLayout layout = printer.createPageLayout(Paper.A4, PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT);
 
-		File initialDir = new File(Settings.getInstance().outputFolder);
-		String initialName = null;
-		// if (!fileNameField.getText().isBlank() && fileNameField.getText().length()<50)
-		//   initialName = fileNameField.getText().strip();
+		double pagePrintableWidth = layout.getPrintableWidth();
+		double pagePrintableHeight = layout.getPrintableHeight(); 
+		final double scaleX = pagePrintableWidth / (screenshot.getWidth());
 
-		if (mvc.saveFile != null) {
-			if (initialName == null) {
-				String name = mvc.saveFile.getName();
-				if(name.contains("."))
-					name = name.substring(0, name.lastIndexOf('.'));
-				initialName = name;
-			}
-			File parentDir = new File(mvc.saveFile.getParent());
-			if (parentDir.exists())
-				initialDir = parentDir;
-		}
-		if (initialName != null)
-			fileChooser.setInitialFileName(initialName);
+		final double scaleY = pagePrintableHeight / screenshot.getHeight();
+		final ImageView print_node = new ImageView(screenshot);
+		print_node.getTransforms().add(new Scale(scaleX, scaleX));
 
-		if (!(initialDir.exists() && initialDir.canRead()))
-			initialDir = new File(System.getProperty("user.home"));
+		PrinterJob printSheet = PrinterJob.createPrinterJob();
 
-		fileChooser.setInitialDirectory(initialDir);
+		if (printSheet != null && printSheet.showPrintDialog(anchor.getScene().getWindow())) {
 
-		File file = fileChooser.showSaveDialog(convertWindow);
-
-		if (file != null) {
-			mvc.converter.saveMusicXMLFile(file);
-			mvc.saveFile = file;
-			mvc.convertWindow.hide();
-
-		}
-	}
-
-	@FXML 
-	void  editInput() {
-//		mvc.convertWindow.hide();
-	
-		
-
-			WritableImage screenshot = anchor.snapshot(null, null);
-			Printer printer = Printer.getDefaultPrinter();
-			PageLayout layout = printer.createPageLayout(Paper.A4, PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT);
-
-			double pagePrintableWidth = layout.getPrintableWidth();
-			double pagePrintableHeight = layout.getPrintableHeight(); 
-		//	final double scaleX = pagePrintableWidth / (1.5*screenshot.getWidth());
-			final double scaleX = pagePrintableWidth / (screenshot.getWidth());
-
-			final double scaleY = pagePrintableHeight / screenshot.getHeight();
-			final ImageView print_node = new ImageView(screenshot);
-			print_node.getTransforms().add(new Scale(scaleX, scaleX));
-
-			PrinterJob printSheet = PrinterJob.createPrinterJob();
-
-			if (printSheet != null && printSheet.showPrintDialog(anchor.getScene().getWindow())) {
-
-				double numberOfPages = Math.ceil(scaleX / scaleY);
-				Translate gridTransform = new Translate(0, 0);
-				print_node.getTransforms().add(gridTransform);
-				for (int i = 0; i < numberOfPages; i++) {
-					gridTransform.setY(-i * (pagePrintableHeight / scaleX));
-					printSheet.printPage(layout, print_node);
-				}
-
-				printSheet.endJob();
-
+			double numberOfPages = Math.ceil(scaleX / scaleY);
+			Translate gridTransform = new Translate(0, 0);
+			print_node.getTransforms().add(gridTransform);
+			for (int i = 0; i < numberOfPages; i++) {
+				gridTransform.setY(-i * (pagePrintableHeight / scaleX));
+				printSheet.printPage(layout, print_node);
 			}
 
-		
+			printSheet.endJob();
+
+		}
 
 	}
 
 
-	@FXML
-	void handleGotoMeasure(ActionEvent event) {
+@FXML 
+void  editInput() {
+	mvc.convertWindow.hide();
 
+}
+
+@FXML
+void handleStyle(ActionEvent event) {
+
+	Parent root;
+	try {
+		FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/sheetMusicStyle.fxml"));
+		root = loader.load();
+		SheetMusicStyleController controller = loader.getController();
+		controller.setMainViewController(mvc);
+		convertWindow = openNewWindow(root, "Sheet Music Style Editor");
+	} catch (IOException e) {
+		Logger logger = Logger.getLogger(getClass().getName());
+		logger.log(Level.SEVERE, "Failed to create new Window.", e);
 	}
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {}
+
+}
+
+
+Window openNewWindow(Parent root, String windowName) {
+	Stage stage = new Stage();
+	stage.setTitle(windowName);
+	//stage.initModality(Modality.APPLICATION_MODAL);
+	stage.initModality(Modality.NONE);
+	stage.initOwner(MainApp.STAGE);
+	stage.setResizable(false);
+	Scene scene = new Scene(root);
+	stage.setScene(scene);
+	stage.show();
+	return scene.getWindow();
+}
+
+
+@FXML
+void handleGotoMeasure(ActionEvent event) {
+
+}
+
+@Override
+public void start(Stage primaryStage) throws Exception {}
 }
