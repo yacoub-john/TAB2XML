@@ -13,7 +13,7 @@ import PlayNotes.MidiTest;
 import GUI.PreviewSheetMusicController;
 
 public class DrumParser {
-	
+
 	public ArrayList<String> instrumentNameList = new ArrayList<>();
 	public ArrayList<String> instrumentIDList = new ArrayList<>();
 	public ArrayList<Integer> midiChannelList = new ArrayList<>();
@@ -21,7 +21,7 @@ public class DrumParser {
 	public ArrayList<Integer> midiUnpitchList = new ArrayList<>();
 	public ArrayList<Double> midiVolumeList = new ArrayList<>();
 	public ArrayList<Integer> midiPanlist = new ArrayList<>();
-	
+
 	public ArrayList<String> notesList = new ArrayList<>();
 	public ArrayList<Integer> chordList = new ArrayList<>();
 	public ArrayList<String> noteHeadList = new ArrayList<>();
@@ -35,7 +35,7 @@ public class DrumParser {
 	public void parseDrums(NodeList measures, ArrayList<Integer> nNPM, Document doc) {
 
 		NodeList instrumentNames =  doc.getElementsByTagName("instrument-name");
-        
+
 
 
 		for (int j = 0; j<instrumentNames.getLength(); j++) {
@@ -43,12 +43,12 @@ public class DrumParser {
 			Element instrumentName = (Element) instrumentNames.item(j);    
 			String  NOI = instrumentName.getTextContent();
 			System.out.println("Instrument " + (j+1) + ": " + NOI);
-			
+
 			instrumentNameList.add(NOI);
-			
+
 
 		}
-		
+
 
 		System.out.println("==================================");
 
@@ -59,7 +59,7 @@ public class DrumParser {
 		NodeList pans =  doc.getElementsByTagName("pan");
 
 		for (int k = 0; k<midiChannels.getLength(); k++) {
-			
+
 			String instrumentID = "P1-I";
 
 			Element midiChannel = (Element) midiChannels.item(k);    
@@ -71,7 +71,7 @@ public class DrumParser {
 			String  NOP = midiProgram.getTextContent();
 			midiProgramList.add(Integer.parseInt(NOP));
 			System.out.println("midi-Program: " + NOP);
-			
+
 
 			Element midiUnpitched = (Element) midiUnpitcheds.item(k);    
 			String  NOU = midiUnpitched.getTextContent();
@@ -95,17 +95,18 @@ public class DrumParser {
 			System.out.println("==================================");
 
 		}
-		
+
 		System.out.println("Midi Channels: " + midiChannelList);
 		System.out.println("Midi Program: " + midiProgramList);
 		System.out.println("Midi Unpitched: " + midiUnpitchList);
 		System.out.println("Midi Volumes: " + midiVolumeList);
 		System.out.println("Midi Pans: " + midiPanlist);
-        System.out.println("instrument ID List: " + instrumentIDList);
-        System.out.println();
-		
+		System.out.println("instrument ID List: " + instrumentIDList);
+		System.out.println();
+
 		for (int i=0; i<measures.getLength(); i++) {
-			
+
+
 			NodeList divisions  =  doc.getElementsByTagName("divisions");
 			Element division = (Element) divisions.item(i);    
 			String  NOD = division.getTextContent();
@@ -121,7 +122,7 @@ public class DrumParser {
 				NOF = fifth.getTextContent();
 				System.out.println("Fifth of measure " + ( i+1) + ": " + NOF);
 			}
-			
+
 			NodeList signs =  doc.getElementsByTagName("sign");
 			String  NOS = "";
 
@@ -130,17 +131,38 @@ public class DrumParser {
 				NOS = sign.getTextContent();
 				System.out.println("Sign: " + NOS);
 			}
-			
+
 			NodeList Lines =  doc.getElementsByTagName("line");
-			
+
 
 			if ( Lines.item(i) != null ) {
 				Element Line = (Element) Lines.item(i);    
 				String NOL = Line.getTextContent();
 				System.out.println("Line: " + NOL);
 			}
+
+			NodeList barStyles =  doc.getElementsByTagName("bar-style");
+
+			if(barStyles.item(i) != null) {
+
+				Element barStyle = (Element) barStyles.item(i);    
+				String	NOB = barStyle.getTextContent();
+				System.out.println("Bar styles in measure " + (i+1)  + NOB);
+			}
+			
+			
+			NodeList words =  doc.getElementsByTagName("words");
+
+			if(words.item(i) != null) {
+
+				Element word = (Element) words.item(i);    
+				String	NOW = word.getTextContent();
+				System.out.println("words in measure " + (i+1)  + NOW);
+			}
+
+
 		}
-		
+
 		NodeList notes = doc.getElementsByTagName("note");
 		System.out.println();
 		System.out.println("Amount of notes is: " + notes.getLength());
@@ -155,8 +177,8 @@ public class DrumParser {
 		NodeList types = doc.getElementsByTagName("type");
 		NodeList stems= doc.getElementsByTagName("stem");
 		NodeList noteHeads = doc.getElementsByTagName("notehead");
-		
-		
+
+
 		String[] noteHeadExistList = new String[noteHeads.getLength()];
 		int noteHeadExistsCounter = 0;
 
@@ -167,47 +189,47 @@ public class DrumParser {
 			noteHeadExistList[i] = noteHeadValue;
 		}
 
-		
+
 		for(int j = 0; j < notes.getLength(); j++) {
 
 
 			NodeList singleNote = (NodeList) notes.item(j);		
-			
+
 			boolean hasChord = false;
 			boolean hasNoteHead = false;
 
 			for(int k = 0; k < singleNote.getLength(); k++) {
-				
+
 				Node singleNoteElement = (Node) singleNote.item(k);				
-				
+
 				if(singleNoteElement.getNodeName().equals("chord")) {
 					hasChord = true;
 				}
-				
+
 				if(singleNoteElement.getNodeName().equals("notehead")) {
 					hasNoteHead = true;
 				}
-				
-				
+
+
 			}
-			
+
 			String note = "";
 
 			System.out.println("Note: " + (j+1));
-			
-			
+
+
 			if(hasChord) {
 				System.out.println("Chord: 0");
 				chordList.add(0);
 
 			}
-			
+
 			else {
 				System.out.println("Chord: 1");
 				chordList.add(1);
 			}
-			
-			
+
+
 			if(octaves.item(j) != null) {
 
 				Element octave = (Element) octaves.item(j);    
@@ -215,7 +237,7 @@ public class DrumParser {
 				System.out.println("Octave: " +  octaveValue);
 				note += octaveValue;
 			}
-			
+
 			if(steps.item(j) != null) {
 
 				Element step = (Element) steps.item(j);    
@@ -232,7 +254,7 @@ public class DrumParser {
 				System.out.println("Duration: " +  durationValue);
 				noteLengthList.add(Integer.parseInt(durationValue));
 			}
-			
+
 			if(noteInstrumID.item(j) != null) {
 
 				Element noteinstrumIDElement = (Element) noteInstrumID.item(j);    
@@ -275,26 +297,31 @@ public class DrumParser {
 
 
 			}
-			
+
 			System.out.println("Note: " + note);
 			notesList.add(note);
 			System.out.println("--------------------");		
 		}
 
-        System.out.println();
+		System.out.println();
 		System.out.println("Notes: " + notesList);
 		System.out.println("Chords: " + chordList);
 		System.out.println("Note Heads: " + noteHeadList);
 		System.out.println("Notes Length: " + noteLengthList);
 		System.out.println("Stems: " + stemList);
-        System.out.println("Note Instrument ID: " + noteInstrumentIDList);
-        System.out.println();
-		
-        //midiTester.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList);
-        drumTest.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList, nNPM);
-        PreviewSheetMusicController.canvasNote.getNotesDrums("Drumset", notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList, nNPM);
-        
-        
+		System.out.println("Note Instrument ID: " + noteInstrumentIDList);
+		System.out.println();
+
+		for(int i = 0; i< nNPM.size(); i++) {
+			if(i != 0) {
+				nNPM.set(i, (nNPM.get(i) + nNPM.get(i-1)));
+			}
+		}
+
+		drumTest.getNotes(notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList, nNPM);
+		PreviewSheetMusicController.canvasNote.getNotesDrums("Drumset", notesList, chordList, noteHeadList, noteLengthList, stemList, noteInstrumentIDList, nNPM);
+
+
 	}
 }
 

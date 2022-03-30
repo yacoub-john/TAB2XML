@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 import org.jfugue.player.Player;
 
+@SuppressWarnings("unused")
 public class JfugueForDrum {
 
 	ArrayList<String> instruments = new ArrayList<>();
@@ -17,6 +18,7 @@ public class JfugueForDrum {
 	private ArrayList<String> noteInstrumentIDList = new ArrayList<>();
 	
 	private  int nNPMCounter = 0;
+	public String total = "";
 
 
 	//Receive notes from Drum Parser
@@ -27,6 +29,7 @@ public class JfugueForDrum {
 		noteHeadList = noteHeadsRecieved;
 		noteLengthList = noteLengthRecieved;
 		stemList = stemRecieved;
+		nNPM = nNPMrecieved;
 		noteInstrumentIDList = noteInstrumIDRecieved;
 		
 		getIntruments();
@@ -76,47 +79,66 @@ public class JfugueForDrum {
 	}
 	
 	public void playNotes() {
-		
 		Player player = new Player();
-		String total = "";
-		String str="T120 V0 ";
+		
+		String str="T120 V9 ";
 		total += str;
 		
 		for(int i = 0; i < notesList.size(); i++) {
-			
-			
-			String noteInstrum = "";
-			//System.out.println("Note instrum: " + noteInstrumentIDList.get(i));
-			
+			String noteInstrum = "";			
 			for(int j = 0; j < instrumentsID.size(); j++) {
-				
-				//System.out.println("Instrum list " + noteInstrumentIDList.get(i));
-
 				
 				if(noteInstrumentIDList.get(i).equals(instrumentsID.get(j))) {
 					noteInstrum = instruments.get(j);
-					total += "V0 I[" + noteInstrum + "] "; 
+					total += "[" + noteInstrum + "]"; 
 					break;
 				}
 				
 			}
 			
-			total+= notesList.get(i);
+			if(noteLengthList.get(i).equals(64)) {
+				total += "W";
+			}
 
+			else if(noteLengthList.get(i).equals(32)) {
+				total += "H";
+			}
+
+			else if(noteLengthList.get(i).equals(16)) {
+				total += "Q";
+			}
+
+			else if(noteLengthList.get(i).equals(8)) {
+				total += "I";
+			}
+
+			else if(noteLengthList.get(i).equals(4)) {
+				total += "S";
+			}
+
+			else if(noteLengthList.get(i).equals(2)) {
+				total += "T";
+			}
+
+			else if(noteLengthList.get(i).equals(1)) {
+				total += "X";
+			}
+
+			else if(noteLengthList.get(i).equals(1/2)) {
+				total += "O";
+			}
 			
 			if((i+1)<chordList.size() && chordList.get(i+1)==0) 
 			{
-				//total+="+";
+				total+="+";
 			}
 			
 			else {
-				//player.play(str+notes.get(i));
 				total += " ";
 			}
 						
 			if(nNPMCounter<nNPM.size() && i == (nNPM.get(nNPMCounter) - 1)) {
 				total += "| ";
-				//player.play("|");
 				nNPMCounter ++;
 			}
 			
@@ -127,9 +149,6 @@ public class JfugueForDrum {
 		nNPMCounter = 0;
 	}
 
-	public static void main(String[] args) {
-		Player player1 = new Player();
-		player1.play("V0 I[HI_MID_TOM] Eq Ch. | Eq Ch. | Dq Eq Dq Cq   V1 I[Flute] Rw | Rw | GmajQQQ CmajQ");
-	}
+	
 }
 

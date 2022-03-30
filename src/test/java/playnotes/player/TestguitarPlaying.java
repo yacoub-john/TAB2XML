@@ -1,4 +1,4 @@
-package testCases;
+package playnotes.player;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -6,9 +6,10 @@ import org.junit.jupiter.api.Test;
 
 import Parser.GuitarParser;
 import Parser.XMLParser;
+import PlayNotes.JfugueTest;
 
-class TestGuitarParser {
-
+class TestguitarPlaying {
+	
 	public String getGuitarXML() {
 
 		String parse  = """
@@ -298,7 +299,7 @@ class TestGuitarParser {
 
 	}
 	
-	public String getXML2() {
+public String getXML2() {
 		
 		String parse = """
 				
@@ -409,10 +410,13 @@ class TestGuitarParser {
 		
 	}
 
+	
 	@Test
-	public void testStrings() {
-
+	void TestPlaying() {
+		
 		String parse = getGuitarXML();
+		
+		String test = "T120 V0 I[Guitar] | E2I B2I E3I G#3I B3I E4I B3I G#3I | E4W+B3W+G#3W+E3W+B2W+E2W ";
 
 
 		XMLParser xmlParser = new XMLParser();
@@ -426,164 +430,22 @@ class TestGuitarParser {
 		GuitarParser guitar = new GuitarParser();
 		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
 		
-		assertEquals("6",guitar.stringList.get(0));
-		assertEquals("5",guitar.stringList.get(1));
-		assertEquals("4",guitar.stringList.get(2));
-		assertEquals("3",guitar.stringList.get(3));
-		assertEquals("2",guitar.stringList.get(4));
-		assertEquals("1",guitar.stringList.get(5));
-		assertEquals("2",guitar.stringList.get(6));
-		assertEquals("3",guitar.stringList.get(7));
-		assertEquals("1",guitar.stringList.get(8));
-		assertEquals("2",guitar.stringList.get(9));
-		assertEquals("3",guitar.stringList.get(10));
-		assertEquals("4",guitar.stringList.get(11));
-		assertEquals("5",guitar.stringList.get(12));
-		assertEquals("6",guitar.stringList.get(13));
+		 // JfugueTest jfugueGuitar = new JfugueTest();
+		//jfugueGuitar.getNotes(guitar.notesList, xmlParser.nNPM, guitar.stringList, guitar.fretList, guitar.chordList, guitar.alterList);
+		guitar.jfugueTester.playNotes();
+	
+		
+		assertEquals(test,guitar.jfugueTester.total);
+		
 		
 	}
 	
 	@Test
-	public void testFrets() {
-
-		String parse = getGuitarXML();
-
-
-		XMLParser xmlParser = new XMLParser();
-		try {
-			xmlParser.loadXMLFromString(parse);
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
+	void TestPlaying2() {
 		
-		GuitarParser guitar = new GuitarParser();
-		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
-		
-		assertEquals("0",guitar.fretList.get(0));
-		assertEquals("2",guitar.fretList.get(1));
-		assertEquals("2",guitar.fretList.get(2));
-		assertEquals("1",guitar.fretList.get(3));
-		assertEquals("0",guitar.fretList.get(4));
-		assertEquals("0",guitar.fretList.get(5));
-		assertEquals("0",guitar.fretList.get(6));
-		assertEquals("1",guitar.fretList.get(7));
-		assertEquals("0",guitar.fretList.get(8));
-		assertEquals("0",guitar.fretList.get(9));
-		assertEquals("1",guitar.fretList.get(10));
-		assertEquals("2",guitar.fretList.get(11));
-		assertEquals("2",guitar.fretList.get(12));
-		assertEquals("0",guitar.fretList.get(13));
-		
-		
-	}
-	
-	
-	@Test
-	public void testNotes() {
-
-		String parse = getGuitarXML();
-
-
-		XMLParser xmlParser = new XMLParser();
-		try {
-			xmlParser.loadXMLFromString(parse);
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
-		
-		GuitarParser guitar = new GuitarParser();
-		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
-		
-		assertEquals("E2I",guitar.notesList.get(0));
-		assertEquals("B2I",guitar.notesList.get(1));
-		assertEquals("E3I",guitar.notesList.get(2));
-		assertEquals("G#3I",guitar.notesList.get(3));
-		assertEquals("B3I",guitar.notesList.get(4));
-		assertEquals("E4I",guitar.notesList.get(5));
-		assertEquals("B3I",guitar.notesList.get(6));
-		assertEquals("G#3I",guitar.notesList.get(7));
-		assertEquals("E4W",guitar.notesList.get(8));
-		assertEquals("B3W",guitar.notesList.get(9));
-		assertEquals("G#3W",guitar.notesList.get(10));
-		assertEquals("E3W",guitar.notesList.get(11));
-		assertEquals("B2W",guitar.notesList.get(12));
-		assertEquals("E2W",guitar.notesList.get(13));
-	}
-	
-	@Test
-	public void testNotesLength() {
-
-		String parse = getGuitarXML();
-
-
-		XMLParser xmlParser = new XMLParser();
-		try {
-			xmlParser.loadXMLFromString(parse);
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
-		
-		GuitarParser guitar = new GuitarParser();
-		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
-		
-		assertEquals("eighth",guitar.noteLengthList.get(0));
-		assertEquals("eighth",guitar.noteLengthList.get(1));
-		assertEquals("eighth",guitar.noteLengthList.get(2));
-		assertEquals("eighth",guitar.noteLengthList.get(3));
-		assertEquals("eighth",guitar.noteLengthList.get(4));
-		assertEquals("eighth",guitar.noteLengthList.get(5));
-		assertEquals("eighth",guitar.noteLengthList.get(6));
-		assertEquals("eighth",guitar.noteLengthList.get(7));
-		assertEquals("whole",guitar.noteLengthList.get(8));
-		assertEquals("whole",guitar.noteLengthList.get(9));
-		assertEquals("whole",guitar.noteLengthList.get(10));
-		assertEquals("whole",guitar.noteLengthList.get(11));
-		assertEquals("whole",guitar.noteLengthList.get(12));
-		assertEquals("whole",guitar.noteLengthList.get(13));
-		
-	}
-	
-	@Test
-	public void testchords() {
-
-		String parse = getGuitarXML();
-
-
-		XMLParser xmlParser = new XMLParser();
-		try {
-			xmlParser.loadXMLFromString(parse);
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
-		
-		GuitarParser guitar = new GuitarParser();
-		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
-		
-	    assertEquals(1,guitar.chordList.get(0));
-	    assertEquals(1,guitar.chordList.get(1));
-	    assertEquals(1,guitar.chordList.get(2));
-	    assertEquals(1,guitar.chordList.get(3));
-	    assertEquals(1,guitar.chordList.get(4));
-	    assertEquals(1,guitar.chordList.get(5));
-	    assertEquals(1,guitar.chordList.get(6));
-	    assertEquals(1,guitar.chordList.get(7));
-	    assertEquals(1,guitar.chordList.get(8));
-	    assertEquals(0,guitar.chordList.get(9));
-	    assertEquals(0,guitar.chordList.get(10));
-	    assertEquals(0,guitar.chordList.get(11));
-	    assertEquals(0,guitar.chordList.get(12));
-	    assertEquals(0,guitar.chordList.get(13));
-		
-	}
-	
-	@Test
-	public void testStrings2() {
-
 		String parse = getXML2();
+		
+		String test = "T120 V0 I[Guitar] | A4H F#4H C#4H | ";
 
 
 		XMLParser xmlParser = new XMLParser();
@@ -597,106 +459,14 @@ class TestGuitarParser {
 		GuitarParser guitar = new GuitarParser();
 		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
 		
-	  assertEquals("1",guitar.stringList.get(0));
-	  assertEquals("2",guitar.stringList.get(1));
-	  assertEquals("3",guitar.stringList.get(2));
-		
-	}
+		JfugueTest jfugueGuitar = new JfugueTest();
+		jfugueGuitar.getNotes(guitar.notesList, xmlParser.nNPM, guitar.stringList, guitar.fretList, guitar.chordList, guitar.alterList);
+		jfugueGuitar.playNotes();
 	
-	@Test
-	public void testFrets2() {
-
-		String parse = getXML2();
-
-
-		XMLParser xmlParser = new XMLParser();
-		try {
-			xmlParser.loadXMLFromString(parse);
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
 		
-		GuitarParser guitar = new GuitarParser();
-		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
-		
-		assertEquals("5",guitar.fretList.get(0));
-		assertEquals("7",guitar.fretList.get(1));
-		assertEquals("6",guitar.fretList.get(2));
-	}
-	
-	@Test
-	public void testNotes2() {
-
-		String parse = getXML2();
-
-
-		XMLParser xmlParser = new XMLParser();
-		try {
-			xmlParser.loadXMLFromString(parse);
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
-		
-		GuitarParser guitar = new GuitarParser();
-		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
-		
-		assertEquals("A4H",guitar.notesList.get(0));
-		assertEquals("F#4H",guitar.notesList.get(1));
-		assertEquals("C#4H",guitar.notesList.get(2));
-		
-	}
-	
-	@Test
-	public void testNotesLength2() {
-
-		String parse = getXML2();
-
-
-		XMLParser xmlParser = new XMLParser();
-		try {
-			xmlParser.loadXMLFromString(parse);
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
-		
-		GuitarParser guitar = new GuitarParser();
-		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
-		
-		assertEquals("half",guitar.noteLengthList.get(0));
-		assertEquals("half",guitar.noteLengthList.get(1));
-		assertEquals("half",guitar.noteLengthList.get(2));
+		assertEquals(test,jfugueGuitar.total);
 		
 		
 	}
-	
-	@Test
-	public void testchords2() {
-
-		String parse = getXML2();
-
-
-		XMLParser xmlParser = new XMLParser();
-		try {
-			xmlParser.loadXMLFromString(parse);
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
-		
-		GuitarParser guitar = new GuitarParser();
-		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
-		
-	    assertEquals(1,guitar.chordList.get(0));
-	    assertEquals(1,guitar.chordList.get(1));
-	    assertEquals(1,guitar.chordList.get(2));
-
-		
-	}
-
-
-
 
 }
