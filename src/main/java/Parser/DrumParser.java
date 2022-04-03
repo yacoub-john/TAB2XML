@@ -104,6 +104,10 @@ public class DrumParser {
 
 
 		NodeList instrumentNames =  doc.getElementsByTagName("instrument-name");
+<<<<<<< HEAD
+
+=======
+>>>>>>> branch 'Develop' of https://github.com/yacoub-john/TAB2XML
 
 		
 		for (int j = 0; j<instrumentNames.getLength(); j++) {
@@ -111,6 +115,12 @@ public class DrumParser {
 			Element instrumentName = (Element) instrumentNames.item(j);    
 			String  NOI = instrumentName.getTextContent();
 			System.out.println("Instrument " + (j+1) + ": " + NOI);
+<<<<<<< HEAD
+
+			instrumentNameList.add(NOI);
+
+=======
+>>>>>>> branch 'Develop' of https://github.com/yacoub-john/TAB2XML
 
 			instrumentNameList.add(NOI);
 		}
@@ -171,6 +181,10 @@ public class DrumParser {
 
 		for (int i=0; i<measures.getLength(); i++) {
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> branch 'Develop' of https://github.com/yacoub-john/TAB2XML
 			NodeList divisions  =  doc.getElementsByTagName("divisions");
 			Element division = (Element) divisions.item(i);    
 			String  NOD = division.getTextContent();
@@ -204,6 +218,27 @@ public class DrumParser {
 				String NOL = Line.getTextContent();
 				System.out.println("Line: " + NOL);
 			}
+
+			NodeList barStyles =  doc.getElementsByTagName("bar-style");
+
+			if(barStyles.item(i) != null) {
+
+				Element barStyle = (Element) barStyles.item(i);    
+				String	NOB = barStyle.getTextContent();
+				System.out.println("Bar styles in measure " + (i+1)  + NOB);
+			}
+			
+			
+			NodeList words =  doc.getElementsByTagName("words");
+
+			if(words.item(i) != null) {
+
+				Element word = (Element) words.item(i);    
+				String	NOW = word.getTextContent();
+				System.out.println("words in measure " + (i+1)  + NOW);
+			}
+
+
 		}
 
 		NodeList notes = doc.getElementsByTagName("note");
