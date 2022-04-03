@@ -75,6 +75,7 @@ public class DrumParser {
 				System.out.println("Bar location of measure " + (i+1) + ": " + bar);
 			}
 			
+			
 			if(repeats.item(i) != null && hasBarline) {
 
 				Element repeat = (Element) repeats.item(i);    
