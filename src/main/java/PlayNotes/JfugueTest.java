@@ -22,7 +22,7 @@ public class JfugueTest {
 	private  ArrayList<Integer> xPlacement;
 	private  ArrayList<Integer> yPlacement;
 	private AnimationTimer loop;
-	
+	public Player player;
 	public String total = "";
 
 	public static CanvasNotes canvasNote;
@@ -49,11 +49,17 @@ public class JfugueTest {
 
 	public void playNotes() {
 		if(notes.isEmpty() == false) {
+
 			Player player = new Player();
+			player = new Player();
 		
-			String str="T120 V0 I[Guitar] | ";
-			total = str;	
-						
+			String str="T100 V0 I[Guitar] | ";
+			String total = str;
+			System.out.println(xPlacement);
+			System.out.println(yPlacement);
+			int counter=0;
+			
+
 			for(int i=0;i<notes.size();i++) {
 				total+= notes.get(i);
 			

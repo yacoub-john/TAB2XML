@@ -6,7 +6,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.Color;	
 import javafx.scene.text.Font;
 
 @SuppressWarnings("unused")
@@ -33,12 +33,21 @@ public class CanvasNotes {
 	private ScrollPane scrollPane;
 	private AnchorPane anchorPane;
 	
+	private static int lineSpacing = 0;
+	private static  int noteSpacing = 0;
 	private int nNPMCounter = 0;
 	private int currentX = 0;
 	private int currentY = 0;
 
 	private  double canvasWidth = 0;
 	private  double canvasHeight = 0;
+	
+	public static void setLineSpacing(int lineSpacingRecieved) {
+		lineSpacing = lineSpacingRecieved;
+	}
+	public static void setNoteSpacing(int noteSpacingRecieved) {
+		noteSpacing = noteSpacingRecieved;
+	}
 
 	public void getNotesGuitar(String recievedInstrument, ArrayList<String> recievedString, ArrayList<String> recievedFret, ArrayList<Integer> nNPM, ArrayList<String> recievedAlter, ArrayList<String> noteLengthRecieved, ArrayList<Integer> recievedChord ) {
 
@@ -148,19 +157,15 @@ public class CanvasNotes {
 			graphics_context.setFont(font);
 			graphics_context.setFill(Color.BLACK);
 
-			//			graphics_context.fillRect(55,currentY+25,10,50);
-			//			graphics_context.fillRect(65,currentY+25,10,50);
-			//			graphics_context.setStroke(Color.BLACK);
+			//	graphics_context.fillRect(55,currentY+25,10,50);
+			//	graphics_context.fillRect(65,currentY+25,10,50);
+			//	graphics_context.setStroke(Color.BLACK);
 			graphics_context.setLineWidth(8);
 			graphics_context.strokeLine(70, currentY+16, 70, currentY+32);
 
 			graphics_context.strokeLine(83, currentY+16,83, currentY+32);
 
-
-
-
 			//graphics_context.fillText("\uD834\uDD25",currentX-40, currentY+75);
-
 
 		}
 	}
@@ -226,7 +231,7 @@ public class CanvasNotes {
 				
 				if(currentY+400 > canvasHeight) {
 					anchorPane.setPrefHeight(canvasHeight+500);
-					canvas.setHeight(canvasHeight+500);
+					//canvas.setHeight(canvasHeight+500);
 					canvasHeight = canvasHeight + 500;
 				}
 				
