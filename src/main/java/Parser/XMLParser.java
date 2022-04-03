@@ -12,7 +12,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 
 
-public class XMLParser {
+public class XMLParser extends GuitarParser {
 	
 	public static String instrument = "";
 	public ArrayList<Integer> nNPM = new ArrayList<Integer>();

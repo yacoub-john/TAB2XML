@@ -19,11 +19,10 @@ public class JfugueForDrum {
 	
 	private  int nNPMCounter = 0;
 	public String total = "";
-
+	public static String tempo = "120";
 
 	//Receive notes from Drum Parser
 	public void getNotes(ArrayList<String> notesRecieved, ArrayList<Integer> chordsRecieved, ArrayList<String> noteHeadsRecieved, ArrayList<Integer> noteLengthRecieved, ArrayList<String> stemRecieved, ArrayList<String> noteInstrumIDRecieved, ArrayList<Integer> nNPMrecieved) {
-		
 		notesList = notesRecieved;
 		chordList = chordsRecieved;
 		noteHeadList = noteHeadsRecieved;
@@ -80,7 +79,7 @@ public class JfugueForDrum {
 	
 	public void playNotes() {
 		Player player = new Player();
-		String str="T120 V9 ";
+		String str= "T" +tempo + " V9 ";
 		total = str;
 		
 		for(int i = 0; i < notesList.size(); i++) {

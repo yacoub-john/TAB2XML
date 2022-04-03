@@ -24,6 +24,8 @@ public class JfugueTest {
 	private AnimationTimer loop;
 	public Player player;
 	public String total = "";
+	public static String tempo = "120";
+
 
 	public static CanvasNotes canvasNote;
 	private  int nNPMCounter = 0;
@@ -53,7 +55,7 @@ public class JfugueTest {
 			Player player = new Player();
 			player = new Player();
 		
-			String str="T100 V0 I[Guitar] | ";
+			String str= "T" + tempo + " V0 I[Guitar] | ";
 			String total = str;
 			System.out.println(xPlacement);
 			System.out.println(yPlacement);
