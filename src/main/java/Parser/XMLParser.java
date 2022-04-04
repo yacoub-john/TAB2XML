@@ -3,10 +3,13 @@ package Parser;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.fxmisc.richtext.CodeArea;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import GUI.MusicInfoController;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -15,18 +18,22 @@ import java.util.ArrayList;
 public class XMLParser extends GuitarParser {
 	
 	public static String instrument = "";
-	public ArrayList<Integer> nNPM = new ArrayList<Integer>();
+	public static ArrayList<Integer> nNPM = new ArrayList<Integer>();
 	public int numOfmeasures = 0;
-	
 	public NodeList out = null;
 	public Document document = null;
-	
+	public static ArrayList<String> details;
+	public GuitarParser guitarParser = new GuitarParser();
+	DrumParser drumParser = new DrumParser();
+
 	
 	
 	public void getXml(Document doc) {
 
 
 		doc.getDocumentElement().normalize();
+		details = new ArrayList<String>();
+		nNPM = new ArrayList<Integer>();
 
 
 		NodeList partNameList  =  doc.getElementsByTagName("part-name");
@@ -37,7 +44,7 @@ public class XMLParser extends GuitarParser {
 			Element child = (Element) partNameList.item(i);    
 			String  st1 = child.getTextContent();
 			System.out.println("Part " + (i + 1)  + ": " + st1);
-			
+			details.add("Part " + (i + 1)  + ": " + st1);
 			if(i == 0) {
 				
 			 partName = st1;
@@ -56,6 +63,8 @@ public class XMLParser extends GuitarParser {
 			
 			NodeList measure = (NodeList) measures.item(i); 
 			System.out.println("Total number of notes in measure " + i +" is: " + (measure.getLength()-3)/2);
+			details.add("Total number of notes in measure " + i +" is: " + (measure.getLength()-3)/2);
+
 			nNPM.add((measure.getLength()-3)/2);
 			
 			
@@ -64,23 +73,21 @@ public class XMLParser extends GuitarParser {
         
 
 		if(partName.equals("Guitar")) {
-			GuitarParser guitarParser = new GuitarParser();
 			instrument = "Guitar";
-			guitarParser.parseGuitar(measures, nNPM, doc);
+			guitarParser.parseGuitar(details,measures, nNPM, doc);
 			
 		}
 		
 		else if (partName.equals("Drumset")) {
-			DrumParser drumParser = new DrumParser();
 			instrument = "Drumset";
-			drumParser.parseDrums(measures, nNPM, doc);
+			drumParser.parseDrums(details,measures, nNPM, doc);
 		}
 		
 		out = measures;
 		document = doc;
 
 	}
-
+	
 	public void loadXMLFromString(String xml) throws Exception
 	{
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

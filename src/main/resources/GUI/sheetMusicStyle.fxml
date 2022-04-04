@@ -37,7 +37,7 @@
             </Text>
             <ChoiceBox fx:id="fontsChoice" layoutX="166.0" layoutY="182.0" prefWidth="150.0" style="-fx-background-color: BLACK;" />
             <Button fx:id="Close" layoutX="445.0" layoutY="227.0" mnemonicParsing="false" onAction="#handleClose" text="Cancel" />
-            <Slider fx:id="LineSpacing" layoutX="166.0" layoutY="138.0" min="20.0" onDragDetected="#handleDragLineSpacing" onMouseClicked="#handleDragLineSpacing" onMouseDragged="#handleDragLineSpacing" prefHeight="37.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true" />
+            <Slider fx:id="LineSpacing" blockIncrement="5.0" layoutX="166.0" layoutY="138.0" majorTickUnit="10.0" max="45.0" min="5.0" minorTickCount="0" onDragDetected="#handleDragLineSpacing" onMouseClicked="#handleDragLineSpacing" onMouseDragged="#handleDragLineSpacing" prefHeight="37.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true" value="5.0" />
             <Slider fx:id="sliderTempo" layoutX="166.0" layoutY="43.0" max="220.0" min="40.0" onDragDetected="#handleDragTempo" onMouseClicked="#handleDragTempo" onMouseDragged="#handleDragTempo" prefHeight="37.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true" />
             <TextField fx:id="tempBox" alignment="CENTER" layoutX="431.0" layoutY="36.0" onAction="#handleTempoBox" prefHeight="26.0" prefWidth="40.0" text="40" />
             <TextField fx:id="NoteSpacingBox" alignment="CENTER" layoutX="431.0" layoutY="85.0" onAction="#handleNoteSpacingBox" prefHeight="26.0" prefWidth="40.0" text="20" />

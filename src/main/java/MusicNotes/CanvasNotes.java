@@ -32,21 +32,21 @@ public class CanvasNotes {
 	private Canvas canvas;
 	private ScrollPane scrollPane;
 	private AnchorPane anchorPane;
-	
-	public static int lineSpacing = 12;
-	public static  int noteSpacing = 40;
-	public static String font = "Arial";
+
+	public int lineSpacing = 12;
+	public int noteSpacing = 40;
+	public String font = "Arial";
 	private int nNPMCounter = 0;
 	private int currentX = 0;
 	private int currentY = 0;
 
 	private  double canvasWidth = 0;
 	private  double canvasHeight = 0;
-	
-	public static void setLineSpacing(int lineSpacingRecieved) {
+
+	public  void setLineSpacing(int lineSpacingRecieved) {
 		lineSpacing = lineSpacingRecieved;
 	}
-	public static void setNoteSpacing(int noteSpacingRecieved) {
+	public  void setNoteSpacing(int noteSpacingRecieved) {
 		noteSpacing = noteSpacingRecieved;
 	}
 
@@ -72,16 +72,21 @@ public class CanvasNotes {
 		noteInstrumentIDList = noteInstrumIDRecieved;
 
 	}
-
-	public void printNotes(Canvas canv, ScrollPane scroll, AnchorPane anchor) {
-		
+	
+	public void getCanvas(Canvas canv, ScrollPane scroll, AnchorPane anchor) {
 		canvas = canv;
 		scrollPane = scroll;
 		anchorPane = anchor;
-		//Set starting X and Y values 
+	}
+	
+	public void clearCanvas() {
+		graphics_context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+	}
+	
+	public void printNotes() {
+
 		currentX = 100;
-		
-		
+
 		if(instrumentName.equals("Guitar")) {
 			currentY = 40;
 		}
@@ -90,14 +95,14 @@ public class CanvasNotes {
 		}
 		nNPMCounter = 0;
 
-		graphics_context = canv.getGraphicsContext2D();
+		graphics_context = canvas.getGraphicsContext2D();
 
 		canvasWidth = graphics_context.getCanvas().getWidth();
 		canvasHeight = graphics_context.getCanvas().getHeight();
 
 		//Background
-//		graphics_context.setFill(Color.WHITE);
-//		graphics_context.fillRect(0, 0, canvasWidth, canvasHeight);
+		//		graphics_context.setFill(Color.WHITE);
+		//		graphics_context.fillRect(0, 0, canvasWidth, canvasHeight);
 
 		//Horizontal Lines
 		printHorizontalLines(graphics_context);
@@ -130,7 +135,7 @@ public class CanvasNotes {
 		// Border
 		graphics_context.setStroke(Color.BLACK);
 		graphics_context.setLineWidth(4);
-		graphics_context.strokeRect(0, 0, canvasWidth, canvasHeight);
+		graphics_context.strokeRect(0, 0, canvasWidth, canvasHeight-10);
 
 
 	}
@@ -189,10 +194,10 @@ public class CanvasNotes {
 		else if (instrumentName.equals("Drumset")) {
 
 			graphics_context.strokeLine(50, currentY, canvasWidth - 50, currentY);
-			graphics_context.strokeLine(50, currentY+12, canvasWidth - 50, currentY+12);
-			graphics_context.strokeLine(50, currentY+24, canvasWidth - 50, currentY+24);
-			graphics_context.strokeLine(50, currentY+36, canvasWidth - 50, currentY+36);
-			graphics_context.strokeLine(50, currentY+48, canvasWidth - 50, currentY+48);
+			graphics_context.strokeLine(50, currentY+lineSpacing, canvasWidth - 50, currentY+lineSpacing);
+			graphics_context.strokeLine(50, currentY+(2*lineSpacing), canvasWidth - 50, currentY+(2*lineSpacing));
+			graphics_context.strokeLine(50, currentY+(3*lineSpacing), canvasWidth - 50, currentY+(3*lineSpacing));
+			graphics_context.strokeLine(50, currentY+(4*lineSpacing), canvasWidth - 50, currentY+(4*lineSpacing));
 			//		graphics_context.strokeLine(50, currentY+50, canvasWidth - 50, currentY+50);
 		}
 	}
@@ -208,7 +213,7 @@ public class CanvasNotes {
 		else if (instrumentName.equals("Drumset")) {
 			graphics_context.setStroke(Color.BLACK);
 			graphics_context.setLineWidth(3);
-			graphics_context.strokeLine(currentX, currentY+1, currentX, currentY+47);
+			graphics_context.strokeLine(currentX, currentY+1, currentX, currentY+(4*lineSpacing)-1);
 		}
 
 	}
@@ -218,7 +223,7 @@ public class CanvasNotes {
 	public void printNotesGuitar(GraphicsContext graphics_context) {
 		Font font = new Font("Arial", 20);
 		graphics_context.setFont(font);
-				
+
 		for(int i = 0; i < fretList.size(); i++) {
 
 			if(notesPerMeasure.get(nNPMCounter) == i) {
@@ -228,33 +233,34 @@ public class CanvasNotes {
 				currentX += 30;
 			}
 
-			if( (currentX + 40) >= canvasWidth ) {
-				
+
+			if (currentX+50>=canvasWidth-50) {
+
 				if(currentY+400 > canvasHeight) {
 					anchorPane.setPrefHeight(canvasHeight+500);
-					//canvas.setHeight(canvasHeight+500);
+					canvas.setHeight(canvasHeight+500);
 					canvasHeight = canvasHeight + 500;
 				}
-				
-					currentY = currentY + 200;
-					currentX = 55;
-				
-				
+
+				currentX=(int) (canvasWidth-50);
+				printVertical(graphics_context);
+				currentY+=169;
 				printHorizontalLines(graphics_context);
+				currentX=50;
 			}
 
 			if(stringList.get(i).equals("1")) {
 				graphics_context.setStroke(Color.WHITE);
-				
+
 				if( Integer.parseInt(fretList.get(i)) < 10) {
 					graphics_context.strokeLine(currentX, currentY, currentX+12,currentY);
 
 				}
 				else {
-					graphics_context.strokeLine(currentX, currentY, currentX+20,currentY);
+					graphics_context.strokeLine(currentX, currentY, currentX+24,currentY);
 
 				}
-				
+
 				graphics_context.setFill(Color.BLACK);
 				graphics_context.fillText(fretList.get(i), currentX, currentY+5); 
 
@@ -265,16 +271,16 @@ public class CanvasNotes {
 
 			else if(stringList.get(i).equals("2")) {
 				graphics_context.setStroke(Color.WHITE);
-				
+
 				if( Integer.parseInt(fretList.get(i)) < 10) {
 					graphics_context.strokeLine(currentX, currentY+25, currentX+12,currentY+25);
 
 				}
 				else {
-					graphics_context.strokeLine(currentX, currentY+25, currentX+20,currentY+25);
+					graphics_context.strokeLine(currentX, currentY+25, currentX+24,currentY+25);
 
 				}
-				
+
 				graphics_context.setFill(Color.BLACK);
 				graphics_context.fillText(fretList.get(i), currentX, currentY+30); 
 
@@ -285,16 +291,16 @@ public class CanvasNotes {
 
 			else if(stringList.get(i).equals("3")) {
 				graphics_context.setStroke(Color.WHITE);
-				
+
 				if( Integer.parseInt(fretList.get(i)) < 10) {
 					graphics_context.strokeLine(currentX, currentY+50, currentX+12,currentY+50);
 
 				}
 				else {
-					graphics_context.strokeLine(currentX, currentY+50, currentX+20,currentY+50);
+					graphics_context.strokeLine(currentX, currentY+50, currentX+24,currentY+50);
 
 				}
-				
+
 				graphics_context.setFill(Color.BLACK);
 				graphics_context.fillText(fretList.get(i), currentX, currentY+55); 
 
@@ -304,16 +310,16 @@ public class CanvasNotes {
 			}
 			else if(stringList.get(i).equals("4")) {
 				graphics_context.setStroke(Color.WHITE);
-				
+
 				if( Integer.parseInt(fretList.get(i)) < 10) {
 					graphics_context.strokeLine(currentX, currentY+75, currentX+12,currentY+75);
 
 				}
 				else {
-					graphics_context.strokeLine(currentX, currentY+75, currentX+20,currentY+75);
+					graphics_context.strokeLine(currentX, currentY+75, currentX+24,currentY+75);
 
 				}
-				
+
 				graphics_context.setFill(Color.BLACK);
 				graphics_context.fillText(fretList.get(i), currentX, currentY+80); 
 
@@ -323,16 +329,16 @@ public class CanvasNotes {
 			}
 			else if(stringList.get(i).equals("5")) {
 				graphics_context.setStroke(Color.WHITE);
-				
+
 				if( Integer.parseInt(fretList.get(i)) < 10) {
 					graphics_context.strokeLine(currentX, currentY+100, currentX+12,currentY+100);
 
 				}
 				else {
-					graphics_context.strokeLine(currentX, currentY+100, currentX+20,currentY+100);
+					graphics_context.strokeLine(currentX, currentY+100, currentX+24,currentY+100);
 
 				}
-				
+
 				graphics_context.setFill(Color.BLACK);
 				graphics_context.fillText(fretList.get(i), currentX, currentY+105); 
 
@@ -342,13 +348,13 @@ public class CanvasNotes {
 			}
 			else if(stringList.get(i).equals("6")) {
 				graphics_context.setStroke(Color.WHITE);
-				
+
 				if( Integer.parseInt(fretList.get(i)) < 10) {
 					graphics_context.strokeLine(currentX, currentY+125, currentX+12,currentY+125);
 
 				}
 				else {
-					graphics_context.strokeLine(currentX, currentY+125, currentX+20,currentY+125);
+					graphics_context.strokeLine(currentX, currentY+125, currentX+24,currentY+125);
 
 				}
 
@@ -413,60 +419,61 @@ public class CanvasNotes {
 
 		String noteShape  = "";
 		if(duration==32) {
-			noteShape="?";
+			noteShape="\uD834\uDD5E";
 		}
 		else {
-			noteShape="?";
+			noteShape="\u2669";
 		}
 
 		//		if(duration == 64) {
-		//			return "?";
+		//			return "\uD834\uDD5D";
 		//		}
 		//
 		//		else if(duration == 32) {
-		//			return "?";
+		//			return "\uD834\uDD5E";
 		//		}
 		//
 		//		else if(duration == 16) {
-		//			return "?";
+		//			return "\uD834\uDD5F";
 		//		}
 		//
 		//		else if(duration == 8) {
-		//			return "?";
+		//			return "\uD834\uDD60";
 		//		}
 		//
 		//		else if(duration == 4) {
-		//			return "?";
+		//			return "\uD834\uDD61";
 		//		}
 		//
 		//		else if(duration == 2) {
-		//			return "?";
+		//			return "\uD834\uDD62";
 		//		}
 		//
 		//		else if(duration == 1) {
-		//			return "?";
+		//			return "\uD834\uDD63";
 		//		}
 		//		else if(duration == 16) {
 		//			
-		//			return "?";
+		//			return "\uD834\uDD5F";
 		//		}
 		//
 		//		else if(duration == 8) {
-		//			return "?";
+		//			return "\uD834\uDD60";
 		//		}
 		//
 		//		else if(duration == 4) {
-		//			return "?";
+		//			return "\uD834\uDD61";
 		//		}
 		//
 		//		else if(duration == 2) {
-		//			return "?";
+		//			return "\uD834\uDD62";
 		//		}
 		//
 		//		else if(duration == 1) {
-		//			return "?";
+		//			return "\uD834\uDD63";
 		//		}
 		//		
+
 
 		return noteShape;
 	}
@@ -492,17 +499,17 @@ public class CanvasNotes {
 			int number = Integer.parseInt(notesList.get(i).substring(0,1));
 
 			if (!noteHeadList.get(i).equals("non") && !notesList.get(i).equals("5A")){
-				
+
 				font = new Font("Arial Rounded MT Bold", 60);
 				graphics_context.setFont(font);
-								
+
 				if(notesLengthList.get(i)==32) {
-					graphics_context.fillText("?", currentX, currentY+1);
+					graphics_context.fillText("\uD835\uDD69", currentX, currentY+1);
 				}
 				else {
-					graphics_context.fillText("?", currentX, currentY+1);
+					graphics_context.fillText("\uD834\uDD43", currentX, currentY+1);
 				}
-				
+
 				// adding vertical line
 				graphics_context.setLineWidth(3);
 				graphics_context.strokeLine(currentX+20, currentY-13 ,currentX+20,  currentY-41);
@@ -584,17 +591,17 @@ public class CanvasNotes {
 
 					font = new Font("Arial Rounded MT Bold", 60);
 					graphics_context.setFont(font);
-					
+
 					if(notesLengthList.get(i)==32) {
 						font = new Font("Arial Rounded MT Bold", 26);
 						graphics_context.setFont(font);
-						
-						graphics_context.fillText("?", currentX+4, currentY-5);
+
+						graphics_context.fillText("\uD835\uDD69", currentX+4, currentY-5);
 					}
 					else {
-						graphics_context.fillText("?", currentX+1, currentY-4);
+						graphics_context.fillText("\uD834\uDD43", currentX+1, currentY-4);
 					}
-					
+
 					graphics_context.setLineWidth(1);
 					graphics_context.strokeLine(currentX, currentY-12 ,currentX+25,  currentY-12);
 				}
@@ -641,7 +648,7 @@ public class CanvasNotes {
 
 
 			if(counter==4) {
-				
+
 				if(nNPMCounter-1>=0 && notesPerMeasure.get(nNPMCounter-1) == i) {
 					graphics_context.setLineWidth(6);
 					currentX-=30;
@@ -653,33 +660,33 @@ public class CanvasNotes {
 					graphics_context.setStroke(Color.BLACK); //Note shape is from the duration
 					graphics_context.strokeLine(currentX-138, currentY-41,currentX-22 ,currentY-41);
 				}
-				
-				
+
+
 				if(notesLengthList.get(i-1)==4) {
 					graphics_context.strokeLine(currentX-138, currentY-31,currentX-22 ,currentY-31);
 
 				}
-				
-				
-				
+
+
+
 				counter=0;
 			}
 
 			if (i+1<chordList.size()-1 && chordList.get(i+1)!= 0 ) {
-				currentX+=40;
+				currentX+=noteSpacing;
 				counter++;
 				System.out.println(counter);
 			}
 
 
 			if (currentX+50>=canvasWidth-50) {
-				
+
 				if(currentY+400 > canvasHeight) {
 					anchorPane.setPrefHeight(canvasHeight+500);
 					canvas.setHeight(canvasHeight+500);
 					canvasHeight = canvasHeight + 500;
 				}
-				
+
 				currentX=(int) (canvasWidth-50);
 				printVertical(graphics_context);
 				currentY+=160;

@@ -22,20 +22,27 @@ public class DrumParser {
 	public ArrayList<Double> midiVolumeList = new ArrayList<>();
 	public ArrayList<Integer> midiPanlist = new ArrayList<>();
 
-	public ArrayList<String> notesList = new ArrayList<>();
-	public ArrayList<Integer> chordList = new ArrayList<>();
-	public ArrayList<String> noteHeadList = new ArrayList<>();
-	public ArrayList<Integer> noteLengthList = new ArrayList<>();
-	public ArrayList<String> stemList = new ArrayList<>();
-	public ArrayList<String> noteInstrumentIDList = new ArrayList<>();
+	public static  ArrayList<String> notesList = new ArrayList<>();
+	public static ArrayList<Integer> chordList = new ArrayList<>();
+	public static ArrayList<String> noteHeadList = new ArrayList<>();
+	public static ArrayList<Integer> noteLengthList = new ArrayList<>();
+	public static ArrayList<String> stemList = new ArrayList<>();
+	public static  ArrayList<String> noteInstrumentIDList = new ArrayList<>();
 	public static MidiTest midiTester = new MidiTest();
 	public static JfugueForDrum drumTest = new JfugueForDrum();
 	
 	public ArrayList<Integer> barlineList = new ArrayList<Integer>();
 	public ArrayList<Integer> directionList = new ArrayList<Integer>();
 
-	public void parseDrums(NodeList measures, ArrayList<Integer> nNPM, Document doc) {
-
+	public void parseDrums(ArrayList<String> detials,NodeList measures, ArrayList<Integer> nNPM, Document doc) {
+		
+		ArrayList<String> notesList = new ArrayList<>();
+		ArrayList<Integer> chordList = new ArrayList<>();
+		ArrayList<String> noteHeadList = new ArrayList<>();
+		ArrayList<Integer> noteLengthList = new ArrayList<>();
+		ArrayList<String> stemList = new ArrayList<>();
+		ArrayList<String> noteInstrumentIDList = new ArrayList<>();
+		
 		boolean hasBarline = false;
 		boolean HasDirection = false;
 		
@@ -47,6 +54,7 @@ public class DrumParser {
 		
 		NodeList directions=  doc.getElementsByTagName("direction");
 		NodeList words =  doc.getElementsByTagName("words");
+
 		
 		for(int i=0; i < measures.getLength(); i++) {
 			
@@ -55,15 +63,15 @@ public class DrumParser {
 			for(int s = 0; s<measure.getLength(); s++) {
 
 				Node notesMeasure = (Node) measure.item(s); // Note of First Measure
-				//System.out.println("Measure " + i + " Attribute: " + notesMeasure);
+				//detials.add("Measure " + i + " Attribute: " + notesMeasure);
 
 				if(notesMeasure.getNodeName().equals("barline")) {
-					//System.out.println("Has Barline!");
+					//detials.add("Has Barline!");
 					hasBarline = true;
 				}
 
 				if(notesMeasure.getNodeName().equals("direction")) {
-					//System.out.println("Has Direction!");
+					//detials.add("Has Direction!");
 					HasDirection = true;
 				}		
 			}
@@ -72,7 +80,7 @@ public class DrumParser {
 
 				Element barLine = (Element) barlines.item(i);    
 				String bar = barLine.getAttribute("location");
-				System.out.println("Bar location of measure " + (i+1) + ": " + bar);
+				detials.add("Bar location of measure " + (i+1) + ": " + bar);
 			}
 			
 			if(repeats.item(i) != null && hasBarline) {
@@ -82,11 +90,11 @@ public class DrumParser {
 				
 				if(repeatDirection.equals("backward")) {
 					String repeatValue = repeat.getAttribute("times");
-					System.out.println("Repeat Direction of measure " + (i+1) + ": " + repeatDirection);
-					System.out.println("Repeat Value of measure " + (i+1) + ": " + repeatValue);
+					detials.add("Repeat Direction of measure " + (i+1) + ": " + repeatDirection);
+					detials.add("Repeat Value of measure " + (i+1) + ": " + repeatValue);
 				}
 				else {
-					System.out.println("Repeat Direction of measure " + (i+1) + ": " + repeatDirection);
+					detials.add("Repeat Direction of measure " + (i+1) + ": " + repeatDirection);
 				}
 				
 			}
@@ -95,7 +103,7 @@ public class DrumParser {
 
 				Element barStyle = (Element) barStyles.item(i);    
 				String style = barStyle.getTextContent();
-				System.out.println("Barstyle of measure " + (i+1) + ": " + style);
+				detials.add("Barstyle of measure " + (i+1) + ": " + style);
 			}
 			
 			hasBarline = false;
@@ -103,30 +111,21 @@ public class DrumParser {
 		}
 
 
-		NodeList instrumentNames =  doc.getElementsByTagName("instrument-name");
-<<<<<<< HEAD
 
-=======
->>>>>>> branch 'Develop' of https://github.com/yacoub-john/TAB2XML
+		NodeList instrumentNames =  doc.getElementsByTagName("instrument-name");
 
 		
 		for (int j = 0; j<instrumentNames.getLength(); j++) {
 
 			Element instrumentName = (Element) instrumentNames.item(j);    
 			String  NOI = instrumentName.getTextContent();
-			System.out.println("Instrument " + (j+1) + ": " + NOI);
-<<<<<<< HEAD
-
-			instrumentNameList.add(NOI);
-
-=======
->>>>>>> branch 'Develop' of https://github.com/yacoub-john/TAB2XML
+			detials.add("Instrument " + (j+1) + ": " + NOI);
 
 			instrumentNameList.add(NOI);
 		}
 
 
-		System.out.println("==================================");
+		detials.add("==================================");
 
 		NodeList midiChannels =  doc.getElementsByTagName("midi-channel");
 		NodeList midiPrograms =  doc.getElementsByTagName("midi-program");
@@ -141,12 +140,12 @@ public class DrumParser {
 			Element midiChannel = (Element) midiChannels.item(k);    
 			String  NOC = midiChannel.getTextContent();
 			midiChannelList.add(Integer.parseInt(NOC));
-			System.out.println("midi-Channel: " + NOC);
+			detials.add("midi-Channel: " + NOC);
 
 			Element midiProgram = (Element) midiPrograms.item(k);    
 			String  NOP = midiProgram.getTextContent();
 			midiProgramList.add(Integer.parseInt(NOP));
-			System.out.println("midi-Program: " + NOP);
+			detials.add("midi-Program: " + NOP);
 
 
 			Element midiUnpitched = (Element) midiUnpitcheds.item(k);    
@@ -154,41 +153,37 @@ public class DrumParser {
 			instrumentID += NOU;
 			instrumentIDList.add(instrumentID);
 			midiUnpitchList.add(Integer.parseInt(NOU));
-			System.out.println("midi-Unpitched: " + NOU);
+			detials.add("midi-Unpitched: " + NOU);
 
 			Element volume= (Element) volumes.item(k);    
 			String  NOV = volume.getTextContent();
 			midiVolumeList.add(Double.parseDouble(NOV));
-			System.out.println("Volume: " + NOV);
+			detials.add("Volume: " + NOV);
 
 			Element pan = (Element) pans.item(k);    
 			String  NOPA = pan.getTextContent();
-			System.out.println("Pan: " + NOPA);
+			detials.add("Pan: " + NOPA);
 			midiPanlist.add(Integer.parseInt(NOPA));
 
 
-			System.out.println("==================================");
+			detials.add("==================================");
 
 		}
 
-		System.out.println("Midi Channels: " + midiChannelList);
-		System.out.println("Midi Program: " + midiProgramList);
-		System.out.println("Midi Unpitched: " + midiUnpitchList);
-		System.out.println("Midi Volumes: " + midiVolumeList);
-		System.out.println("Midi Pans: " + midiPanlist);
-		System.out.println("instrument ID List: " + instrumentIDList);
-		System.out.println();
+		detials.add("Midi Channels: " + midiChannelList);
+		detials.add("Midi Program: " + midiProgramList);
+		detials.add("Midi Unpitched: " + midiUnpitchList);
+		detials.add("Midi Volumes: " + midiVolumeList);
+		detials.add("Midi Pans: " + midiPanlist);
+		detials.add("instrument ID List: " + instrumentIDList);
+		detials.add("");
 
 		for (int i=0; i<measures.getLength(); i++) {
 
-<<<<<<< HEAD
-
-=======
->>>>>>> branch 'Develop' of https://github.com/yacoub-john/TAB2XML
 			NodeList divisions  =  doc.getElementsByTagName("divisions");
 			Element division = (Element) divisions.item(i);    
 			String  NOD = division.getTextContent();
-			System.out.println("Number of divisions in measure " + (i + 1) + ": " + NOD);
+			detials.add("Number of divisions in measure " + (i + 1) + ": " + NOD);
 
 
 			NodeList fifths =  doc.getElementsByTagName("fifths");
@@ -198,7 +193,7 @@ public class DrumParser {
 
 				Element fifth = (Element) fifths.item(i);    
 				NOF = fifth.getTextContent();
-				System.out.println("Fifth of measure " + ( i+1) + ": " + NOF);
+				detials.add("Fifth of measure " + ( i+1) + ": " + NOF);
 			}
 
 			NodeList signs =  doc.getElementsByTagName("sign");
@@ -207,7 +202,7 @@ public class DrumParser {
 			if ( signs.item(i) != null ) {
 				Element sign = (Element) signs.item(i);    
 				NOS = sign.getTextContent();
-				System.out.println("Sign: " + NOS);
+				detials.add("Sign: " + NOS);
 			}
 
 			NodeList Lines =  doc.getElementsByTagName("line");
@@ -216,35 +211,32 @@ public class DrumParser {
 			if ( Lines.item(i) != null ) {
 				Element Line = (Element) Lines.item(i);    
 				String NOL = Line.getTextContent();
-				System.out.println("Line: " + NOL);
+				detials.add("Line: " + NOL);
 			}
 
-			NodeList barStyles =  doc.getElementsByTagName("bar-style");
 
 			if(barStyles.item(i) != null) {
 
 				Element barStyle = (Element) barStyles.item(i);    
 				String	NOB = barStyle.getTextContent();
-				System.out.println("Bar styles in measure " + (i+1)  + NOB);
+				detials.add("Bar styles in measure " + (i+1)  + NOB);
 			}
 			
 			
-			NodeList words =  doc.getElementsByTagName("words");
-
 			if(words.item(i) != null) {
 
 				Element word = (Element) words.item(i);    
 				String	NOW = word.getTextContent();
-				System.out.println("words in measure " + (i+1)  + NOW);
+				detials.add("words in measure " + (i+1)  + NOW);
 			}
 
 
 		}
 
 		NodeList notes = doc.getElementsByTagName("note");
-		System.out.println();
-		System.out.println("Amount of notes is: " + notes.getLength());
-		System.out.println("--------------------");
+		detials.add("");
+		detials.add("Amount of notes is: " + notes.getLength());
+		detials.add("--------------------");
 
 
 		NodeList steps =  doc.getElementsByTagName("display-step");
@@ -293,17 +285,17 @@ public class DrumParser {
 
 			String note = "";
 
-			System.out.println("Note: " + (j+1));
+			detials.add("Note: " + (j+1));
 
 
 			if(hasChord) {
-				System.out.println("Chord: 0");
+				detials.add("Chord: 0");
 				chordList.add(0);
 
 			}
 
 			else {
-				System.out.println("Chord: 1");
+				detials.add("Chord: 1");
 				chordList.add(1);
 			}
 
@@ -312,7 +304,7 @@ public class DrumParser {
 
 				Element octave = (Element) octaves.item(j);    
 				String  octaveValue = octave.getTextContent();
-				System.out.println("Octave: " +  octaveValue);
+				detials.add("Octave: " +  octaveValue);
 				note += octaveValue;
 			}
 
@@ -320,7 +312,7 @@ public class DrumParser {
 
 				Element step = (Element) steps.item(j);    
 				String  stepValue= step.getTextContent();
-				System.out.println("Step: " +  stepValue);
+				detials.add("Step: " +  stepValue);
 				note += stepValue;
 			}
 
@@ -329,7 +321,7 @@ public class DrumParser {
 
 				Element duration = (Element) durations.item(j);    
 				String  durationValue = duration.getTextContent();
-				System.out.println("Duration: " +  durationValue);
+				detials.add("Duration: " +  durationValue);
 				noteLengthList.add(Integer.parseInt(durationValue));
 			}
 
@@ -337,7 +329,7 @@ public class DrumParser {
 
 				Element noteinstrumIDElement = (Element) noteInstrumID.item(j);    
 				String  instrumIDText = noteinstrumIDElement.getAttribute("id");
-				System.out.println("Instrument ID: " +  instrumIDText);
+				detials.add("Instrument ID: " +  instrumIDText);
 				noteInstrumentIDList.add(instrumIDText);
 			}
 
@@ -345,7 +337,7 @@ public class DrumParser {
 
 				Element voice = (Element) voices.item(j);    
 				String  voiceValue = voice.getTextContent();
-				System.out.println("Voice: " +  voiceValue);
+				detials.add("Voice: " +  voiceValue);
 
 			}
 
@@ -353,42 +345,42 @@ public class DrumParser {
 
 				Element type = (Element) types.item(j);    
 				String  typeValue = type.getTextContent();
-				System.out.println("Type: " +  typeValue);
+				detials.add("Type: " +  typeValue);
 			}
 
 			if(stems.item(j) != null) {
 
 				Element stem = (Element) stems.item(j);    
 				String  stemValue = stem.getTextContent();
-				System.out.println("Stem: " +  stemValue);
+				detials.add("Stem: " +  stemValue);
 				stemList.add(stemValue);
 			}
 
 			if(hasNoteHead) {
-				System.out.println("Note Head: " +  noteHeadExistList[noteHeadExistsCounter]);
+				detials.add("Note Head: " +  noteHeadExistList[noteHeadExistsCounter]);
 				noteHeadList.add(noteHeadExistList[noteHeadExistsCounter]);
 				noteHeadExistsCounter++;
 			}
 			else {
-				System.out.println("Note Head: non" );
+				detials.add("Note Head: non" );
 				noteHeadList.add("non");
 
 
 			}
 
-			System.out.println("Note: " + note);
+			detials.add("Note: " + note);
 			notesList.add(note);
-			System.out.println("--------------------");		
+			detials.add("--------------------");		
 		}
 
-		System.out.println();
-		System.out.println("Notes: " + notesList);
-		System.out.println("Chords: " + chordList);
-		System.out.println("Note Heads: " + noteHeadList);
-		System.out.println("Notes Length: " + noteLengthList);
-		System.out.println("Stems: " + stemList);
-		System.out.println("Note Instrument ID: " + noteInstrumentIDList);
-		System.out.println();
+		detials.add("");
+		detials.add("Notes: " + notesList);
+		detials.add("Chords: " + chordList);
+		detials.add("Note Heads: " + noteHeadList);
+		detials.add("Notes Length: " + noteLengthList);
+		detials.add("Stems: " + stemList);
+		detials.add("Note Instrument ID: " + noteInstrumentIDList);
+		detials.add("");
 
 		for(int i = 0; i< nNPM.size(); i++) {
 			if(i != 0) {

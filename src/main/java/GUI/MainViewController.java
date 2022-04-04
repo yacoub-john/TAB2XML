@@ -72,6 +72,7 @@ public class MainViewController extends Application {
 	@FXML  Button previewButton;
 	@FXML  Button goToline;
 	@FXML  ComboBox<String> cmbScoreType;
+	public XMLParser xmlParser = new XMLParser();
 
 
 	public MainViewController() {
@@ -312,7 +313,6 @@ public class MainViewController extends Application {
 	private void previewButtonHandle() throws IOException {
 		System.out.println("Preview Button Clicked!");
 		try {
-			XMLParser xmlParser = new XMLParser();
 			xmlParser.loadXMLFromString(converter.getMusicXML());
 		} catch (Exception e1) {
 			e1.printStackTrace();

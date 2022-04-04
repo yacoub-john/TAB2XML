@@ -53,7 +53,6 @@ public class JfugueTest {
 		if(notes.isEmpty() == false) {
 
 			Player player = new Player();
-			player = new Player();
 		
 			String str= "T" + tempo + " V0 I[Guitar] | ";
 			String total = str;
@@ -84,13 +83,9 @@ public class JfugueTest {
 			}
 
 			System.out.println(total);
-			player.play(total);
+			
+			//player.play(total);
 			nNPMCounter = 0;
-		}
-
-
-		else {
-			System.out.println("No notes to play");
 		}
 	}
 
