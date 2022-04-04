@@ -140,6 +140,23 @@ public class GuitarParser {
 			boolean hasChord = false;
 			boolean hasAlter = false;
 			
+			String NOS = "";
+			String POS = "";
+			String TOS = "";
+			
+
+			 if (slurs.item(j) != null) {
+				
+				Element slur = (Element) slurs.item(j);    
+				 NOS = slur.getAttribute("number");
+				 TOS = slur.getAttribute("type");
+				 POS = slur.getAttribute("placement");
+				System.out.println("slur number is : " + NOS);
+				System.out.println("slur type is : " + TOS);
+				System.out.println("slur placement is : " + POS);
+				
+			 }
+			
 			
 
 			//Checks if the current note has a chord or attribute 
@@ -165,44 +182,23 @@ public class GuitarParser {
 							
 							
 							
+							
+							
 						}
 					}
 				}
 				
-			}
-			
-			String NOS = "";
-			String POS = "";
-			String TOS = "";
-			
-		
-			
-			
+			}	
+    
 			if(hasSlurs) {
 				
-				for (int m=0; m<noslurs;m++) {
+				    numOfSlur.add(noslurs);
+					slurNumber.add(NOS);
+					slurType.add(TOS);
+					slurPlacement.add(POS);
 					
 					
-					
-					if ( slurs.item(j) != null) {  
-						Element slur = (Element) slurs.item(j);    
-						 NOS = slur.getAttribute("number");
-						 TOS = slur.getAttribute("type");
-						 POS = slur.getAttribute("placement");
-						System.out.println("slur number is : " + NOS);
-						System.out.println("slur type is : " + TOS);
-						System.out.println("slur placement is : " + POS);
-						
-						
-						numOfSlur.add(noslurs);
-						slurNumber.add(NOS);
-						slurType.add(TOS);
-						slurPlacement.add(POS);
-					}
-					
-					
-					
-				}
+				
 				
 			}
 			
