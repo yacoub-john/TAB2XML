@@ -23,6 +23,9 @@ public class GuitarParser {
 	public ArrayList<String> slurNumber = new ArrayList<>();
 	public ArrayList<String> slurType = new ArrayList<>();
 	public ArrayList<String> slurPlacement = new ArrayList<>();
+	public ArrayList<String> slursN = new ArrayList<>();
+	public ArrayList<String> slursT = new ArrayList<>();
+	public ArrayList<String> slursP = new ArrayList<>();
 	
 	
 	public static JfugueTest jfugueTester = new JfugueTest();
@@ -145,15 +148,29 @@ public class GuitarParser {
 			String TOS = "";
 			
 
-			 if (slurs.item(j) != null) {
-				
-				Element slur = (Element) slurs.item(j);    
+			
+				 
+				 for (int z =0;z<slurs.getLength();z++) {
+					 
+					 if (j == 1) {
+					 
+				 
+			    if (slurs.item(z) != null) {
+			    	
+				Element slur = (Element) slurs.item(z);    
 				 NOS = slur.getAttribute("number");
 				 TOS = slur.getAttribute("type");
 				 POS = slur.getAttribute("placement");
 				System.out.println("slur number is : " + NOS);
 				System.out.println("slur type is : " + TOS);
 				System.out.println("slur placement is : " + POS);
+				
+				slursN.add(NOS);
+				slursT.add(TOS);
+				slursP.add(POS);
+				
+			    }
+				 }
 				
 			 }
 			
@@ -387,6 +404,14 @@ public class GuitarParser {
 		System.out.println(slurNumber);
 		System.out.println(slurType);
 		System.out.println(slurPlacement);
+		
+		System.out.println("--------------------");
+		
+		System.out.println(slursN);
+		System.out.println(slursT);
+		System.out.println(slursP);
+		
+		System.out.println(slurs.getLength());
 
 
 		for(int i = 0; i< nNPM.size(); i++) {
