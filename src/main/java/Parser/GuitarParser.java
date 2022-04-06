@@ -23,9 +23,13 @@ public class GuitarParser {
 	public ArrayList<String> slurNumber = new ArrayList<>();
 	public ArrayList<String> slurType = new ArrayList<>();
 	public ArrayList<String> slurPlacement = new ArrayList<>();
+	
+	
 	public ArrayList<String> slursN = new ArrayList<>();
 	public ArrayList<String> slursT = new ArrayList<>();
 	public ArrayList<String> slursP = new ArrayList<>();
+	public ArrayList<String> pullT = new ArrayList<>();
+	public ArrayList<String> pullN = new ArrayList<>();
 	
 	
 	public static JfugueTest jfugueTester = new JfugueTest();
@@ -118,6 +122,7 @@ public class GuitarParser {
 		NodeList frets = doc.getElementsByTagName("fret");
 
 		NodeList slurs = doc.getElementsByTagName("slur");
+		NodeList pullOffs = doc.getElementsByTagName("pull-off");
 
 
 		String[] alterExistList = new String[alters.getLength()];
@@ -169,6 +174,29 @@ public class GuitarParser {
 				slursN.add(NOS);
 				slursT.add(TOS);
 				slursP.add(POS);
+				
+			    }
+				 }
+				
+			 }
+				 
+	 for (int x =0;x<pullOffs.getLength();x++) {
+					 
+					 if (j == 1) {
+					 
+				 
+			    if (pullOffs.item(x) != null) {
+			    	
+				Element pullOff = (Element) pullOffs.item(x);    
+				String NOP = pullOff.getAttribute("number");
+				 String TOP = pullOff.getAttribute("type");
+				System.out.println("pull-Off number is : " + NOP);
+				System.out.println("slur type is : " + TOP);
+				
+				pullN.add(NOP);
+				pullT.add(TOP);
+				
+			
 				
 			    }
 				 }
@@ -426,14 +454,14 @@ public class GuitarParser {
 		System.out.println(slurNumber);
 		System.out.println(slurType);
 		System.out.println(slurPlacement);
-		
-		System.out.println("--------------------");
-		
 		System.out.println(slursN);
 		System.out.println(slursT);
 		System.out.println(slursP);
 		
-		System.out.println(slurs.getLength());
+		System.out.println("--------------------");
+		
+		System.out.println(pullN);
+		System.out.println(pullT);
 
 
 		for(int i = 0; i< nNPM.size(); i++) {
