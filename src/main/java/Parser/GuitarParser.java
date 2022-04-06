@@ -29,6 +29,7 @@ public class GuitarParser {
 	
 	
 	public static JfugueTest jfugueTester = new JfugueTest();
+	int counter =0;
 
 
 
@@ -134,7 +135,7 @@ public class GuitarParser {
 			
 			int noslurs =0;
 			boolean hasSlurs = false;
-			int counter =0;
+			
 
 
 			NodeList singleNote = (NodeList) notes.item(j);
@@ -210,9 +211,30 @@ public class GuitarParser {
 			if(hasSlurs) {
 				
 				    numOfSlur.add(noslurs);
-					slurNumber.add(NOS);
-					slurType.add(TOS);
-					slurPlacement.add(POS);
+					slurNumber.add(slursN.get(counter));
+					slurType.add(slursT.get(counter));
+					slurPlacement.add(slursP.get(counter));
+					
+					counter++;
+					
+					if (noslurs > 1) {
+						
+						for (int y=0;y<noslurs-1;y++) {
+							
+							slurNumber.add(slursN.get(counter));
+							slurType.add(slursT.get(counter));
+							slurPlacement.add(slursP.get(counter));
+							
+							counter++;
+							
+							
+							
+						}
+						
+						
+
+						
+					}
 					
 					
 				
