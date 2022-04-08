@@ -283,27 +283,38 @@ public class GuitarParser {
 						}
 					}
 				}
-
-
-				if(singleNoteElement.getNodeName().equals("notations")) {
-					NodeList notations = (NodeList)singleNoteElement;
-					for(int a= 0;a<notations.getLength();a++) {     
-						if(notations.item(a).getNodeName().equals("technical")) {
-							NodeList tech = (NodeList)singleNoteElement;
-							for(int l=0; l<tech.getLength(); l++) {
-								if(tech.item(l).getNodeName().equals("pull-off")) {
-									hasPullOff = true;
-									numPullOff ++;
-
+				
+				if (singleNoteElement.getNodeName().equals("notations")) {
+					NodeList notation = (NodeList)singleNoteElement;
+					for (int l=0;l<notation.getLength();l++) {
+						if(notation.item(l).getNodeName().equals("technical")) {
+							NodeList tech = (NodeList) notation.item(l);
+							for (int a=0;a<tech.getLength();a++) {
+								if(tech.item(a).getNodeName().equals("pull-off")) {
+									
+									System.out.println("working");
+									
+								hasPullOff = true;
+						     	numPullOff++;
+								
 								}
-
+							
+								
 							}
-
+							
+							
+							
 						}
-
-
+						
+						
+						
+						
 					}
-
+					
+					
+					
+					
+					
 				}
 
 			}	
@@ -376,7 +387,7 @@ public class GuitarParser {
 
 				pullOffNumber.add("0");
 				pullOffType.add("NAN");	
-				count2++;
+				
 
 			}
 			
@@ -571,13 +582,13 @@ public class GuitarParser {
 
 		}
 
-		System.out.println(numOfSlur);
-		System.out.println(slurNumber);
-		System.out.println(slurType);
-		System.out.println(slurPlacement);
-		System.out.println(slursN);
-		System.out.println(slursT);
-		System.out.println(slursP);
+//		System.out.println(numOfSlur);
+//		System.out.println(slurNumber);
+//		System.out.println(slurType);
+//		System.out.println(slurPlacement);
+//		System.out.println(slursN);
+//		System.out.println(slursT);
+//		System.out.println(slursP);
 
 		System.out.println("--------------------");
 
@@ -589,10 +600,10 @@ public class GuitarParser {
 		
 		System.out.println("--------------------");
 		
-		System.out.println(actNotes);
-		System.out.println(nomNotes);
-		System.out.println(actualNotesL);
-		System.out.println(normalNotesL);
+//		System.out.println(actNotes);
+//		System.out.println(nomNotes);
+//		System.out.println(actualNotesL);
+//		System.out.println(normalNotesL);
 		
 		System.out.println(normalNotes.getLength());
 		System.out.println(normalNotes.getLength());
