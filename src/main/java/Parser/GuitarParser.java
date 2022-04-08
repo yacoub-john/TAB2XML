@@ -300,20 +300,10 @@ public class GuitarParser {
 								}
 							
 								
-							}
+							}		
 							
-							
-							
-						}
-						
-						
-						
-						
-					}
-					
-					
-					
-					
+						}		
+					}	
 					
 				}
 
@@ -391,24 +381,21 @@ public class GuitarParser {
 
 			}
 			
-//			if(hasActualNotes) {
-//				
-//				actualNotesL.add(actNotes.get(count3));
-//				normalNotesL.add(nomNotes.get(count3));
-//				count3++;
-//				
-//				
-//				
-//			}
-//			
-//			else {
-//				actualNotesL.add("NAN");
-//				normalNotesL.add("NAN");
-//				count3++;
-//				
-//				
-//				
-//			}
+			if(hasActualNotes) {
+				
+				actualNotesL.add(actNotes.get(count3));
+				normalNotesL.add(nomNotes.get(count3));
+				count3++;
+				
+				
+				
+			}
+			
+			else {
+				actualNotesL.add("NAN");
+				normalNotesL.add("NAN");
+				
+			}
 
 
 			if(hasChord) {
@@ -592,23 +579,20 @@ public class GuitarParser {
 
 		System.out.println("--------------------");
 
-		System.out.println(pullOffNumber);
-		System.out.println(pullOffType);
-
-		System.out.println(pullN);
-		System.out.println(pullT);
+//		System.out.println(pullOffNumber);
+//		System.out.println(pullOffType);
+//
+//		System.out.println(pullN);
+//		System.out.println(pullT);
 		
 		System.out.println("--------------------");
 		
-//		System.out.println(actNotes);
-//		System.out.println(nomNotes);
-//		System.out.println(actualNotesL);
-//		System.out.println(normalNotesL);
+		System.out.println(actNotes);
+		System.out.println(nomNotes);
+		System.out.println(actualNotesL);
+		System.out.println(normalNotesL);
 		
-		System.out.println(normalNotes.getLength());
-		System.out.println(normalNotes.getLength());
 		
-		System.out.println(trying);
 		
 
 
