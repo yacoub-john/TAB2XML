@@ -28,6 +28,7 @@ public class GuitarParser {
 	public ArrayList<Integer> numberOfPullOff = new ArrayList<>();
 	public ArrayList<String> actualNotesL= new ArrayList<>();
 	public ArrayList<String> normalNotesL = new ArrayList<>();
+	public ArrayList<String> bendsL = new ArrayList<>();
 
 
 	public ArrayList<String> slursN = new ArrayList<>();
@@ -37,12 +38,15 @@ public class GuitarParser {
 	public ArrayList<String> pullN = new ArrayList<>();
 	public ArrayList<String> actNotes = new ArrayList<>();
 	public ArrayList<String> nomNotes = new ArrayList<>();
+	public ArrayList<String> bendExist = new ArrayList<>();
+
 
 
 	public static JfugueTest jfugueTester = new JfugueTest();
 	int counter =0;
 	int count2 = 0;
 	int count3=0;
+	int count4=0;
 	int trying;
 
 
@@ -132,9 +136,11 @@ public class GuitarParser {
 
 		NodeList slurs = doc.getElementsByTagName("slur");
 		NodeList pullOffs = doc.getElementsByTagName("pull-off");
-		
+
 		NodeList actualNotes = doc.getElementsByTagName("actual-notes");
 		NodeList normalNotes = doc.getElementsByTagName("normal-notes");
+
+		NodeList bends = doc.getElementsByTagName("bend-alter");
 
 
 		String[] alterExistList = new String[alters.getLength()];
@@ -155,8 +161,10 @@ public class GuitarParser {
 
 			int numPullOff =0;
 			boolean hasPullOff = false;
-			
+
 			boolean hasActualNotes = false;
+
+			boolean hasBend = false;
 
 
 
@@ -175,7 +183,7 @@ public class GuitarParser {
 
 			for (int z =0;z<slurs.getLength();z++) {
 
-				if (j == 1) {
+				if (j == 0) {
 
 
 					if (slurs.item(z) != null) {
@@ -199,7 +207,7 @@ public class GuitarParser {
 
 			for (int x =0;x<pullOffs.getLength();x++) {
 
-				if (j == 1) {
+				if (j == 0) {
 
 
 					if (pullOffs.item(x) != null) {
@@ -219,30 +227,47 @@ public class GuitarParser {
 				}
 
 			}
-			
-			
+
+
 			for (int h =0;h<actualNotes.getLength();h++) {
 
-				if (j == 1) {
+				if (j == 0) {
 
 
 					if (actualNotes.item(h) != null) {
 
 						Element actualNote = (Element) actualNotes.item(h);    
 						String NOA = actualNote.getTextContent();	
-					    actNotes.add(NOA);
+						actNotes.add(NOA);
 
 					}
-				
-				
-				if (normalNotes.item(h) != null) {
-					
-					Element normalNote = (Element) normalNotes.item(h);    
-					String NON = normalNote.getTextContent();	
-				    nomNotes.add(NON);
-					
-					
+
+
+					if (normalNotes.item(h) != null) {
+
+						Element normalNote = (Element) normalNotes.item(h);    
+						String NON = normalNote.getTextContent();	
+						nomNotes.add(NON);
+
+
+					}
 				}
+
+			}
+
+			for (int f =0;f<bends.getLength();f++) {
+
+				if (j == 0) {
+
+
+					if (bends.item(f) != null) {
+
+						Element bend = (Element) bends.item(f);    
+						String NOB = bend.getTextContent();
+						bendExist.add(NOB);
+
+
+					}
 				}
 
 			}
@@ -258,20 +283,16 @@ public class GuitarParser {
 				if(singleNoteElement.getNodeName().equals("chord")) {
 					hasChord = true;
 				}
-				
-				
+
+
 				if(singleNoteElement.getNodeName().equals("time-modification")) {
-							
-							hasActualNotes = true;
-							trying++;
-				
+
+					hasActualNotes = true;
+
+
 				}
-			
 
-             
-
-
-
+		
 				if(singleNoteElement.getNodeName().equals("notations")) {
 					NodeList notation = (NodeList)singleNoteElement;
 					for(int l=0; l<notation.getLength(); l++) {
@@ -279,11 +300,11 @@ public class GuitarParser {
 							hasSlurs = true;
 							noslurs++;
 
-               
+
 						}
 					}
 				}
-				
+
 				if (singleNoteElement.getNodeName().equals("notations")) {
 					NodeList notation = (NodeList)singleNoteElement;
 					for (int l=0;l<notation.getLength();l++) {
@@ -291,20 +312,27 @@ public class GuitarParser {
 							NodeList tech = (NodeList) notation.item(l);
 							for (int a=0;a<tech.getLength();a++) {
 								if(tech.item(a).getNodeName().equals("pull-off")) {
-									
+
 									System.out.println("working");
-									
-								hasPullOff = true;
-						     	numPullOff++;
-								
+
+									hasPullOff = true;
+									numPullOff++;
+
 								}
-							
 								
+								else if (tech.item(a).getNodeName().equals("bend")) {
+									
+									
+									hasBend = true;
+									
+								}
+
+
 							}		
-							
+
 						}		
 					}	
-					
+
 				}
 
 			}	
@@ -377,24 +405,35 @@ public class GuitarParser {
 
 				pullOffNumber.add("0");
 				pullOffType.add("NAN");	
-				
+
 
 			}
-			
+
 			if(hasActualNotes) {
-				
+
 				actualNotesL.add(actNotes.get(count3));
 				normalNotesL.add(nomNotes.get(count3));
 				count3++;
-				
-				
-				
+
+
+
 			}
-			
+
 			else {
 				actualNotesL.add("NAN");
 				normalNotesL.add("NAN");
+
+			}
+			
+			if (hasBend) {
 				
+            bendsL.add(bendExist.get(count4));
+            count4++;	
+			}
+			
+			else {
+				
+				bendsL.add("0");
 			}
 
 
@@ -565,35 +604,39 @@ public class GuitarParser {
 			notesList.add(note);
 			System.out.println("--------------------");
 
-      
+
 
 		}
 
-//		System.out.println(numOfSlur);
-//		System.out.println(slurNumber);
-//		System.out.println(slurType);
-//		System.out.println(slurPlacement);
-//		System.out.println(slursN);
-//		System.out.println(slursT);
-//		System.out.println(slursP);
+		//				System.out.println(numOfSlur);
+		//				System.out.println(slurNumber);
+		//				System.out.println(slurType);
+		//				System.out.println(slurPlacement);
+		//				System.out.println(slursN);
+		//				System.out.println(slursT);
+		//				System.out.println(slursP);
+		//		
+		//				System.out.println("--------------------");
+		//		
+		//				System.out.println(pullOffNumber);
+		//				System.out.println(pullOffType);
+		//		
+		//				System.out.println(pullN);
+		//				System.out.println(pullT);
+		//				
+		//				System.out.println("--------------------");
+		//		//		
+		//				System.out.println(actNotes);
+		//				System.out.println(nomNotes);
+		//				System.out.println(actualNotesL);
+		//				System.out.println(normalNotesL);
 
-		System.out.println("--------------------");
 
-//		System.out.println(pullOffNumber);
-//		System.out.println(pullOffType);
-//
-//		System.out.println(pullN);
-//		System.out.println(pullT);
-		
-		System.out.println("--------------------");
-		
-		System.out.println(actNotes);
-		System.out.println(nomNotes);
-		System.out.println(actualNotesL);
-		System.out.println(normalNotesL);
-		
-		
-		
+		System.out.println(bendExist);
+		System.out.println(bendsL);
+
+
+
 
 
 		for(int i = 0; i< nNPM.size(); i++) {
