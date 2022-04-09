@@ -72,7 +72,7 @@ public class PreviewSheetMusicController extends Application{
 	private Thread t1;
 	ManagedPlayer mplayer;
 	Sequencer seqMang = null;
-
+	public String musicgoto="";
 
 	public PreviewSheetMusicController() {}
 
@@ -86,6 +86,7 @@ public class PreviewSheetMusicController extends Application{
 	@FXML 
 	public void initialize() {
 		canvasNote.getCanvas(canvas, scroll, anchor);
+		musicgoto = "";
 		playing=false;
 		try {
 			seqMang= MidiSystem.getSequencer();
@@ -119,20 +120,40 @@ public class PreviewSheetMusicController extends Application{
 			@Override
 			public void run() {
 				if(Parser.XMLParser.instrument.equals("Guitar")) {
-					if(seqMang.getTickPosition() == seqMang.getTickLength()) {
+					
+					if(musicgoto != "") {
+						if(seqMang.getTickPosition() == seqMang.getTickLength()) {
 
-						Player player = new Player();
-						Parser.GuitarParser.jfugueTester.playNotes();
-						System.out.println("Giving: " + Parser.GuitarParser.jfugueTester.total);
-						Sequence s = player.getSequence(Parser.GuitarParser.jfugueTester.total);
-						try {
-							seqMang.setSequence(s);
-						} catch (InvalidMidiDataException e) {
-							e.printStackTrace();
+							Player player = new Player();
+							System.out.println("Giving: " + musicgoto);
+							Sequence s = player.getSequence(musicgoto);
+							try {
+								seqMang.setSequence(s);
+							} catch (InvalidMidiDataException e) {
+								e.printStackTrace();
+							}
+							seqMang.setTickPosition(0);
+							playing=false;
 						}
-						seqMang.setTickPosition(0);
-						playing=false;
 					}
+					
+					else {
+						if(seqMang.getTickPosition() == seqMang.getTickLength()) {
+
+							Player player = new Player();
+							Parser.GuitarParser.jfugueTester.playNotes();
+							System.out.println("Giving: " + Parser.GuitarParser.jfugueTester.total);
+							Sequence s = player.getSequence(Parser.GuitarParser.jfugueTester.total);
+							try {
+								seqMang.setSequence(s);
+							} catch (InvalidMidiDataException e) {
+								e.printStackTrace();
+							}
+							seqMang.setTickPosition(0);
+							playing=false;
+						}
+					}
+					
 				}
 		
 				else if(Parser.XMLParser.instrument.equals("Drumset")) {
@@ -256,9 +277,48 @@ public class PreviewSheetMusicController extends Application{
 
 	@FXML
 	void handleGotoMeasure(ActionEvent event) {
+	
+		Parser.GuitarParser.jfugueTester.playNotes();
+		String playn= Parser.GuitarParser.jfugueTester.total;
+		String instr=playn.substring(0,18);
+		
+		String measures =playn.substring(18,playn.length()-1);
+	
+	
+		String measureValueText=gotoMeasureField.getText();
+		int count= Integer.parseInt(measureValueText);
+		
+		int index = nthOccurrence(measures, "|", count);
+		String complete = instr + measures.substring(index,measures.length()-1);
+		System.out.println("a"+complete);
+		
+		musicgoto=complete;
+		
+				
+//				for(int i=0;i<getCharAt;i++) {
+//					
+//				}
+		
+			
 
 	}
 
+	public static int nthOccurrence(String str1, String str2, int n) {
+		 
+        String tempStr = str1;
+        int tempIndex = -1;
+        int finalIndex = 0;
+        for(int occurrence = 0; occurrence < n ; ++occurrence){
+            tempIndex = tempStr.indexOf(str2);
+            if(tempIndex==-1){
+                finalIndex = 0;
+                break;
+            }
+            tempStr = tempStr.substring(++tempIndex);
+            finalIndex+=tempIndex;
+        }
+        return --finalIndex;
+    }
 	@Override
 	public void start(Stage primaryStage) throws Exception {}
 }
