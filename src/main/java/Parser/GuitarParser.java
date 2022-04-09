@@ -351,9 +351,4 @@ public class GuitarParser {
 
 	}
 
-	public ArrayList<String> getStrings(){
-
-		return stringList;
-	}
-
 }
