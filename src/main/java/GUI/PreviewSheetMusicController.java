@@ -293,16 +293,9 @@ public class PreviewSheetMusicController extends Application{
 		System.out.println("a"+complete);
 		
 		musicgoto=complete;
-		
-				
-//				for(int i=0;i<getCharAt;i++) {
-//					
-//				}
-		
 			
-
 	}
-
+	
 	public static int nthOccurrence(String str1, String str2, int n) {
 		 
         String tempStr = str1;
@@ -321,4 +314,9 @@ public class PreviewSheetMusicController extends Application{
     }
 	@Override
 	public void start(Stage primaryStage) throws Exception {}
+	
+	@Override
+	public void stop() throws Exception{
+		t1.interrupt();;
+	}
 }

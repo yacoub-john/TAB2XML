@@ -26,10 +26,10 @@ public class GuitarParser {
 
 		notesList = new ArrayList<>();
 		alterList = new ArrayList<>();
-		 chordList = new ArrayList<>();
-		 fretList = new ArrayList<>();
-		 stringList = new ArrayList<>();
-		 noteLengthList = new ArrayList<>();
+		chordList = new ArrayList<>();
+		fretList = new ArrayList<>();
+		stringList = new ArrayList<>();
+		noteLengthList = new ArrayList<>();
 
 		for(int i = 0; i < measures.getLength(); i++) {
 
@@ -345,14 +345,14 @@ public class GuitarParser {
 				nNPM.set(i, (nNPM.get(i) + nNPM.get(i-1)));
 			}
 		}
-      
+
 		jfugueTester.getNotes(notesList, nNPM, stringList, fretList, chordList, alterList);
 		PreviewSheetMusicController.canvasNote.getNotesGuitar("Guitar",stringList, fretList, nNPM, alterList, noteLengthList, chordList);
 
 	}
-	
+
 	public ArrayList<String> getStrings(){
-		
+
 		return stringList;
 	}
 
