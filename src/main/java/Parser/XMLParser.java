@@ -23,7 +23,7 @@ public class XMLParser extends GuitarParser {
 	public NodeList out = null;
 	public Document document = null;
 	public static ArrayList<String> details;
-	public GuitarParser guitarParser = new GuitarParser();
+	public static GuitarParser guitarParser = new GuitarParser();
 	DrumParser drumParser = new DrumParser();
 
 	
@@ -34,6 +34,7 @@ public class XMLParser extends GuitarParser {
 		doc.getDocumentElement().normalize();
 		details = new ArrayList<String>();
 		nNPM = new ArrayList<Integer>();
+		document = doc;
 
 
 		NodeList partNameList  =  doc.getElementsByTagName("part-name");
@@ -84,7 +85,7 @@ public class XMLParser extends GuitarParser {
 		}
 		
 		out = measures;
-		document = doc;
+		
 
 	}
 	
@@ -98,6 +99,15 @@ public class XMLParser extends GuitarParser {
 
 	}
 	
+	public ArrayList<String> getDetails() {
+		
+		return details;
+	}
+	
+public ArrayList<Integer> getnNpm() {
+		
+		return nNPM;
+	}
 	
 	
 	

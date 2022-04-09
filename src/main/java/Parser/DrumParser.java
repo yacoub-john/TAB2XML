@@ -22,7 +22,7 @@ public class DrumParser {
 	public ArrayList<Double> midiVolumeList = new ArrayList<>();
 	public ArrayList<Integer> midiPanlist = new ArrayList<>();
 
-	public static  ArrayList<String> notesList = new ArrayList<>();
+	public   ArrayList<String> notesList = new ArrayList<>();
 	public static ArrayList<Integer> chordList = new ArrayList<>();
 	public static ArrayList<String> noteHeadList = new ArrayList<>();
 	public static ArrayList<Integer> noteLengthList = new ArrayList<>();
@@ -36,12 +36,12 @@ public class DrumParser {
 
 	public void parseDrums(ArrayList<String> detials,NodeList measures, ArrayList<Integer> nNPM, Document doc) {
 		
-		ArrayList<String> notesList = new ArrayList<>();
-		ArrayList<Integer> chordList = new ArrayList<>();
-		ArrayList<String> noteHeadList = new ArrayList<>();
-		ArrayList<Integer> noteLengthList = new ArrayList<>();
-		ArrayList<String> stemList = new ArrayList<>();
-		ArrayList<String> noteInstrumentIDList = new ArrayList<>();
+		 notesList = new ArrayList<>();
+		 chordList = new ArrayList<>();
+		 noteHeadList = new ArrayList<>();
+		 noteLengthList = new ArrayList<>();
+		 stemList = new ArrayList<>();
+		 noteInstrumentIDList = new ArrayList<>();
 		
 		boolean hasBarline = false;
 		boolean HasDirection = false;

@@ -1,5 +1,6 @@
 package playnotes.player;
 
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -428,7 +429,7 @@ public String getXML2() {
 		}
 		
 		GuitarParser guitar = new GuitarParser();
-		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
+		guitar.parseGuitar(xmlParser.details,xmlParser.out, xmlParser.nNPM, xmlParser.document);
 		
 		 // JfugueTest jfugueGuitar = new JfugueTest();
 		//jfugueGuitar.getNotes(guitar.notesList, xmlParser.nNPM, guitar.stringList, guitar.fretList, guitar.chordList, guitar.alterList);
@@ -456,15 +457,22 @@ public String getXML2() {
 			e.printStackTrace();
 		}
 		
-		GuitarParser guitar = new GuitarParser();
-		guitar.parseGuitar(xmlParser.out, xmlParser.nNPM, xmlParser.document);
+//		GuitarParser guitar = new GuitarParser();
+//		guitar.parseGuitar(xmlParser.details,xmlParser.out, xmlParser.nNPM, xmlParser.document);
+//		
+//		JfugueTest jfugueGuitar = new JfugueTest();
+//		guitar.jfugueGuitar.getNotes(guitar.notesList, xmlParser.nNPM, guitar.stringList, guitar.fretList, guitar.chordList, guitar.alterList);
+//		jfugueGuitar.playNotes();
 		
-		JfugueTest jfugueGuitar = new JfugueTest();
-		jfugueGuitar.getNotes(guitar.notesList, xmlParser.nNPM, guitar.stringList, guitar.fretList, guitar.chordList, guitar.alterList);
-		jfugueGuitar.playNotes();
+		GuitarParser guitar = new GuitarParser();
+		guitar.parseGuitar(xmlParser.details,xmlParser.out, xmlParser.nNPM, xmlParser.document);
+		
+		 // JfugueTest jfugueGuitar = new JfugueTest();
+		//jfugueGuitar.getNotes(guitar.notesList, xmlParser.nNPM, guitar.stringList, guitar.fretList, guitar.chordList, guitar.alterList);
+	    guitar.jfugueTester.playNotes();
 	
 		
-		assertEquals(test,jfugueGuitar.total);
+		assertEquals(test,guitar.jfugueTester.total);
 		
 		
 	}

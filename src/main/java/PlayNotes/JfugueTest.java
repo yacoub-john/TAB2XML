@@ -55,7 +55,7 @@ public class JfugueTest {
 			Player player = new Player();
 		
 			String str= "T" + tempo + " V0 I[Guitar] | ";
-			String total = str;
+			total = str;
 			System.out.println(xPlacement);
 			System.out.println(yPlacement);
 			int counter=0;
