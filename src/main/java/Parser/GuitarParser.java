@@ -29,7 +29,8 @@ public class GuitarParser {
 	public ArrayList<String> actualNotesL= new ArrayList<>();
 	public ArrayList<String> normalNotesL = new ArrayList<>();
 	public ArrayList<String> bendsL = new ArrayList<>();
-
+	public ArrayList<String> tiesL = new ArrayList<>();
+	public ArrayList<Integer> NumOfTiesL = new ArrayList<>();
 
 	public ArrayList<String> slursN = new ArrayList<>();
 	public ArrayList<String> slursT = new ArrayList<>();
@@ -39,6 +40,7 @@ public class GuitarParser {
 	public ArrayList<String> actNotes = new ArrayList<>();
 	public ArrayList<String> nomNotes = new ArrayList<>();
 	public ArrayList<String> bendExist = new ArrayList<>();
+	public ArrayList<String> tieExist = new ArrayList<>();
 
 
 
@@ -47,6 +49,7 @@ public class GuitarParser {
 	int count2 = 0;
 	int count3=0;
 	int count4=0;
+	int count5 =0;
 	int trying;
 
 
@@ -141,6 +144,7 @@ public class GuitarParser {
 		NodeList normalNotes = doc.getElementsByTagName("normal-notes");
 
 		NodeList bends = doc.getElementsByTagName("bend-alter");
+		NodeList ties = doc.getElementsByTagName("tied");
 
 
 		String[] alterExistList = new String[alters.getLength()];
@@ -165,6 +169,9 @@ public class GuitarParser {
 			boolean hasActualNotes = false;
 
 			boolean hasBend = false;
+			
+			boolean hastie = false;
+			int numTie = 0;
 
 
 
@@ -220,6 +227,26 @@ public class GuitarParser {
 
 						pullN.add(NOP);
 						pullT.add(TOP);
+
+
+
+					}
+				}
+
+			}
+			
+			for (int x =0;x<ties.getLength();x++) {
+
+				if (j == 0) {
+
+
+					if (ties.item(x) != null) {
+
+						Element tie = (Element) ties.item(x);    
+						String NOT = tie.getAttribute("type");
+						tieExist.add(NOT);
+						
+				
 
 
 
@@ -301,6 +328,14 @@ public class GuitarParser {
 							noslurs++;
 
 
+						}
+						
+						else if (notation.item(l).getNodeName().equals("tied")) {
+							
+							hastie = true;
+							numTie ++;
+							
+							
 						}
 					}
 				}
@@ -423,6 +458,37 @@ public class GuitarParser {
 				actualNotesL.add("NAN");
 				normalNotesL.add("NAN");
 
+			}
+			
+
+			if(hastie) {
+                
+				
+				tiesL.add(tieExist.get(count5));
+				NumOfTiesL.add(numTie);
+				count5++;
+
+				if (numTie > 1) {
+
+					for (int y=0;y<noslurs-1;y++) {
+
+						tiesL.add(tieExist.get(count5));
+						count5++;
+
+					}
+				}
+
+
+
+
+			}
+			
+			else {
+				
+				tiesL.add("NAN");
+				NumOfTiesL.add(0);
+				
+				
 			}
 			
 			if (hasBend) {
@@ -632,8 +698,13 @@ public class GuitarParser {
 		//				System.out.println(normalNotesL);
 
 
-		System.out.println(bendExist);
-		System.out.println(bendsL);
+//		System.out.println(bendExist);
+//		System.out.println(bendsL);
+		
+		
+		System.out.println(NumOfTiesL);
+		System.out.println(tiesL);
+		System.out.println(tieExist);
 
 
 
