@@ -97,19 +97,6 @@ public class XMLParser extends GuitarParser {
 		getXml( builder.parse(is) );
 
 
-	}
-	
-	public ArrayList<String> getDetails() {
-		
-		return details;
-	}
-	
-public ArrayList<Integer> getnNpm() {
-		
-		return nNPM;
-	}
-	
-	
-	
+	}	
 
 }

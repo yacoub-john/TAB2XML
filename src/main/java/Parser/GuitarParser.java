@@ -350,10 +350,5 @@ public class GuitarParser {
 		PreviewSheetMusicController.canvasNote.getNotesGuitar("Guitar",stringList, fretList, nNPM, alterList, noteLengthList, chordList);
 
 	}
-	
-	public ArrayList<String> getStrings(){
-		
-		return stringList;
-	}
 
 }
