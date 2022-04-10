@@ -123,7 +123,8 @@ public class PreviewSheetMusicController extends Application{
 
 	@FXML 
 	void  editInput() {
-		mvc.convertWindow.hide();
+	//	mvc.convertWindow.hide();
+		canvasNote.highlight();
 
 	}
 
