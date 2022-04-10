@@ -1,11 +1,5 @@
 package GUI;
 
-import java.awt.Canvas;
-
-import MusicNotes.CanvasNotes;
-import Parser.DrumParser;
-import Parser.GuitarParser;
-import Parser.XMLParser;
 import PlayNotes.JfugueForDrum;
 import PlayNotes.JfugueTest;
 import javafx.collections.FXCollections;
@@ -91,19 +85,23 @@ public class SheetMusicStyleController {
 	void handleApply(ActionEvent event) {
 		PreviewSheetMusicController.canvasNote.setLineSpacing((int) LineSpacing.getValue());
 		PreviewSheetMusicController.canvasNote.setNoteSpacing((int) NoteSpacing.getValue());
-		//CanvasNotes.font = fontsChoice.getValue();
+		PreviewSheetMusicController.canvasNote.font = fontsChoice.getValue();
 		JfugueTest.tempo = tempBox.getText();
 		JfugueForDrum.tempo = tempBox.getText();
 		
-		if(XMLParser.instrument.equals("Guitar")) {
-			PreviewSheetMusicController.canvasNote.getNotesGuitar("Guitar",GuitarParser.stringList, GuitarParser.fretList, XMLParser.nNPM, GuitarParser.alterList, GuitarParser.noteLengthList, GuitarParser.chordList);
-			
-		}
-		else {
-			//PreviewSheetMusicController.canvasNote.getNotesDrums("Drumset", DrumParser.notesList,  DrumParser.chordList,  DrumParser.noteHeadList,  DrumParser.noteLengthList,  DrumParser.stemList,  DrumParser.noteInstrumentIDList,  XMLParser.nNPM);
-			PreviewSheetMusicController.canvasNote.clearCanvas();
-			PreviewSheetMusicController.canvasNote.printNotes();
-		}
+//		if(XMLParser.instrument.equals("Guitar")) {
+//			PreviewSheetMusicController.canvasNote.getNotesGuitar("Guitar",GuitarParser.stringList, GuitarParser.fretList, XMLParser.nNPM, GuitarParser.alterList, GuitarParser.noteLengthList, GuitarParser.chordList);
+//			PreviewSheetMusicController.canvasNote.clearCanvas();
+//			PreviewSheetMusicController.canvasNote.printNotes();
+//		}
+//		else {
+//			PreviewSheetMusicController.canvasNote.getNotesDrums("Drumset", DrumParser.notesList,  DrumParser.chordList,  DrumParser.noteHeadList,  DrumParser.noteLengthList,  DrumParser.stemList,  DrumParser.noteInstrumentIDList,  XMLParser.nNPM);
+//			
+//		}
+		
+		//Clear Canvas and redraw with new settings
+		PreviewSheetMusicController.canvasNote.clearCanvas();
+		PreviewSheetMusicController.canvasNote.printNotes();
 		
 		//Close Window
 		Stage stage = (Stage) Apply.getScene().getWindow();

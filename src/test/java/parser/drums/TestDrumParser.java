@@ -464,7 +464,7 @@ class TestDrumParser {
 		}
 		
 		DrumParser drum = new DrumParser();
-		drum.parseDrums(xmlParser.details,xmlParser.out, xmlParser.nNPM, xmlParser.document);
+		drum.parseDrums(XMLParser.details,xmlParser.out, XMLParser.nNPM, xmlParser.document);
 		
 		
 		assertEquals("P1-I36", drum.instrumentIDList.get(0));

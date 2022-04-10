@@ -10,11 +10,9 @@ import javax.sound.midi.Sequencer;
 
 import org.jfugue.player.ManagedPlayer;
 import org.jfugue.player.Player;
-import org.jfugue.player.SequencerManager;
 
 import javafx.scene.control.TextField;
 import MusicNotes.CanvasNotes;
-import Parser.GuitarParser;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -317,6 +315,6 @@ public class PreviewSheetMusicController extends Application{
 	
 	@Override
 	public void stop() throws Exception{
-		t1.interrupt();;
+		seqMang.stop();
 	}
 }
