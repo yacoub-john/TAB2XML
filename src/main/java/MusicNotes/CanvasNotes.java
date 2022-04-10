@@ -240,7 +240,7 @@ public class CanvasNotes {
 
 		for(int i = 0; i < fretList.size(); i++) {
 
-			if(notesPerMeasure.get(nNPMCounter) == i && ( (currentX+35) < ((int)canvas.getWidth()-50))) {
+			if(notesPerMeasure.get(nNPMCounter) == i) {
 
 				printVertical(graphics_context);
 				nNPMCounter ++;
@@ -319,7 +319,7 @@ public class CanvasNotes {
 				else {
 					graphics_context.strokeLine(currentX-2, (currentY+2*lineSpacing), currentX+11,(currentY+2*lineSpacing));
 					graphics_context.setFill(Color.BLACK);
-					graphics_context.fillText(fretList.get(i), currentX-2, (currentY+4*lineSpacing)+5);
+					graphics_context.fillText(fretList.get(i), currentX-2, (currentY+2*lineSpacing)+5);
 					xPlacments.add(currentX-2);
 					yPlacements.add((currentY+2*lineSpacing)+5);
 				}
