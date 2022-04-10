@@ -59,6 +59,14 @@ public class XMLParser {
 			nNPM.add((measure.getLength()-3)/2);
 			
 			
+			
+			if (measures.item(i).getNodeName().equals("barline")) {
+				
+				System.out.println("Working");
+				
+			}
+			
+			
 		}
 		
         
