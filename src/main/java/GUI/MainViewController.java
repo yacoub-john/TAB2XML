@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.rmi.server.LoaderHandler;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -24,6 +25,7 @@ import Parser.*;
 import converter.Converter;
 import converter.measure.TabMeasure;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -403,8 +405,17 @@ public class MainViewController extends Application {
         return task;
     }
     
+    @Override
+    public  {
+    	
+    }
+    
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		primaryStage.setOnCloseRequest( event -> {
+			Platform.exit();
+			System.exit(0);
 
+		});
 	}
 }

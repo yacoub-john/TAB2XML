@@ -93,7 +93,7 @@ public class PreviewSheetMusicController extends Application{
 		} catch (MidiUnavailableException e) {
 			e.printStackTrace();
 		}
-		
+
 
 	}
 
@@ -113,13 +113,13 @@ public class PreviewSheetMusicController extends Application{
 
 	@FXML
 	void handleMusic(ActionEvent event) {
-		
+
 
 		t1 = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				if(Parser.XMLParser.instrument.equals("Guitar")) {
-					
+
 					if(musicgoto != "") {
 						if(seqMang.getTickPosition() == seqMang.getTickLength()) {
 
@@ -135,7 +135,7 @@ public class PreviewSheetMusicController extends Application{
 							playing=false;
 						}
 					}
-					
+
 					else {
 						if(seqMang.getTickPosition() == seqMang.getTickLength()) {
 
@@ -152,9 +152,9 @@ public class PreviewSheetMusicController extends Application{
 							playing=false;
 						}
 					}
-					
+
 				}
-		
+
 				else if(Parser.XMLParser.instrument.equals("Drumset")) {
 
 					if(seqMang.getTickPosition() == seqMang.getTickLength()) {
@@ -173,15 +173,15 @@ public class PreviewSheetMusicController extends Application{
 
 
 				}
-				
+
 				if(!playing) {
 					seqMang.start();
 					canvasNote.highlight();
 					playing = true;
 				}
-				
-			}}); 
 
+			}}); 
+		t1.setDaemon(true);
 		t1.start();
 
 	}
@@ -246,7 +246,7 @@ public class PreviewSheetMusicController extends Application{
 	void handleStyle(ActionEvent event) {
 
 		Parent root;
-		
+
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/sheetMusicStyle.fxml"));
 			root = loader.load();
@@ -278,45 +278,54 @@ public class PreviewSheetMusicController extends Application{
 
 	@FXML
 	void handleGotoMeasure(ActionEvent event) {
-	
+
 		Parser.GuitarParser.jfugueTester.playNotes();
 		String playn= Parser.GuitarParser.jfugueTester.total;
 		String instr=playn.substring(0,18);
-		
+
 		String measures =playn.substring(18,playn.length()-1);
-	
-	
+
+
 		String measureValueText=gotoMeasureField.getText();
 		int count= Integer.parseInt(measureValueText);
-		
+
 		int index = nthOccurrence(measures, "|", count);
 		String complete = instr + measures.substring(index,measures.length()-1);
 		System.out.println("a"+complete);
-		
+
 		musicgoto=complete;
-	
-			
+
+
+	}
+
+
+
+	public static int nthOccurrence(String str1, String str2, int n) {
+
+		String tempStr = str1;
+		int tempIndex = -1;
+		int finalIndex = 0;
+		for(int occurrence = 0; occurrence < n ; ++occurrence){
+			tempIndex = tempStr.indexOf(str2);
+			if(tempIndex==-1){
+				finalIndex = 0;
+				break;
+			}
+			tempStr = tempStr.substring(++tempIndex);
+			finalIndex+=tempIndex;
+		}
+		return --finalIndex;
 	}
 	
-	public static int nthOccurrence(String str1, String str2, int n) {
-		 
-        String tempStr = str1;
-        int tempIndex = -1;
-        int finalIndex = 0;
-        for(int occurrence = 0; occurrence < n ; ++occurrence){
-            tempIndex = tempStr.indexOf(str2);
-            if(tempIndex==-1){
-                finalIndex = 0;
-                break;
-            }
-            tempStr = tempStr.substring(++tempIndex);
-            finalIndex+=tempIndex;
-        }
-        return --finalIndex;
-    }
 	@Override
-	public void start(Stage primaryStage) throws Exception {}
-	
+	public void start(Stage primaryStage) throws Exception {
+		primaryStage.setOnCloseRequest( event -> {
+
+			seqMang.stop();
+
+		});
+	}
+
 	@Override
 	public void stop() throws Exception{
 		seqMang.stop();

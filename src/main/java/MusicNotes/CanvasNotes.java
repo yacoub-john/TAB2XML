@@ -114,7 +114,13 @@ public class CanvasNotes {
 	}
 
 	public void printNotes() {
-
+		
+		//Clear Arrays
+		xPlacementsG = new ArrayList<>();
+		yPlacementsG = new ArrayList<>();
+		xPlacementsD = new ArrayList<>();
+		yPlacementsD = new ArrayList<>();
+		
 		currentX = 100;
 
 		if(instrumentName.equals("Guitar")) {
@@ -851,32 +857,61 @@ public class CanvasNotes {
 		Thread t1 = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				Integer[][] clearArray= new Integer[1][2];
-				for(int i=0; i<xPlacementsD.size();i++) {
+				
+				if(instrumentName == "Drumset") {
+					Integer[][] clearArray= new Integer[1][2];
+					for(int i=0; i<xPlacementsD.size();i++) {
 
-					
-					graphics_context.setFill(Color.RED);
-					graphics_context.fillText("\u2304", xPlacementsD.get(i)+5,  yPlacementsD.get(i)-60); //
-					System.out.println("Current "+i);
-					if(i < xPlacementsD.size()) {
-						if(clearArray[0][0]!=null && clearArray[0][1]!=null) {
-									graphics_context.clearRect(clearArray[0][0], clearArray[0][1]-10, 50, 20);
+						
+						graphics_context.setFill(Color.RED);
+						graphics_context.fillText("\u2304", xPlacementsD.get(i)+5,  yPlacementsD.get(i)-60); //
+						System.out.println("Current Drum: "+i);
+						if(i < xPlacementsD.size()) {
+							if(clearArray[0][0]!=null && clearArray[0][1]!=null) {
+										graphics_context.clearRect(clearArray[0][0], clearArray[0][1]-10, 50, 20);
 
+							}
+
+							clearArray[0][0]=  xPlacementsD.get(i)-20;
+							clearArray[0][1]=  yPlacementsD.get(i)-60;	
+
+						}	
+						try {
+							Thread.sleep((long) (1.25*Integer.parseInt(Parser.DrumParser.drumTest.tempo)));
+						} catch (InterruptedException e) {
+							e.printStackTrace();
 						}
+					}
+				}
+				else {
+					Integer[][] clearArray= new Integer[1][2];
+					for(int i=0; i<xPlacementsG.size();i++) {
 
-						clearArray[0][0]=  xPlacementsD.get(i)-20;
-						clearArray[0][1]=  yPlacementsD.get(i)-60;	
+						
+						graphics_context.setFill(Color.RED);
+						graphics_context.fillText("\u2304", xPlacementsG.get(i)-3,  yPlacementsG.get(i)-20); //
+						System.out.println("Current Guitar:"+i);
+						if(i < xPlacementsG.size()) {
+							if(clearArray[0][0]!=null && clearArray[0][1]!=null) {
+										graphics_context.clearRect(clearArray[0][0], clearArray[0][1]-35, 20, 20);
 
-					}	
-					try {
-						Thread.sleep((long) (1.25*Integer.parseInt(Parser.DrumParser.drumTest.tempo)));
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+							}
+
+							clearArray[0][0]=  xPlacementsG.get(i);
+							clearArray[0][1]=  yPlacementsG.get(i);	
+
+						}	
+						try {
+							Thread.sleep((long) (2.2*Integer.parseInt(Parser.GuitarParser.jfugueTester.tempo)));
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 				
+				
 			}}); 
-
+		t1.setDaemon(true);
 		t1.start();
 
 	}
