@@ -405,10 +405,7 @@ public class MainViewController extends Application {
         return task;
     }
     
-    @Override
-    public  {
-    	
-    }
+ 
     
 	@Override
 	public void start(Stage primaryStage) throws Exception {
