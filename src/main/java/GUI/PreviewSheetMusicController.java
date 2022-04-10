@@ -113,6 +113,7 @@ public class PreviewSheetMusicController extends Application{
 
 	@FXML
 	void handleMusic(ActionEvent event) {
+		
 
 		t1 = new Thread(new Runnable() {
 			@Override
@@ -175,6 +176,7 @@ public class PreviewSheetMusicController extends Application{
 				
 				if(!playing) {
 					seqMang.start();
+					canvasNote.highlight();
 					playing = true;
 				}
 				
@@ -244,6 +246,7 @@ public class PreviewSheetMusicController extends Application{
 	void handleStyle(ActionEvent event) {
 
 		Parent root;
+		
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/sheetMusicStyle.fxml"));
 			root = loader.load();
@@ -291,6 +294,7 @@ public class PreviewSheetMusicController extends Application{
 		System.out.println("a"+complete);
 		
 		musicgoto=complete;
+	
 			
 	}
 	
@@ -318,3 +322,4 @@ public class PreviewSheetMusicController extends Application{
 		seqMang.stop();
 	}
 }
+
