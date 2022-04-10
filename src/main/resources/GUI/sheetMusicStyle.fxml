@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="settingsPane" prefHeight="294.0" prefWidth="530.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.SheetMusicStyleController">
+   <children>
+      <Pane layoutX="113.0" layoutY="9.0" prefHeight="497.0" prefWidth="371.0" style="-fx-background-color: WHITE;" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+         <children>
+            <Button fx:id="Apply" layoutX="387.0" layoutY="227.0" mnemonicParsing="false" onAction="#handleApply" text="Apply" />
+            <Text layoutX="33.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tempo:">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <Text layoutX="32.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Note Spacing:">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <Text layoutX="34.0" layoutY="152.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Line Spacing: ">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <Slider fx:id="NoteSpacing" layoutX="166.0" layoutY="92.0" min="20.0" onDragDetected="#handleDragNoteSpacing" onMouseClicked="#handleDragNoteSpacing" onMouseDragged="#handleDragNoteSpacing" prefHeight="37.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true" />
+            <Text layoutX="34.0" layoutY="201.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Font:">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <ChoiceBox fx:id="fontsChoice" layoutX="166.0" layoutY="182.0" prefWidth="150.0" style="-fx-background-color: BLACK;" />
+            <Button fx:id="Close" layoutX="445.0" layoutY="227.0" mnemonicParsing="false" onAction="#handleClose" text="Cancel" />
+            <Slider fx:id="LineSpacing" blockIncrement="5.0" layoutX="166.0" layoutY="138.0" majorTickUnit="10.0" max="45.0" min="5.0" minorTickCount="0" onDragDetected="#handleDragLineSpacing" onMouseClicked="#handleDragLineSpacing" onMouseDragged="#handleDragLineSpacing" prefHeight="37.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true" value="5.0" />
+            <Slider fx:id="sliderTempo" layoutX="166.0" layoutY="43.0" max="220.0" min="40.0" onDragDetected="#handleDragTempo" onMouseClicked="#handleDragTempo" onMouseDragged="#handleDragTempo" prefHeight="37.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true" />
+            <TextField fx:id="tempBox" alignment="CENTER" layoutX="431.0" layoutY="36.0" onAction="#handleTempoBox" prefHeight="26.0" prefWidth="40.0" text="40" />
+            <TextField fx:id="NoteSpacingBox" alignment="CENTER" layoutX="431.0" layoutY="85.0" onAction="#handleNoteSpacingBox" prefHeight="26.0" prefWidth="40.0" text="20" />
+            <TextField fx:id="LineSpacingBox" alignment="CENTER" layoutX="431.0" layoutY="132.0" onAction="#handleLineSpacingBox" prefHeight="26.0" prefWidth="40.0" text="20" />
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>

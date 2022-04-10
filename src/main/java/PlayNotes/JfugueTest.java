@@ -22,8 +22,10 @@ public class JfugueTest {
 	private  ArrayList<Integer> xPlacement;
 	private  ArrayList<Integer> yPlacement;
 	private AnimationTimer loop;
-	
+	public Player player;
 	public String total = "";
+	public static String tempo = "120";
+
 
 	public static CanvasNotes canvasNote;
 	private  int nNPMCounter = 0;
@@ -49,11 +51,16 @@ public class JfugueTest {
 
 	public void playNotes() {
 		if(notes.isEmpty() == false) {
+
 			Player player = new Player();
 		
-			String str="T120 V0 I[Guitar] | ";
-			total = str;	
-						
+			String str= "T" + tempo + " V0 I[Guitar] | ";
+			total = str;
+			System.out.println(xPlacement);
+			System.out.println(yPlacement);
+			int counter=0;
+			
+
 			for(int i=0;i<notes.size();i++) {
 				total+= notes.get(i);
 			
@@ -76,13 +83,9 @@ public class JfugueTest {
 			}
 
 			System.out.println(total);
-			player.play(total);
+			
+			//player.play(total);
 			nNPMCounter = 0;
-		}
-
-
-		else {
-			System.out.println("No notes to play");
 		}
 	}
 

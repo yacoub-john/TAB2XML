@@ -466,7 +466,7 @@ public String getXML() {
 		}
 		
 		DrumParser drum = new DrumParser();
-		drum.parseDrums(xmlParser.out, xmlParser.nNPM, xmlParser.document);
+		drum.parseDrums(xmlParser.details,xmlParser.out, xmlParser.nNPM, xmlParser.document);
 		
 		drum.drumTest.playNotes();
 		

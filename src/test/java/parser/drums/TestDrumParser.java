@@ -464,7 +464,7 @@ class TestDrumParser {
 		}
 		
 		DrumParser drum = new DrumParser();
-		drum.parseDrums(xmlParser.out, xmlParser.nNPM, xmlParser.document);
+		drum.parseDrums(XMLParser.details,xmlParser.out, XMLParser.nNPM, xmlParser.document);
 		
 		
 		assertEquals("P1-I36", drum.instrumentIDList.get(0));
@@ -497,7 +497,7 @@ class TestDrumParser {
 		}
 		
 		DrumParser drum = new DrumParser();
-		drum.parseDrums(xmlParser.out, xmlParser.nNPM, xmlParser.document);
+		drum.parseDrums(xmlParser.details,xmlParser.out, xmlParser.nNPM, xmlParser.document);
 		
 		
 		assertEquals("Bass Drum 1", drum.instrumentNameList.get(0));
@@ -530,8 +530,11 @@ class TestDrumParser {
 			e.printStackTrace();
 		}
 		
+//		DrumParser drum = new DrumParser();
+//		drum.parseDrums(xmlParser.details,xmlParser.out, xmlParser.nNPM, xmlParser.document);
+		
 		DrumParser drum = new DrumParser();
-		drum.parseDrums(xmlParser.out, xmlParser.nNPM, xmlParser.document);
+		drum.parseDrums(xmlParser.details,xmlParser.out, xmlParser.nNPM, xmlParser.document);
 		
 	    assertEquals("5A",drum.notesList.get(0));	
 	    assertEquals("4F",drum.notesList.get(1));	
@@ -575,7 +578,7 @@ class TestDrumParser {
 		}
 		
 		DrumParser drum = new DrumParser();
-		drum.parseDrums(xmlParser.out, xmlParser.nNPM, xmlParser.document);
+		drum.parseDrums(xmlParser.details,xmlParser.out, xmlParser.nNPM, xmlParser.document);
 		
 	   assertEquals(1,drum.chordList.get(0));	
 	   assertEquals(0,drum.chordList.get(1));	
