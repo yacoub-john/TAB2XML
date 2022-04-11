@@ -63,15 +63,15 @@ public class DrumParser {
 			for(int s = 0; s<measure.getLength(); s++) {
 
 				Node notesMeasure = (Node) measure.item(s); // Note of First Measure
-				//detials.add("Measure " + i + " Attribute: " + notesMeasure);
+				//System.out.println("Measure " + i + " Attribute: " + notesMeasure);
 
 				if(notesMeasure.getNodeName().equals("barline")) {
-					//detials.add("Has Barline!");
+					//System.out.println("Has Barline!");
 					hasBarline = true;
 				}
 
 				if(notesMeasure.getNodeName().equals("direction")) {
-					//detials.add("Has Direction!");
+					//System.out.println("Has Direction!");
 					HasDirection = true;
 				}		
 			}
@@ -80,7 +80,7 @@ public class DrumParser {
 
 				Element barLine = (Element) barlines.item(i);    
 				String bar = barLine.getAttribute("location");
-				detials.add("Bar location of measure " + (i+1) + ": " + bar);
+				System.out.println("Bar location of measure " + (i+1) + ": " + bar);
 			}
 			
 			
@@ -91,11 +91,11 @@ public class DrumParser {
 				
 				if(repeatDirection.equals("backward")) {
 					String repeatValue = repeat.getAttribute("times");
-					detials.add("Repeat Direction of measure " + (i+1) + ": " + repeatDirection);
-					detials.add("Repeat Value of measure " + (i+1) + ": " + repeatValue);
+					System.out.println("Repeat Direction of measure " + (i+1) + ": " + repeatDirection);
+					System.out.println("Repeat Value of measure " + (i+1) + ": " + repeatValue);
 				}
 				else {
-					detials.add("Repeat Direction of measure " + (i+1) + ": " + repeatDirection);
+					System.out.println("Repeat Direction of measure " + (i+1) + ": " + repeatDirection);
 				}
 				
 			}
@@ -104,7 +104,7 @@ public class DrumParser {
 
 				Element barStyle = (Element) barStyles.item(i);    
 				String style = barStyle.getTextContent();
-				detials.add("Barstyle of measure " + (i+1) + ": " + style);
+				System.out.println("Barstyle of measure " + (i+1) + ": " + style);
 			}
 			
 			hasBarline = false;
@@ -118,12 +118,12 @@ public class DrumParser {
 
 			Element instrumentName = (Element) instrumentNames.item(j);    
 			String  NOI = instrumentName.getTextContent();
-			detials.add("Instrument " + (j+1) + ": " + NOI);
+			System.out.println("Instrument " + (j+1) + ": " + NOI);
 			instrumentNameList.add(NOI);
 		}
 
 
-		detials.add("==================================");
+		System.out.println("==================================");
 
 		NodeList midiChannels =  doc.getElementsByTagName("midi-channel");
 		NodeList midiPrograms =  doc.getElementsByTagName("midi-program");
@@ -138,12 +138,12 @@ public class DrumParser {
 			Element midiChannel = (Element) midiChannels.item(k);    
 			String  NOC = midiChannel.getTextContent();
 			midiChannelList.add(Integer.parseInt(NOC));
-			detials.add("midi-Channel: " + NOC);
+			System.out.println("midi-Channel: " + NOC);
 
 			Element midiProgram = (Element) midiPrograms.item(k);    
 			String  NOP = midiProgram.getTextContent();
 			midiProgramList.add(Integer.parseInt(NOP));
-			detials.add("midi-Program: " + NOP);
+			System.out.println("midi-Program: " + NOP);
 
 
 			Element midiUnpitched = (Element) midiUnpitcheds.item(k);    
@@ -151,38 +151,38 @@ public class DrumParser {
 			instrumentID += NOU;
 			instrumentIDList.add(instrumentID);
 			midiUnpitchList.add(Integer.parseInt(NOU));
-			detials.add("midi-Unpitched: " + NOU);
+			System.out.println("midi-Unpitched: " + NOU);
 
 			Element volume= (Element) volumes.item(k);    
 			String  NOV = volume.getTextContent();
 			midiVolumeList.add(Double.parseDouble(NOV));
-			detials.add("Volume: " + NOV);
+			System.out.println("Volume: " + NOV);
 
 			Element pan = (Element) pans.item(k);    
 			String  NOPA = pan.getTextContent();
-			detials.add("Pan: " + NOPA);
+			System.out.println("Pan: " + NOPA);
 			midiPanlist.add(Integer.parseInt(NOPA));
 			
 
 
-			detials.add("==================================");
+			System.out.println("==================================");
 
 		}
 
-		detials.add("Midi Channels: " + midiChannelList);
-		detials.add("Midi Program: " + midiProgramList);
-		detials.add("Midi Unpitched: " + midiUnpitchList);
-		detials.add("Midi Volumes: " + midiVolumeList);
-		detials.add("Midi Pans: " + midiPanlist);
-		detials.add("instrument ID List: " + instrumentIDList);
-		detials.add("");
+		System.out.println("Midi Channels: " + midiChannelList);
+		System.out.println("Midi Program: " + midiProgramList);
+		System.out.println("Midi Unpitched: " + midiUnpitchList);
+		System.out.println("Midi Volumes: " + midiVolumeList);
+		System.out.println("Midi Pans: " + midiPanlist);
+		System.out.println("instrument ID List: " + instrumentIDList);
+		System.out.println("");
 
 		for (int i=0; i<measures.getLength(); i++) {
 
 			NodeList divisions  =  doc.getElementsByTagName("divisions");
 			Element division = (Element) divisions.item(i);    
 			String  NOD = division.getTextContent();
-			detials.add("Number of divisions in measure " + (i + 1) + ": " + NOD);
+			System.out.println("Number of divisions in measure " + (i + 1) + ": " + NOD);
 
 
 			NodeList fifths =  doc.getElementsByTagName("fifths");
@@ -192,7 +192,7 @@ public class DrumParser {
 
 				Element fifth = (Element) fifths.item(i);    
 				NOF = fifth.getTextContent();
-				detials.add("Fifth of measure " + ( i+1) + ": " + NOF);
+				System.out.println("Fifth of measure " + ( i+1) + ": " + NOF);
 			}
 
 			NodeList signs =  doc.getElementsByTagName("sign");
@@ -201,7 +201,7 @@ public class DrumParser {
 			if ( signs.item(i) != null ) {
 				Element sign = (Element) signs.item(i);    
 				NOS = sign.getTextContent();
-				detials.add("Sign: " + NOS);
+				System.out.println("Sign: " + NOS);
 			}
 
 			NodeList Lines =  doc.getElementsByTagName("line");
@@ -210,14 +210,14 @@ public class DrumParser {
 			if ( Lines.item(i) != null ) {
 				Element Line = (Element) Lines.item(i);    
 				String NOL = Line.getTextContent();
-				detials.add("Line: " + NOL);
+				System.out.println("Line: " + NOL);
 			}
 
 			if(barStyles.item(i) != null) {
 
 				Element barStyle = (Element) barStyles.item(i);    
 				String	NOB = barStyle.getTextContent();
-				detials.add("Bar styles in measure " + (i+1)  + NOB);
+				System.out.println("Bar styles in measure " + (i+1)  + NOB);
 			}
 			
 			
@@ -225,15 +225,15 @@ public class DrumParser {
 
 				Element word = (Element) words.item(i);    
 				String	NOW = word.getTextContent();
-				detials.add("words in measure " + (i+1)  + NOW);
+				System.out.println("words in measure " + (i+1)  + NOW);
 			}
 
 		}
 
 		NodeList notes = doc.getElementsByTagName("note");
-		detials.add("");
-		detials.add("Amount of notes is: " + notes.getLength());
-		detials.add("--------------------");
+		System.out.println("");
+		System.out.println("Amount of notes is: " + notes.getLength());
+		System.out.println("--------------------");
 
 
 		NodeList steps =  doc.getElementsByTagName("display-step");
@@ -258,6 +258,8 @@ public class DrumParser {
 
 
 		for(int j = 0; j < notes.getLength(); j++) {
+			
+			boolean hasDuration = false;
 
 
 			NodeList singleNote = (NodeList) notes.item(j);		
@@ -276,23 +278,27 @@ public class DrumParser {
 				if(singleNoteElement.getNodeName().equals("notehead")) {
 					hasNoteHead = true;
 				}
+				
+				if(singleNoteElement.getNodeName().equals("duration")) {
+					hasDuration =true;
+				}
 
 
 			}
 
 			String note = "";
 
-			detials.add("Note: " + (j+1));
+			System.out.println("Note: " + (j+1));
 
 
 			if(hasChord) {
-				detials.add("Chord: 0");
+				System.out.println("Chord: 0");
 				chordList.add(0);
 
 			}
 
 			else {
-				detials.add("Chord: 1");
+				System.out.println("Chord: 1");
 				chordList.add(1);
 			}
 
@@ -301,7 +307,7 @@ public class DrumParser {
 
 				Element octave = (Element) octaves.item(j);    
 				String  octaveValue = octave.getTextContent();
-				detials.add("Octave: " +  octaveValue);
+				System.out.println("Octave: " +  octaveValue);
 				note += octaveValue;
 			}
 
@@ -309,7 +315,7 @@ public class DrumParser {
 
 				Element step = (Element) steps.item(j);    
 				String  stepValue= step.getTextContent();
-				detials.add("Step: " +  stepValue);
+				System.out.println("Step: " +  stepValue);
 				note += stepValue;
 			}
 
@@ -318,15 +324,23 @@ public class DrumParser {
 
 				Element duration = (Element) durations.item(j);    
 				String  durationValue = duration.getTextContent();
-				detials.add("Duration: " +  durationValue);
+				System.out.println("Duration: " +  durationValue);
+				
+				if (hasDuration) {
 				noteLengthList.add(Integer.parseInt(durationValue));
+				}
+				
+				else {
+					noteLengthList.add(0);
+					
+				}
 			}
 
 			if(noteInstrumID.item(j) != null) {
 
 				Element noteinstrumIDElement = (Element) noteInstrumID.item(j);    
 				String  instrumIDText = noteinstrumIDElement.getAttribute("id");
-				detials.add("Instrument ID: " +  instrumIDText);
+				System.out.println("Instrument ID: " +  instrumIDText);
 				noteInstrumentIDList.add(instrumIDText);
 			}
 
@@ -334,7 +348,7 @@ public class DrumParser {
 
 				Element voice = (Element) voices.item(j);    
 				String  voiceValue = voice.getTextContent();
-				detials.add("Voice: " +  voiceValue);
+				System.out.println("Voice: " +  voiceValue);
 
 			}
 
@@ -342,42 +356,45 @@ public class DrumParser {
 
 				Element type = (Element) types.item(j);    
 				String  typeValue = type.getTextContent();
-				detials.add("Type: " +  typeValue);
+				System.out.println("Type: " +  typeValue);
 			}
 
 			if(stems.item(j) != null) {
 
 				Element stem = (Element) stems.item(j);    
 				String  stemValue = stem.getTextContent();
-				detials.add("Stem: " +  stemValue);
+				System.out.println("Stem: " +  stemValue);
 				stemList.add(stemValue);
 			}
 
 			if(hasNoteHead) {
-				detials.add("Note Head: " +  noteHeadExistList[noteHeadExistsCounter]);
+				System.out.println("Note Head: " +  noteHeadExistList[noteHeadExistsCounter]);
 				noteHeadList.add(noteHeadExistList[noteHeadExistsCounter]);
 				noteHeadExistsCounter++;
 			}
 			else {
-				detials.add("Note Head: non" );
+				System.out.println("Note Head: non" );
 				noteHeadList.add("non");
 
 
 			}
+			
+			
 
-			detials.add("Note: " + note);
+			System.out.println("Note: " + note);
 			notesList.add(note);
-			detials.add("--------------------");		
+			System.out.println("--------------------");		
 		}
 
-		detials.add("");
-		detials.add("Notes: " + notesList);
-		detials.add("Chords: " + chordList);
-		detials.add("Note Heads: " + noteHeadList);
-		detials.add("Notes Length: " + noteLengthList);
-		detials.add("Stems: " + stemList);
-		detials.add("Note Instrument ID: " + noteInstrumentIDList);
-		detials.add("");
+		System.out.println("");
+		System.out.println("Notes: " + notesList);
+		System.out.println("Chords: " + chordList);
+		System.out.println("Note Heads: " + noteHeadList);
+		System.out.println("Notes Length: " + noteLengthList);
+		System.out.println("Stems: " + stemList);
+		System.out.println("Note Instrument ID: " + noteInstrumentIDList);
+		System.out.println("");
+		
 
 		for(int i = 0; i< nNPM.size(); i++) {
 			if(i != 0) {

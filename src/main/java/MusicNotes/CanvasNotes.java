@@ -586,7 +586,7 @@ public class CanvasNotes {
 
 		int counter=0;  // For tracking when to connect 4 notes together.
 
-		for(int i = 0; i < notesList.size(); i++) {
+		for(int i = 0; i < notesLengthList.size(); i++) {
 
 			if(notesPerMeasure.get(nNPMCounter) == i) {
 
