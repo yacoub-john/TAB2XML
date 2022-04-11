@@ -124,7 +124,7 @@ public class GuitarParser {
 		Element staffLine = (Element) staffLines.item(0);    
 		String  NOST = staffLine.getTextContent();
 
-		System.out.println();
+		
 		System.out.println("*********************");
 		System.out.println("Number of staff Lines" + ": " + NOST);
 		System.out.println("Staff detals: ");
@@ -151,11 +151,11 @@ public class GuitarParser {
 		}
 
 		System.out.println("*********************");
-		System.out.println();
+	
 
 		NodeList notes = doc.getElementsByTagName("note");
 		System.out.println("Amount of notes is: " + notes.getLength());
-		System.out.println();
+	
 
 		NodeList steps =  doc.getElementsByTagName("step");
 		NodeList alters = doc.getElementsByTagName("alter");
@@ -201,6 +201,8 @@ public class GuitarParser {
 
 			boolean hastie = false;
 			int numTie = 0;
+			
+			boolean hasDuration = false;
 
 
 
@@ -209,6 +211,7 @@ public class GuitarParser {
 
 			boolean hasChord = false;
 			boolean hasAlter = false;
+			
 
 			String NOS = "";
 			String POS = "";
@@ -365,6 +368,12 @@ public class GuitarParser {
 							numTie ++;
 
 
+						}
+						
+						else if(notation.item(l).getNodeName().equals("duration")) {
+							
+							hasDuration=true;
+							
 						}
 					}
 				}
@@ -626,7 +635,15 @@ public class GuitarParser {
 				Element type = (Element) types.item(j);    
 				String  typeValue = type.getTextContent();
 				System.out.println("Type: " +  typeValue);
+				
+				if (hasDuration) {
 				noteLengthList.add(typeValue);
+				}
+				
+				else {
+					noteLengthList.add("0");
+					
+				}
 
 				/*Duration 		Character
 				 * whole 	   		w
@@ -703,41 +720,32 @@ public class GuitarParser {
 
 		}
 
-		//				System.out.println(numOfSlur);
-		//				System.out.println(slurNumber);
-		//				System.out.println(slurType);
-		//				System.out.println(slurPlacement);
-		//				System.out.println(slursN);
-		//				System.out.println(slursT);
-		//				System.out.println(slursP);
-		//		
-		//				System.out.println("--------------------");
-		//		
-		//				System.out.println(pullOffNumber);
-		//				System.out.println(pullOffType);
-		//		
-		//				System.out.println(pullN);
-		//				System.out.println(pullT);
-		//				
-		//				System.out.println("--------------------");
-		//		//		
-		//				System.out.println(actNotes);
-		//				System.out.println(nomNotes);
-		//				System.out.println(actualNotesL);
-		//				System.out.println(normalNotesL);
+						System.out.println(numOfSlur + "" );
+						System.out.println(slurNumber + "" );
+						System.out.println(slurType + "" );
+						System.out.println(slurPlacement + "" );
+						
+				
+						System.out.println("--------------------");
+				
+						System.out.println(pullOffNumber + "" );
+						System.out.println(pullOffType + "" );
+				
+					
+						
+						System.out.println("--------------------");
+		
+						
+						System.out.println(actualNotesL + "" );
+						System.out.println(normalNotesL + "" );
 
 
-		//		System.out.println(bendExist);
-		//		System.out.println(bendsL);
+				System.out.println(bendExist + "" );
+				System.out.println(bendsL + "" );
 
 
-		System.out.println(NumOfTiesL);
-		System.out.println(tiesL);
-		System.out.println(tieExist);
-
-
-
-
+		System.out.println(NumOfTiesL + "" );
+		System.out.println(tiesL + "" );
 
 		for(int i = 0; i< nNPM.size(); i++) {
 			if(i != 0) {

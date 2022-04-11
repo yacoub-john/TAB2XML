@@ -257,6 +257,8 @@ public class DrumParser {
 
 
 		for(int j = 0; j < notes.getLength(); j++) {
+			
+			boolean hasDuration = false;
 
 
 			NodeList singleNote = (NodeList) notes.item(j);		
@@ -274,6 +276,10 @@ public class DrumParser {
 
 				if(singleNoteElement.getNodeName().equals("notehead")) {
 					hasNoteHead = true;
+				}
+				
+				if(singleNoteElement.getNodeName().equals("duration")) {
+					hasDuration =true;
 				}
 
 
@@ -318,7 +324,15 @@ public class DrumParser {
 				Element duration = (Element) durations.item(j);    
 				String  durationValue = duration.getTextContent();
 				System.out.println("Duration: " +  durationValue);
+	
+				if (hasDuration) {
 				noteLengthList.add(Integer.parseInt(durationValue));
+				}
+				
+				else {
+					noteLengthList.add(0);
+					
+				}
 			}
 
 			if(noteInstrumID.item(j) != null) {
@@ -363,6 +377,8 @@ public class DrumParser {
 
 
 			}
+			
+			
 
 			System.out.println("Note: " + note);
 			notesList.add(note);
@@ -377,6 +393,7 @@ public class DrumParser {
 		System.out.println("Stems: " + stemList);
 		System.out.println("Note Instrument ID: " + noteInstrumentIDList);
 		System.out.println("");
+
 
 		for(int i = 0; i< nNPM.size(); i++) {
 			if(i != 0) {
