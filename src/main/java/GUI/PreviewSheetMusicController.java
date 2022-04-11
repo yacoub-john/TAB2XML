@@ -157,11 +157,27 @@ public class PreviewSheetMusicController extends Application{
 				}
 		
 				else if(Parser.XMLParser.instrument.equals("Drumset")) {
+				if(musicgoto != "") {
+					if(seqMang.getTickPosition() == seqMang.getTickLength()) {
 
+						Player player = new Player();
+//						Parser.DrumParser.drumTest.playNotes();
+						Sequence s = player.getSequence(musicgoto);
+						try {
+							seqMang.setSequence(s);
+						} catch (InvalidMidiDataException e) {
+							e.printStackTrace();
+						}
+						seqMang.setTickPosition(0);
+						playing=false;
+					}
+				}
+				else {
 					if(seqMang.getTickPosition() == seqMang.getTickLength()) {
 
 						Player player = new Player();
 						Parser.DrumParser.drumTest.playNotes();
+						System.out.println("Giving: " + Parser.DrumParser.drumTest.total);
 						Sequence s = player.getSequence(Parser.DrumParser.drumTest.total);
 						try {
 							seqMang.setSequence(s);
@@ -171,9 +187,12 @@ public class PreviewSheetMusicController extends Application{
 						seqMang.setTickPosition(0);
 						playing=false;
 					}
-
-
+					
+					
 				}
+				}
+
+				
 				
 				if(!playing) {
 					seqMang.start();
@@ -277,6 +296,7 @@ public class PreviewSheetMusicController extends Application{
 
 	@FXML
 	void handleGotoMeasure(ActionEvent event) {
+		if(Parser.XMLParser.instrument.equals("Guitar")) {
 	
 		Parser.GuitarParser.jfugueTester.playNotes();
 		String playn= Parser.GuitarParser.jfugueTester.total;
@@ -293,7 +313,30 @@ public class PreviewSheetMusicController extends Application{
 		System.out.println("a"+complete);
 		
 		musicgoto=complete;
+		}
 		
+		else  if(Parser.XMLParser.instrument.equals("Drumset")) { {
+			
+			Parser.DrumParser.drumTest.playNotes();
+			String playn= Parser.DrumParser.drumTest.total;
+			String instr=playn.substring(0,7);
+			
+			String measures =playn.substring(7,playn.length()-1);
+		
+		
+			String measureValueText=gotoMeasureField.getText();
+			int count= Integer.parseInt(measureValueText);
+			
+			int index = nthOccurrence(measures, "|", count);
+			String complete = instr + measures.substring(index+1,measures.length()-1);
+			System.out.println("a"+complete);
+			
+			musicgoto=complete;
+			
+		}
+		
+		}
+	}
 				
 //				for(int i=0;i<getCharAt;i++) {
 //					
@@ -301,7 +344,7 @@ public class PreviewSheetMusicController extends Application{
 		
 			
 
-	}
+	
 
 	public static int nthOccurrence(String str1, String str2, int n) {
 		 
