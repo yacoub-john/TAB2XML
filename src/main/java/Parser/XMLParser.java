@@ -91,6 +91,8 @@ public class XMLParser {
 
 
 		for(int i = 0; i < measures.getLength(); i++) {
+			
+			int temp2=0;
 
 			hasRepeat = false;
 			numMeasures=0;
@@ -131,6 +133,7 @@ public class XMLParser {
 					//					count++;
 					
 					int temp=count;
+					temp2=count;
 
 					while(repD.get(temp).equals("forward")) {
 
@@ -143,7 +146,18 @@ public class XMLParser {
 
 					while(repD.get(count).equals("forward")) {
 
-						repeatNum.add(repN.get(count+count2));
+						repeatNum.add(repN.get(temp2+count2));
+					   count++;
+					
+
+
+					}
+					
+					count=temp2;
+					
+					while(repD.get(count).equals("forward")) {
+
+				
 						repeatDirection.add(repD.get(count));
 						count++;
 					
@@ -176,8 +190,8 @@ public class XMLParser {
 			
 		}
 		
-		details.add(repeatNum + "");
-		details.add(repeatDirection + "");
+		details.add("Repeat number is: " +repeatNum + "");
+		details.add("Repeat direction is: " +repeatDirection + "");
 		
 
 
