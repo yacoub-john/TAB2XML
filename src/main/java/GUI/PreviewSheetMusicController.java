@@ -191,7 +191,7 @@ public class PreviewSheetMusicController extends Application{
 
 		if(playing) {
 			seqMang.stop();
-			canvasNote.t1.run();;
+			canvasNote.t1.stop();
 			havePlayed=true;
 			playing=false;
 		}
