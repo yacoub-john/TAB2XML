@@ -90,7 +90,7 @@ public class GuitarParser {
 			NodeList divisions  =  doc.getElementsByTagName("divisions");
 			Element division = (Element) divisions.item(i);    
 			String NOD = division.getTextContent();
-			System.out.println("Number of divisions in measure " + (i + 1) + ": " + NOD);
+			details.add("Number of divisions in measure " + (i + 1) + ": " + NOD);
 
 
 			String NOF = "";
@@ -100,7 +100,7 @@ public class GuitarParser {
 
 				Element fifth = (Element) fifths.item(i);    
 				NOF = fifth.getTextContent();
-				System.out.println("Fifth of measure " + ( i+1) + ": " + NOF);
+				details.add("Fifth of measure " + ( i+1) + ": " + NOF);
 			}
 
 			NodeList signs =  doc.getElementsByTagName("sign");
@@ -109,7 +109,7 @@ public class GuitarParser {
 			if ( signs.item(i) != null ) {
 				Element sign = (Element) signs.item(i);    
 				NOS = sign.getTextContent();
-				System.out.println("Sign: " + NOS);
+				details.add("Sign: " + NOS);
 			}
 
 
@@ -125,9 +125,9 @@ public class GuitarParser {
 		String  NOST = staffLine.getTextContent();
 
 		
-		System.out.println("*********************");
-		System.out.println("Number of staff Lines" + ": " + NOST);
-		System.out.println("Staff detals: ");
+		details.add("*********************");
+		details.add("Number of staff Lines" + ": " + NOST);
+		details.add("Staff detals: ");
 
 		for (int k = 0; k < tuningSteps.getLength(); k++) {
 
@@ -142,19 +142,19 @@ public class GuitarParser {
 
 				int x = k + 1;
 
-				System.out.println("Line = " + x );
-				System.out.println("tuning-step: " +  NOTS);
-				System.out.println("tuning-octave: " +  NOTO);
+				details.add("Line = " + x );
+				details.add("tuning-step: " +  NOTS);
+				details.add("tuning-octave: " +  NOTO);
 
 			}
 
 		}
 
-		System.out.println("*********************");
+		details.add("*********************");
 	
 
 		NodeList notes = doc.getElementsByTagName("note");
-		System.out.println("Amount of notes is: " + notes.getLength());
+		details.add("Amount of notes is: " + notes.getLength());
 	
 
 		NodeList steps =  doc.getElementsByTagName("step");
@@ -231,9 +231,9 @@ public class GuitarParser {
 						NOS = slur.getAttribute("number");
 						TOS = slur.getAttribute("type");
 						POS = slur.getAttribute("placement");
-						System.out.println("slur number is : " + NOS);
-						System.out.println("slur type is : " + TOS);
-						System.out.println("slur placement is : " + POS);
+						details.add("slur number is : " + NOS);
+						details.add("slur type is : " + TOS);
+						details.add("slur placement is : " + POS);
 
 						slursN.add(NOS);
 						slursT.add(TOS);
@@ -254,8 +254,8 @@ public class GuitarParser {
 						Element pullOff = (Element) pullOffs.item(x);    
 						String NOP = pullOff.getAttribute("number");
 						String TOP = pullOff.getAttribute("type");
-						System.out.println("pull-Off number is : " + NOP);
-						System.out.println("slur type is : " + TOP);
+						details.add("pull-Off number is : " + NOP);
+						details.add("slur type is : " + TOP);
 
 						pullN.add(NOP);
 						pullT.add(TOP);
@@ -386,7 +386,7 @@ public class GuitarParser {
 							for (int a=0;a<tech.getLength();a++) {
 								if(tech.item(a).getNodeName().equals("pull-off")) {
 
-									System.out.println("working");
+									details.add("working");
 
 									hasPullOff = true;
 									numPullOff++;
@@ -588,13 +588,13 @@ public class GuitarParser {
 
 			String note = "";
 
-			System.out.println("Note: " + (j+1));
+			details.add("Note: " + (j+1));
 
 			if(steps.item(j) != null) {
 
 				Element step = (Element) steps.item(j);    
 				String  stepValue= step.getTextContent();
-				System.out.println("Step: " +  stepValue);
+				details.add("Step: " +  stepValue);
 				note += stepValue;
 			}
 
@@ -605,13 +605,13 @@ public class GuitarParser {
 			if(hasAlter && alterList.get(j).equals("-1")) {
 				note += "b";
 			}
-			System.out.println("Alter: " +  alterList.get(j));
+			details.add("Alter: " +  alterList.get(j));
 
 			if(octaves.item(j) != null) {
 
 				Element octave = (Element) octaves.item(j);    
 				String  octaveValue = octave.getTextContent();
-				System.out.println("Octave: " +  octaveValue);
+				details.add("Octave: " +  octaveValue);
 				note += octaveValue;
 			}
 
@@ -619,14 +619,14 @@ public class GuitarParser {
 
 				Element duration = (Element) durations.item(j);    
 				String  durationValue = duration.getTextContent();
-				System.out.println("Duration: " +  durationValue);
+				details.add("Duration: " +  durationValue);
 			}
 
 			if(voices.item(j) != null) {
 
 				Element voice = (Element) voices.item(j);    
 				String  voiceValue = voice.getTextContent();
-				System.out.println("Voice: " +  voiceValue);
+				details.add("Voice: " +  voiceValue);
 
 			}
 
@@ -634,16 +634,9 @@ public class GuitarParser {
 
 				Element type = (Element) types.item(j);    
 				String  typeValue = type.getTextContent();
-				System.out.println("Type: " +  typeValue);
-				
-				if (hasDuration) {
+				details.add("Type: " +  typeValue);
 				noteLengthList.add(typeValue);
-				}
-				
-				else {
-					noteLengthList.add("0");
-					
-				}
+
 
 				/*Duration 		Character
 				 * whole 	   		w
@@ -698,7 +691,7 @@ public class GuitarParser {
 
 				Element string = (Element) strings.item(j);    
 				String  stringValue = string.getTextContent();
-				System.out.println("String: " +  stringValue);
+				details.add("String: " +  stringValue);
 				stringList.add(stringValue);
 
 			}
@@ -707,45 +700,45 @@ public class GuitarParser {
 
 				Element fret = (Element) frets.item(j);    
 				String  fretValue = fret.getTextContent();
-				System.out.println("Fret: " +  fretValue);
+				details.add("Fret: " +  fretValue);
 				fretList.add(fretValue);
 			}
 
 
 
 			notesList.add(note);
-			System.out.println("--------------------");
+			details.add("--------------------");
 
 
 
 		}
 
-						System.out.println(numOfSlur + "" );
-						System.out.println(slurNumber + "" );
-						System.out.println(slurType + "" );
-						System.out.println(slurPlacement + "" );
+						details.add(numOfSlur + "" );
+						details.add(slurNumber + "" );
+						details.add(slurType + "" );
+						details.add(slurPlacement + "" );
 						
 				
-						System.out.println("--------------------");
+						details.add("--------------------");
 				
-						System.out.println(pullOffNumber + "" );
-						System.out.println(pullOffType + "" );
+						details.add(pullOffNumber + "" );
+						details.add(pullOffType + "" );
 				
 					
 						
-						System.out.println("--------------------");
+						details.add("--------------------");
 		
 						
-						System.out.println(actualNotesL + "" );
-						System.out.println(normalNotesL + "" );
+						details.add(actualNotesL + "" );
+						details.add(normalNotesL + "" );
 
 
-				System.out.println(bendExist + "" );
-				System.out.println(bendsL + "" );
+				details.add(bendExist + "" );
+				details.add(bendsL + "" );
 
 
-		System.out.println(NumOfTiesL + "" );
-		System.out.println(tiesL + "" );
+		details.add(NumOfTiesL + "" );
+		details.add(tiesL + "" );
 
 		for(int i = 0; i< nNPM.size(); i++) {
 			if(i != 0) {

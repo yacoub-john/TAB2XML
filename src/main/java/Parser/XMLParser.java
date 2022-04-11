@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class XMLParser {
 
 	public static String instrument = "";
-	public ArrayList<Integer> nNPM = new ArrayList<Integer>();
+	public static ArrayList<Integer> nNPM = new ArrayList<Integer>();
 	public int numOfmeasures = 0;
 
 	public NodeList out = null;
@@ -35,6 +35,8 @@ public class XMLParser {
 
 
 	public void getXml(Document doc) {
+		
+		nNPM = new ArrayList<Integer>();
 		
 		 details = new ArrayList<String>();
 		 repeatNum = new ArrayList<String>();
@@ -72,7 +74,7 @@ public class XMLParser {
 
 			Element child = (Element) partNameList.item(i);    
 			String  st1 = child.getTextContent();
-			System.out.println("Part " + (i + 1)  + ": " + st1);
+			details.add("Part " + (i + 1)  + ": " + st1);
 
 			if(i == 0) {
 
@@ -83,7 +85,7 @@ public class XMLParser {
 
 
 		NodeList measures = doc.getElementsByTagName("measure"); 
-		System.out.println("Amount of Measures is: " + measures.getLength());
+		details.add("Amount of Measures is: " + measures.getLength());
 		numOfmeasures  = measures.getLength();
 
 
@@ -168,16 +170,14 @@ public class XMLParser {
 
 
 			}
-			System.out.println( "Number of notes in measure " + (i+1) + ": "+ numMeasures);
+			details.add( "Number of notes in measure " + (i+1) + ": "+ numMeasures);
 			nNPM.add(numMeasures);
 			
 			
 		}
-
-
-
-		System.out.println(repeatNum + "");
-		System.out.println(repeatDirection + "");
+		
+		details.add(repeatNum + "");
+		details.add(repeatDirection + "");
 		
 
 
