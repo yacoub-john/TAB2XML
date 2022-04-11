@@ -419,7 +419,6 @@ public class MainViewController extends Application {
         return task;
     }
     
-   
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setOnCloseRequest( event -> {
