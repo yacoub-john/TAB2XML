@@ -43,6 +43,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import utility.Range;
 import utility.Settings;
@@ -259,6 +260,19 @@ public class MainViewController extends Application {
 		stage.initModality(Modality.NONE);
 		stage.initOwner(MainApp.STAGE);
 		stage.setResizable(false);
+		
+		if(windowName.equals("Sheet Music")) {
+			stage.setResizable(false);
+			stage.setOnCloseRequest(e -> {
+				e.consume();
+				PreviewSheetMusicController.seqMang.stop();
+				if(PreviewSheetMusicController.canvasNote.t1.isAlive()) {
+					PreviewSheetMusicController.canvasNote.t1.stop();
+				}
+				stage.hide();
+			});
+		}
+		
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
@@ -405,17 +419,12 @@ public class MainViewController extends Application {
         return task;
     }
     
-    @Override
-    public  {
-    	
-    }
-    
+   
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setOnCloseRequest( event -> {
 			Platform.exit();
 			System.exit(0);
-
 		});
 	}
 }

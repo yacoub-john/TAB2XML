@@ -12,24 +12,77 @@ import PlayNotes.JfugueTest;
 
 public class GuitarParser {
 
-	public static ArrayList<String> notesList = new ArrayList<>();
-	public static ArrayList<String> alterList = new ArrayList<>();
-	public static ArrayList<Integer> chordList = new ArrayList<>();
-	public static ArrayList<String> fretList = new ArrayList<>();
-	public static ArrayList<String> stringList = new ArrayList<>();
-	public static ArrayList<String> noteLengthList = new ArrayList<>();
+	public ArrayList<String> notesList = new ArrayList<>();
+	public ArrayList<String> alterList = new ArrayList<>();
+	public ArrayList<Integer> chordList = new ArrayList<>();
+	public ArrayList<String> fretList = new ArrayList<>();
+	public ArrayList<String> stringList = new ArrayList<>();
+	public ArrayList<String> noteLengthList = new ArrayList<>();
+
+	public ArrayList<Integer> numOfSlur = new ArrayList<>();
+	public ArrayList<String> slurNumber = new ArrayList<>();
+	public ArrayList<String> slurType = new ArrayList<>();
+	public ArrayList<String> slurPlacement = new ArrayList<>();
+	public ArrayList<String> pullOffNumber = new ArrayList<>();
+	public ArrayList<String> pullOffType = new ArrayList<>();
+	public ArrayList<Integer> numberOfPullOff = new ArrayList<>();
+	public ArrayList<String> actualNotesL= new ArrayList<>();
+	public ArrayList<String> normalNotesL = new ArrayList<>();
+	public ArrayList<String> bendsL = new ArrayList<>();
+	public ArrayList<String> tiesL = new ArrayList<>();
+	public ArrayList<Integer> NumOfTiesL = new ArrayList<>();
+
+	public ArrayList<String> slursN = new ArrayList<>();
+	public ArrayList<String> slursT = new ArrayList<>();
+	public ArrayList<String> slursP = new ArrayList<>();
+	public ArrayList<String> pullT = new ArrayList<>();
+	public ArrayList<String> pullN = new ArrayList<>();
+	public ArrayList<String> actNotes = new ArrayList<>();
+	public ArrayList<String> nomNotes = new ArrayList<>();
+	public ArrayList<String> bendExist = new ArrayList<>();
+	public ArrayList<String> tieExist = new ArrayList<>();
+
+
+
 	public static JfugueTest jfugueTester = new JfugueTest();
+	int counter =0;
+	int count2 = 0;
+	int count3=0;
+	int count4=0;
+	int count5 =0;
+	int trying;
 
 
-
-	public void parseGuitar(ArrayList<String> detials,NodeList measures, ArrayList<Integer> nNPM, Document doc) {
-
+	public void parseGuitar(ArrayList<String> details, NodeList measures, ArrayList<Integer> nNPM, Document doc) {
 		notesList = new ArrayList<>();
 		alterList = new ArrayList<>();
 		chordList = new ArrayList<>();
 		fretList = new ArrayList<>();
 		stringList = new ArrayList<>();
 		noteLengthList = new ArrayList<>();
+
+		numOfSlur = new ArrayList<>();
+		slurNumber = new ArrayList<>();
+		slurType = new ArrayList<>();
+		slurPlacement = new ArrayList<>();
+		pullOffNumber = new ArrayList<>();
+		pullOffType = new ArrayList<>();
+		numberOfPullOff = new ArrayList<>();
+		actualNotesL= new ArrayList<>();
+		normalNotesL = new ArrayList<>();
+		bendsL = new ArrayList<>();
+		tiesL = new ArrayList<>();
+		NumOfTiesL = new ArrayList<>();
+
+		slursN = new ArrayList<>();
+		slursT = new ArrayList<>();
+		slursP = new ArrayList<>();
+		pullT = new ArrayList<>();
+		pullN = new ArrayList<>();
+		actNotes = new ArrayList<>();
+		nomNotes = new ArrayList<>();
+		bendExist = new ArrayList<>();
+		tieExist = new ArrayList<>();
 
 		for(int i = 0; i < measures.getLength(); i++) {
 
@@ -38,7 +91,6 @@ public class GuitarParser {
 			Element division = (Element) divisions.item(i);    
 			String NOD = division.getTextContent();
 			System.out.println("Number of divisions in measure " + (i + 1) + ": " + NOD);
-			detials.add("Number of divisions in measure " + (i + 1) + ": " + NOD);
 
 
 			String NOF = "";
@@ -49,8 +101,6 @@ public class GuitarParser {
 				Element fifth = (Element) fifths.item(i);    
 				NOF = fifth.getTextContent();
 				System.out.println("Fifth of measure " + ( i+1) + ": " + NOF);
-				detials.add("Fifth of measure " + ( i+1) + ": " + NOF);
-
 			}
 
 			NodeList signs =  doc.getElementsByTagName("sign");
@@ -60,8 +110,6 @@ public class GuitarParser {
 				Element sign = (Element) signs.item(i);    
 				NOS = sign.getTextContent();
 				System.out.println("Sign: " + NOS);
-				detials.add("Sign: " + NOS);
-
 			}
 
 
@@ -80,10 +128,6 @@ public class GuitarParser {
 		System.out.println("*********************");
 		System.out.println("Number of staff Lines" + ": " + NOST);
 		System.out.println("Staff detals: ");
-		detials.add("");
-		detials.add("*********************");
-		detials.add("Number of staff Lines" + ": " + NOST);
-		detials.add("Staff detals: ");
 
 		for (int k = 0; k < tuningSteps.getLength(); k++) {
 
@@ -101,9 +145,6 @@ public class GuitarParser {
 				System.out.println("Line = " + x );
 				System.out.println("tuning-step: " +  NOTS);
 				System.out.println("tuning-octave: " +  NOTO);
-				detials.add("Line = " + x );
-				detials.add("tuning-step: " +  NOTS);
-				detials.add("tuning-octave: " +  NOTO);
 
 			}
 
@@ -111,14 +152,10 @@ public class GuitarParser {
 
 		System.out.println("*********************");
 		System.out.println();
-		detials.add("*********************");
-		detials.add("");
 
 		NodeList notes = doc.getElementsByTagName("note");
 		System.out.println("Amount of notes is: " + notes.getLength());
 		System.out.println();
-		detials.add("Amount of notes is: " + notes.getLength());
-		detials.add("");
 
 		NodeList steps =  doc.getElementsByTagName("step");
 		NodeList alters = doc.getElementsByTagName("alter");
@@ -128,6 +165,15 @@ public class GuitarParser {
 		NodeList types = doc.getElementsByTagName("type");
 		NodeList strings= doc.getElementsByTagName("string");
 		NodeList frets = doc.getElementsByTagName("fret");
+
+		NodeList slurs = doc.getElementsByTagName("slur");
+		NodeList pullOffs = doc.getElementsByTagName("pull-off");
+
+		NodeList actualNotes = doc.getElementsByTagName("actual-notes");
+		NodeList normalNotes = doc.getElementsByTagName("normal-notes");
+
+		NodeList bends = doc.getElementsByTagName("bend-alter");
+		NodeList ties = doc.getElementsByTagName("tied");
 
 
 		String[] alterExistList = new String[alters.getLength()];
@@ -143,12 +189,146 @@ public class GuitarParser {
 
 		for(int j = 0; j < notes.getLength(); j++) {
 
+			int noslurs =0;
+			boolean hasSlurs = false;
+
+			int numPullOff =0;
+			boolean hasPullOff = false;
+
+			boolean hasActualNotes = false;
+
+			boolean hasBend = false;
+
+			boolean hastie = false;
+			int numTie = 0;
+
+
 
 			NodeList singleNote = (NodeList) notes.item(j);
 			NodeList technical = (NodeList) singleNote.item(1); //1: Technical  3: Number of Notes 
 
 			boolean hasChord = false;
 			boolean hasAlter = false;
+
+			String NOS = "";
+			String POS = "";
+			String TOS = "";
+
+
+
+
+			for (int z =0;z<slurs.getLength();z++) {
+
+				if (j == 0) {
+
+
+					if (slurs.item(z) != null) {
+
+						Element slur = (Element) slurs.item(z);    
+						NOS = slur.getAttribute("number");
+						TOS = slur.getAttribute("type");
+						POS = slur.getAttribute("placement");
+						System.out.println("slur number is : " + NOS);
+						System.out.println("slur type is : " + TOS);
+						System.out.println("slur placement is : " + POS);
+
+						slursN.add(NOS);
+						slursT.add(TOS);
+						slursP.add(POS);
+
+					}
+				}
+
+			}
+
+			for (int x =0;x<pullOffs.getLength();x++) {
+
+				if (j == 0) {
+
+
+					if (pullOffs.item(x) != null) {
+
+						Element pullOff = (Element) pullOffs.item(x);    
+						String NOP = pullOff.getAttribute("number");
+						String TOP = pullOff.getAttribute("type");
+						System.out.println("pull-Off number is : " + NOP);
+						System.out.println("slur type is : " + TOP);
+
+						pullN.add(NOP);
+						pullT.add(TOP);
+
+
+
+					}
+				}
+
+			}
+
+			for (int x =0;x<ties.getLength();x++) {
+
+				if (j == 0) {
+
+
+					if (ties.item(x) != null) {
+
+						Element tie = (Element) ties.item(x);    
+						String NOT = tie.getAttribute("type");
+						tieExist.add(NOT);
+
+
+
+
+
+					}
+				}
+
+			}
+
+
+			for (int h =0;h<actualNotes.getLength();h++) {
+
+				if (j == 0) {
+
+
+					if (actualNotes.item(h) != null) {
+
+						Element actualNote = (Element) actualNotes.item(h);    
+						String NOA = actualNote.getTextContent();	
+						actNotes.add(NOA);
+
+					}
+
+
+					if (normalNotes.item(h) != null) {
+
+						Element normalNote = (Element) normalNotes.item(h);    
+						String NON = normalNote.getTextContent();	
+						nomNotes.add(NON);
+
+
+					}
+				}
+
+			}
+
+			for (int f =0;f<bends.getLength();f++) {
+
+				if (j == 0) {
+
+
+					if (bends.item(f) != null) {
+
+						Element bend = (Element) bends.item(f);    
+						String NOB = bend.getTextContent();
+						bendExist.add(NOB);
+
+
+					}
+				}
+
+			}
+
+
 
 			//Checks if the current note has a chord or attribute 
 
@@ -159,7 +339,198 @@ public class GuitarParser {
 				if(singleNoteElement.getNodeName().equals("chord")) {
 					hasChord = true;
 				}
+
+
+				if(singleNoteElement.getNodeName().equals("time-modification")) {
+
+					hasActualNotes = true;
+
+
+				}
+
+
+				if(singleNoteElement.getNodeName().equals("notations")) {
+					NodeList notation = (NodeList)singleNoteElement;
+					for(int l=0; l<notation.getLength(); l++) {
+						if(notation.item(l).getNodeName().equals("slur")) {
+							hasSlurs = true;
+							noslurs++;
+
+
+						}
+
+						else if (notation.item(l).getNodeName().equals("tied")) {
+
+							hastie = true;
+							numTie ++;
+
+
+						}
+					}
+				}
+
+				if (singleNoteElement.getNodeName().equals("notations")) {
+					NodeList notation = (NodeList)singleNoteElement;
+					for (int l=0;l<notation.getLength();l++) {
+						if(notation.item(l).getNodeName().equals("technical")) {
+							NodeList tech = (NodeList) notation.item(l);
+							for (int a=0;a<tech.getLength();a++) {
+								if(tech.item(a).getNodeName().equals("pull-off")) {
+
+									System.out.println("working");
+
+									hasPullOff = true;
+									numPullOff++;
+
+								}
+
+								else if (tech.item(a).getNodeName().equals("bend")) {
+
+
+									hasBend = true;
+
+								}
+
+
+							}		
+
+						}		
+					}	
+
+				}
+
+			}	
+
+			if(hasSlurs) {
+
+				numOfSlur.add(noslurs);
+				slurNumber.add(slursN.get(counter));
+				slurType.add(slursT.get(counter));
+				slurPlacement.add(slursP.get(counter));
+
+				counter++;
+
+				if (noslurs > 1) {
+
+					for (int y=0;y<noslurs-1;y++) {
+
+						slurNumber.add(slursN.get(counter));
+						slurType.add(slursT.get(counter));
+						slurPlacement.add(slursP.get(counter));
+
+						counter++;
+
+
+
+					}
+
+
+
+
+				}
+
+
+
+
 			}
+
+			else {
+
+				numOfSlur.add(0);
+				slurNumber.add("NAN");
+				slurType.add("NAN");
+				slurPlacement.add("NAN");
+
+			}
+
+
+			if (hasPullOff) {
+
+				numberOfPullOff.add(numPullOff);
+				pullOffNumber.add(pullN.get(count2));
+				pullOffType.add(pullT.get(count2));
+				count2++;
+
+				if (numPullOff > 1) {
+
+					for (int y=0;y<numPullOff-1;y++) {	
+						pullOffNumber.add(pullN.get(count2));
+						pullOffType.add(pullT.get(count2));
+						count2++;
+
+
+
+					}
+				}
+
+			}
+
+			else {
+
+				pullOffNumber.add("0");
+				pullOffType.add("NAN");	
+
+
+			}
+
+			if(hasActualNotes) {
+
+				actualNotesL.add(actNotes.get(count3));
+				normalNotesL.add(nomNotes.get(count3));
+				count3++;
+
+
+
+			}
+
+			else {
+				actualNotesL.add("NAN");
+				normalNotesL.add("NAN");
+
+			}
+
+
+			if(hastie) {
+
+
+				tiesL.add(tieExist.get(count5));
+				NumOfTiesL.add(numTie);
+				count5++;
+
+				if (numTie > 1) {
+
+					for (int y=0;y<noslurs-1;y++) {
+
+						tiesL.add(tieExist.get(count5));
+						count5++;
+
+					}
+				}
+
+
+
+
+			}
+
+			else {
+
+				tiesL.add("NAN");
+				NumOfTiesL.add(0);
+
+
+			}
+
+			if (hasBend) {
+
+				bendsL.add(bendExist.get(count4));
+				count4++;	
+			}
+
+			else {
+
+				bendsL.add("0");
+			}
+
 
 			if(hasChord) {
 				chordList.add(0);
@@ -209,14 +580,12 @@ public class GuitarParser {
 			String note = "";
 
 			System.out.println("Note: " + (j+1));
-			detials.add("Note: " + (j+1));
 
 			if(steps.item(j) != null) {
 
 				Element step = (Element) steps.item(j);    
 				String  stepValue= step.getTextContent();
 				System.out.println("Step: " +  stepValue);
-				detials.add("Step: " +  stepValue);
 				note += stepValue;
 			}
 
@@ -228,15 +597,12 @@ public class GuitarParser {
 				note += "b";
 			}
 			System.out.println("Alter: " +  alterList.get(j));
-			detials.add("Alter: " +  alterList.get(j));
-
 
 			if(octaves.item(j) != null) {
 
 				Element octave = (Element) octaves.item(j);    
 				String  octaveValue = octave.getTextContent();
 				System.out.println("Octave: " +  octaveValue);
-				detials.add("Octave: " +  octaveValue);
 				note += octaveValue;
 			}
 
@@ -245,7 +611,6 @@ public class GuitarParser {
 				Element duration = (Element) durations.item(j);    
 				String  durationValue = duration.getTextContent();
 				System.out.println("Duration: " +  durationValue);
-				detials.add("Duration: " +  durationValue);
 			}
 
 			if(voices.item(j) != null) {
@@ -253,7 +618,7 @@ public class GuitarParser {
 				Element voice = (Element) voices.item(j);    
 				String  voiceValue = voice.getTextContent();
 				System.out.println("Voice: " +  voiceValue);
-				detials.add("Voice: " +  voiceValue);
+
 			}
 
 			if(types.item(j) != null) {
@@ -261,7 +626,6 @@ public class GuitarParser {
 				Element type = (Element) types.item(j);    
 				String  typeValue = type.getTextContent();
 				System.out.println("Type: " +  typeValue);
-				detials.add("Type: " +  typeValue);
 				noteLengthList.add(typeValue);
 
 				/*Duration 		Character
@@ -318,7 +682,6 @@ public class GuitarParser {
 				Element string = (Element) strings.item(j);    
 				String  stringValue = string.getTextContent();
 				System.out.println("String: " +  stringValue);
-				detials.add("String: " +  stringValue);
 				stringList.add(stringValue);
 
 			}
@@ -328,23 +691,60 @@ public class GuitarParser {
 				Element fret = (Element) frets.item(j);    
 				String  fretValue = fret.getTextContent();
 				System.out.println("Fret: " +  fretValue);
-				detials.add("Fret: " +  fretValue);
 				fretList.add(fretValue);
 			}
 
+
+
 			notesList.add(note);
 			System.out.println("--------------------");
-			detials.add("--------------------");
 
 
 
 		}
+
+		//				System.out.println(numOfSlur);
+		//				System.out.println(slurNumber);
+		//				System.out.println(slurType);
+		//				System.out.println(slurPlacement);
+		//				System.out.println(slursN);
+		//				System.out.println(slursT);
+		//				System.out.println(slursP);
+		//		
+		//				System.out.println("--------------------");
+		//		
+		//				System.out.println(pullOffNumber);
+		//				System.out.println(pullOffType);
+		//		
+		//				System.out.println(pullN);
+		//				System.out.println(pullT);
+		//				
+		//				System.out.println("--------------------");
+		//		//		
+		//				System.out.println(actNotes);
+		//				System.out.println(nomNotes);
+		//				System.out.println(actualNotesL);
+		//				System.out.println(normalNotesL);
+
+
+		//		System.out.println(bendExist);
+		//		System.out.println(bendsL);
+
+
+		System.out.println(NumOfTiesL);
+		System.out.println(tiesL);
+		System.out.println(tieExist);
+
+
+
+
 
 		for(int i = 0; i< nNPM.size(); i++) {
 			if(i != 0) {
 				nNPM.set(i, (nNPM.get(i) + nNPM.get(i-1)));
 			}
 		}
+
 
 		jfugueTester.getNotes(notesList, nNPM, stringList, fretList, chordList, alterList);
 		PreviewSheetMusicController.canvasNote.getNotesGuitar("Guitar",stringList, fretList, nNPM, alterList, noteLengthList, chordList);

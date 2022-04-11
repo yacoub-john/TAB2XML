@@ -58,12 +58,13 @@ public class CanvasNotes {
 	private Canvas canvas;
 	private ScrollPane scrollPane;
 	private AnchorPane anchorPane;
-
+	public int measure = 0;
+	public Thread t1 = new Thread();
 
 	public int lineSpacing = 12;
 	public int noteSpacing = 40;
 	public int noteSize = 40;
-	public String font = "Arial";
+	public String fontRecieved = "Arial";
 
 	private int nNPMCounter = 0;
 	private int currentX = 0;
@@ -84,6 +85,7 @@ public class CanvasNotes {
 		stringList = recievedString;
 		fretList = recievedFret;
 		notesPerMeasure = nNPM;
+		noteSize = 10;
 		//alterList = recievedAlter;
 		noteLenghtList = noteLengthRecieved;
 		chordList = recievedChord;
@@ -94,12 +96,12 @@ public class CanvasNotes {
 		instrumentName = recievedInstrument;
 		notesPerMeasure = nNPMrecieved;
 		notesList = notesRecieved;
+		noteSize = 70;
 		chordList = chordsRecieved;
 		noteHeadList = noteHeadsRecieved;
 		notesLengthList = noteLengthRecieved;
 		stemList = stemRecieved;
 		noteInstrumentIDList = noteInstrumIDRecieved;
-
 	}
 
 
@@ -125,12 +127,11 @@ public class CanvasNotes {
 
 		if(instrumentName.equals("Guitar")) {
 			int num = 40;
-			lineSpacing = 20;
 			num = Math.abs(40 - lineSpacing);
 			currentY = lineSpacing+num;
 		}
 		else {
-			currentY=75;
+			currentY=lineSpacing+60;
 		}
 		nNPMCounter = 0;
 
@@ -148,6 +149,12 @@ public class CanvasNotes {
 
 		// Sheet Music Type
 		printType(graphics_context);
+		
+		//Measure
+		Font font = new Font(fontRecieved, 10);
+		graphics_context.setFont(font);
+		graphics_context.fillText("1",50,30);
+
 
 		//		graphics_context.setStroke(Color.WHITE);
 		//		graphics_context.strokeLine(100, 85, 110, 85);
@@ -164,11 +171,9 @@ public class CanvasNotes {
 		// Notes
 
 		if(instrumentName.equals("Guitar")) {
-			noteSize = 10;
 			printNotesGuitar(graphics_context);
 		}
 		else if (instrumentName.equals("Drumset")) {
-			noteSize = 70;
 			printNotesDrums(graphics_context);
 
 		}
@@ -191,12 +196,12 @@ public class CanvasNotes {
 			graphics_context.setFill(Color.BLACK);
 			//graphics_context.fillText("Guitar",50,currentY-15);
 
-			font = new Font("Arial Rounded MT Bold", 28);
+			font = new Font(fontRecieved, 1.4*lineSpacing);
 			graphics_context.setFont(font);
 			graphics_context.setFill(Color.BLACK);
-			graphics_context.fillText("T",55,currentY+28);
-			graphics_context.fillText("A",54,currentY+52);
-			graphics_context.fillText("B",54,currentY+75);
+			graphics_context.fillText("T",55,currentY+1.7*lineSpacing);
+			graphics_context.fillText("A",54,currentY+3*lineSpacing);
+			graphics_context.fillText("B",54,currentY+4.4*lineSpacing);
 		}
 
 		else if (instrumentName.equals("Drumset")) {
@@ -270,17 +275,17 @@ public class CanvasNotes {
 
 	// Prints Guitar Notes
 	public void printNotesGuitar(GraphicsContext graphics_context) {
-
-		Font fontsize = new Font("Arial", noteSize);
+		nNPMCounter = 0;
+		Font fontsize = new Font(fontRecieved, noteSize);
 		graphics_context.setFont(fontsize);
 
 		for(int i = 0; i < fretList.size(); i++) {
 
-			if(notesPerMeasure.get(nNPMCounter) == i) {
-
+			if(notesPerMeasure.size()-1 >= nNPMCounter && notesPerMeasure.get(nNPMCounter) == i) {
+				
 				printVertical(graphics_context);
 				nNPMCounter ++;
-				currentX += 30;
+				currentX += noteSpacing-10;
 			}
 
 			if (currentX+30>=canvasWidth-50) {
@@ -292,8 +297,11 @@ public class CanvasNotes {
 				}
 
 				currentX=(int) (canvasWidth-50);
-				printVertical(graphics_context);
+				//printVertical(graphics_context);
 				currentY+=169;
+				Font font = new Font(fontRecieved, 10);
+				graphics_context.setFont(font);
+				graphics_context.fillText(nNPMCounter+"",50,currentY-20);
 				printHorizontalLines(graphics_context);
 				currentX=50;
 			}
@@ -446,7 +454,7 @@ public class CanvasNotes {
 				graphics_context.setLineWidth(1.1);
 				graphics_context.strokeLine(currentX+4, ((currentY+5*lineSpacing)+10), currentX+4, ((currentY+5*lineSpacing)+30));
 
-				if(i+1 < noteLenghtList.size() && noteLenghtList.get(i+1).equals("eighth") && (currentX+80<canvasWidth-50) && notesPerMeasure.get(nNPMCounter) != i+1) {
+				if(i+1 < noteLenghtList.size() && noteLenghtList.get(i+1).equals("eighth") && (currentX+80<canvasWidth-50) && notesPerMeasure.size()-1 >= nNPMCounter && notesPerMeasure.get(nNPMCounter) != i+1) {
 					// Horizontal Line under the note
 					graphics_context.setStroke(Color.BLACK);
 					graphics_context.setLineWidth(3);
@@ -487,7 +495,13 @@ public class CanvasNotes {
 
 		currentX = (int) (canvasWidth-50);
 		printVertical(graphics_context);
-		Parser.GuitarParser.jfugueTester.getCanvas(graphics_context, xPlacementsG, yPlacementsG);
+		if(measure == 0) {
+			Font font = new Font("Arial Bold", 20);
+			graphics_context.setFill(Color.RED);
+			graphics_context.setFont(font);
+			graphics_context.fillText("\u2304", xPlacementsG.get(0)-3,  yPlacementsG.get(0)-20); //
+		}
+		//Parser.GuitarParser.jfugueTester.getCanvas(graphics_context, xPlacementsG, yPlacementsG);
 	}
 
 	public String getNoteShape(int duration) {
@@ -578,7 +592,7 @@ public class CanvasNotes {
 
 				printVertical(graphics_context);
 				nNPMCounter ++;
-				currentX += 30;
+				currentX += noteSpacing-10;
 			}
 
 
@@ -590,7 +604,7 @@ public class CanvasNotes {
 
 			if (!noteHeadList.get(i).equals("non") && !notesList.get(i).equals("5A")){
 
-				font = new Font("Arial Rounded MT Bold", 60);
+				font = new Font(fontRecieved, 60);
 				graphics_context.setFont(font);
 
 				if(notesLengthList.get(i)==32) {
@@ -601,7 +615,7 @@ public class CanvasNotes {
 				}
 
 				// adding vertical line
-				graphics_context.setLineWidth(3);
+				graphics_context.setLineWidth(noteSize-67);
 				graphics_context.strokeLine(currentX+20, currentY-13 ,currentX+20,  currentY-41);
 
 				xPlacementsD.add(currentX);
@@ -620,7 +634,7 @@ public class CanvasNotes {
 
 
 					// adding vertical line
-					graphics_context.setLineWidth(3);
+					graphics_context.setLineWidth(noteSize-67);
 					graphics_context.strokeLine(currentX+20, currentY+10 ,currentX+20,  currentY-41);
 
 
@@ -638,7 +652,7 @@ public class CanvasNotes {
 					graphics_context.fillText(getNoteShape(notesLengthList.get(i)), currentX, currentY+12); 
 
 					// adding vertical line
-					graphics_context.setLineWidth(3);
+					graphics_context.setLineWidth(noteSize-67);
 					graphics_context.strokeLine(currentX+20, currentY+5 ,currentX+20,  currentY-41);
 
 
@@ -657,7 +671,7 @@ public class CanvasNotes {
 					graphics_context.setFill(Color.BLACK); //Note shape is from the duration
 					graphics_context.fillText(getNoteShape(notesLengthList.get(i)), currentX, currentY+48); 
 					// adding vertical line
-					graphics_context.setLineWidth(3);
+					graphics_context.setLineWidth(noteSize-67);
 					graphics_context.strokeLine(currentX+20, currentY ,currentX+20,  currentY-41);
 
 
@@ -674,7 +688,7 @@ public class CanvasNotes {
 					graphics_context.fillText(getNoteShape(notesLengthList.get(i)), currentX, currentY+5); 
 
 					// adding vertical line
-					graphics_context.setLineWidth(3);
+					graphics_context.setLineWidth(noteSize-67);
 					graphics_context.strokeLine(currentX+20, currentY+5 ,currentX+20,  currentY-41);
 
 
@@ -696,7 +710,7 @@ public class CanvasNotes {
 
 
 				// adding vertical line
-				graphics_context.setLineWidth(3);
+				graphics_context.setLineWidth(noteSize-67);
 				graphics_context.strokeLine(currentX+20, currentY ,currentX+20,  currentY-41);
 
 				//Storing the value of x and y
@@ -737,7 +751,7 @@ public class CanvasNotes {
 
 
 				// adding vertical line
-				graphics_context.setLineWidth(3);
+				graphics_context.setLineWidth(noteSize-67);
 				graphics_context.strokeLine(currentX+20, currentY ,currentX+20,  currentY-41);
 
 
@@ -748,7 +762,7 @@ public class CanvasNotes {
 				graphics_context.setFill(Color.BLACK); //Note shape is from the duration
 				graphics_context.fillText(getNoteShape(notesLengthList.get(i)), currentX, currentY+29);
 				// adding vertical line
-				graphics_context.setLineWidth(3);
+				graphics_context.setLineWidth(noteSize-67);
 				graphics_context.strokeLine(currentX+20, currentY ,currentX+20,  currentY-41);
 
 				//Storing the value of x and y
@@ -764,7 +778,7 @@ public class CanvasNotes {
 				graphics_context.fillText(getNoteShape(notesLengthList.get(i)), currentX, currentY+24);
 
 				// adding vertical line
-				graphics_context.setLineWidth(3);
+				graphics_context.setLineWidth(noteSize-67);
 				graphics_context.strokeLine(currentX+20, currentY,currentX+20,  currentY-41);
 
 				//Storing the value of x and y
@@ -780,7 +794,7 @@ public class CanvasNotes {
 				graphics_context.fillText(getNoteShape(notesLengthList.get(i)), currentX, currentY+17);
 
 				// adding vertical line
-				graphics_context.setLineWidth(3);
+				graphics_context.setLineWidth(noteSize-67);
 				graphics_context.strokeLine(currentX+20, currentY ,currentX+20,  currentY-41);
 
 				//Storing the value of x and y
@@ -833,16 +847,25 @@ public class CanvasNotes {
 				currentX=(int) (canvasWidth-50);
 				printVertical(graphics_context);
 				currentY+=160;
+				font = new Font(fontRecieved, 10);
+				graphics_context.setFont(font);
+				graphics_context.fillText(nNPMCounter+"",50,currentY-20);
 				printHorizontalLines(graphics_context);
 				currentX=50;
 				counter=0;
 			}
-
-
+	
 		}
 
 		currentX = (int) (canvasWidth-50);    
 		printVertical(graphics_context);
+		if(measure == 0) {
+			Font font = new Font("Arial Bold", 20);
+			graphics_context.setFill(Color.RED);
+			graphics_context.setFont(font);
+			graphics_context.fillText("\u2304", xPlacementsD.get(0)+5,  yPlacementsD.get(0)-60); //
+
+		}
 		nNPMCounter ++;
 
 	}
@@ -851,10 +874,11 @@ public class CanvasNotes {
 
 
 		Font font = new Font("Arial Bold", 20);
+		graphics_context.setFill(Color.RED);
 		graphics_context.setFont(font);
 		
 		
-		Thread t1 = new Thread(new Runnable() {
+		 t1 = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				
@@ -862,13 +886,12 @@ public class CanvasNotes {
 					Integer[][] clearArray= new Integer[1][2];
 					for(int i=0; i<xPlacementsD.size();i++) {
 
-						
-						graphics_context.setFill(Color.RED);
+					
 						graphics_context.fillText("\u2304", xPlacementsD.get(i)+5,  yPlacementsD.get(i)-60); //
 						System.out.println("Current Drum: "+i);
 						if(i < xPlacementsD.size()) {
 							if(clearArray[0][0]!=null && clearArray[0][1]!=null) {
-										graphics_context.clearRect(clearArray[0][0], clearArray[0][1]-10, 50, 20);
+										graphics_context.clearRect(clearArray[0][0], clearArray[0][1]-8, 50, 20);
 
 							}
 
@@ -877,7 +900,8 @@ public class CanvasNotes {
 
 						}	
 						try {
-							Thread.sleep((long) (1.25*Integer.parseInt(Parser.DrumParser.drumTest.tempo)));
+							int diff = 120 - Integer.parseInt(Parser.DrumParser.drumTest.tempo);
+							Thread.sleep((long) ((1.25*Integer.parseInt(Parser.DrumParser.drumTest.tempo))+2.5*diff));
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -902,7 +926,9 @@ public class CanvasNotes {
 
 						}	
 						try {
-							Thread.sleep((long) (2.2*Integer.parseInt(Parser.GuitarParser.jfugueTester.tempo)));
+							int diff = 120 - Integer.parseInt(Parser.DrumParser.drumTest.tempo);
+							System.out.println("Diff: "+ diff);
+							Thread.sleep((long) ((2.2*Integer.parseInt(Parser.GuitarParser.jfugueTester.tempo))+2.5*diff));
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}

@@ -67,9 +67,9 @@ public class PreviewSheetMusicController extends Application{
 	public static CanvasNotes canvasNote = new CanvasNotes();
 	public boolean playing = false;
 	public boolean havePlayed = false;
-	private Thread t1;
+	public static Thread t1;
 	ManagedPlayer mplayer;
-	Sequencer seqMang = null;
+	public static Sequencer seqMang = null;
 	public String musicgoto="";
 
 	public PreviewSheetMusicController() {}
@@ -191,6 +191,7 @@ public class PreviewSheetMusicController extends Application{
 
 		if(playing) {
 			seqMang.stop();
+			canvasNote.t1.run();;
 			havePlayed=true;
 			playing=false;
 		}
@@ -234,10 +235,11 @@ public class PreviewSheetMusicController extends Application{
 		}
 
 	}
-
-
+	
 	@FXML 
 	void  editInput() {
+		seqMang.stop();
+		canvasNote.t1.stop();
 		mvc.convertWindow.hide();
 
 	}
@@ -319,16 +321,9 @@ public class PreviewSheetMusicController extends Application{
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setOnCloseRequest( event -> {
-
-			seqMang.stop();
-
-		});
+		System.out.println("Hello");
 	}
 
-	@Override
-	public void stop() throws Exception{
-		seqMang.stop();
-	}
+	
 }
 

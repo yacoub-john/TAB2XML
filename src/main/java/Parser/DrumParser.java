@@ -83,6 +83,7 @@ public class DrumParser {
 				detials.add("Bar location of measure " + (i+1) + ": " + bar);
 			}
 			
+			
 			if(repeats.item(i) != null && hasBarline) {
 
 				Element repeat = (Element) repeats.item(i);    
@@ -111,16 +112,13 @@ public class DrumParser {
 		}
 
 
-
 		NodeList instrumentNames =  doc.getElementsByTagName("instrument-name");
 
-		
 		for (int j = 0; j<instrumentNames.getLength(); j++) {
 
 			Element instrumentName = (Element) instrumentNames.item(j);    
 			String  NOI = instrumentName.getTextContent();
 			detials.add("Instrument " + (j+1) + ": " + NOI);
-
 			instrumentNameList.add(NOI);
 		}
 
@@ -164,6 +162,7 @@ public class DrumParser {
 			String  NOPA = pan.getTextContent();
 			detials.add("Pan: " + NOPA);
 			midiPanlist.add(Integer.parseInt(NOPA));
+			
 
 
 			detials.add("==================================");
@@ -214,7 +213,6 @@ public class DrumParser {
 				detials.add("Line: " + NOL);
 			}
 
-
 			if(barStyles.item(i) != null) {
 
 				Element barStyle = (Element) barStyles.item(i);    
@@ -229,7 +227,6 @@ public class DrumParser {
 				String	NOW = word.getTextContent();
 				detials.add("words in measure " + (i+1)  + NOW);
 			}
-
 
 		}
 

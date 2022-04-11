@@ -14,13 +14,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import models.measure.note.Note;
 
 
 public class SheetMusicStyleController {
 
 	//private MainViewController mvc;
 
-	ObservableList<String> fontsList = FXCollections.observableArrayList("Arial","Arial Black","Arial MT","Arial Narrow","Bazooka","Book Antiqua","Bookman Old Style","Boulder","Calisto MT","Calligrapher","Century Gothic","Century Schoolbook","Cezanne","CG Omega","CG Times","Charlesworth","Chaucer","Clarendon Condensed","Comic Sans MS","Copperplate Gothic Bold","Copperplate Gothic Light","Cornerstone","Coronet","Courier","Courier New","Cuckoo","Dauphin","Denmark","Fransiscan","Garamond","Geneva","Haettenschweiler","Heather","Helvetica","Herald","Impact","Jester","Letter Gothic","Lithograph","Lithograph Light","Long Island","Lucida Console","Lucida Handwriting","Lucida Sans","Lucida Sans Unicode","Marigold","Market","Matisse ITC","MS LineDraw","News GothicMT","OCR A Extended","Old Century","Pegasus","Pickwick","Poster","Pythagoras","Sceptre","Sherwood","Signboard","Socket","Steamer","Storybook","Subway","Tahoma","Technical","Teletype","Tempus Sans ITC","Times","Times New Roman","Times New Roman PS","Trebuchet MS","Tristan","Tubular","Unicorn","Univers","Univers Condensed","Vagabond","Verdana","Westminster");
+	ObservableList<String> fontsList = FXCollections.observableArrayList("Arial","Arial Black","Arial MT","Arial Narrow","Bazooka","Book Antiqua","Bookman Old Style","Boulder","Calisto MT","Calligrapher","Century Gothic","Century Schoolbook","Cezanne","CG Omega","CG Times","Charlesworth","Chaucer","Clarendon Condensed","Comic Sans MS","Copperplate Gothic Bold","Copperplate Gothic Light","Cornerstone","Coronet","Courier","Courier New","Cuckoo","Dauphin","Denmark","Fransiscan","Garamond","Geneva","Haettenschweiler","Heather","Helvetica","Herald","Impact","Jester","Letter Gothic","Lithograph","Lithograph Light","Long Island","Lucida Console","Lucida Handwriting","Lucida Sans","Lucida Sans Unicode","Marigold","Market","Matisse ITC","MS LineDraw","News GothicMT","OCR A Extended","Old Century","Papyrus","Pegasus","Pickwick","Poster","Pythagoras","Sceptre","Sherwood","Signboard","Socket","Steamer","Storybook","Subway","Tahoma","Technical","Teletype","Tempus Sans ITC","Times","Times New Roman","Times New Roman PS","Trebuchet MS","Tristan","Tubular","Unicorn","Univers","Univers Condensed","Vagabond","Verdana","Westminster");
 
 	@FXML
 	private Button Apply;
@@ -30,8 +31,7 @@ public class SheetMusicStyleController {
 
 	@FXML
 	private Slider LineSpacing;
-
-
+	
 	@FXML
 	private Slider NoteSpacing;
 
@@ -52,7 +52,12 @@ public class SheetMusicStyleController {
 
 	@FXML
 	private TextField tempBox;
+	
+	@FXML
+    private TextField noteSizeBox;
 
+    @FXML
+    private Slider noteSizeSlider;
 
 
 	public void setMainViewController(MainViewController mvcInput) {
@@ -68,7 +73,7 @@ public class SheetMusicStyleController {
 	@FXML
 	void initialize() {
 		fontsChoice.setItems(fontsList);
-		fontsChoice.setValue(PreviewSheetMusicController.canvasNote.font);
+		fontsChoice.setValue(PreviewSheetMusicController.canvasNote.fontRecieved);
 
 		tempBox.setText(JfugueTest.tempo);
 		sliderTempo.setValue(Double.parseDouble(JfugueForDrum.tempo));
@@ -76,16 +81,19 @@ public class SheetMusicStyleController {
 		NoteSpacingBox.setText(PreviewSheetMusicController.canvasNote.noteSpacing+"");
 		NoteSpacing.setValue(PreviewSheetMusicController.canvasNote.noteSpacing);
 
-
 		LineSpacingBox.setText(PreviewSheetMusicController.canvasNote.lineSpacing+"");
 		LineSpacing.setValue(PreviewSheetMusicController.canvasNote.lineSpacing);
+		
+		noteSizeBox.setText(PreviewSheetMusicController.canvasNote.noteSize+"");
+		noteSizeSlider.setValue(PreviewSheetMusicController.canvasNote.noteSize);
 	}
 
 	@FXML
 	void handleApply(ActionEvent event) {
 		PreviewSheetMusicController.canvasNote.setLineSpacing((int) LineSpacing.getValue());
 		PreviewSheetMusicController.canvasNote.setNoteSpacing((int) NoteSpacing.getValue());
-		PreviewSheetMusicController.canvasNote.font = fontsChoice.getValue();
+		PreviewSheetMusicController.canvasNote.fontRecieved = fontsChoice.getValue();
+		PreviewSheetMusicController.canvasNote.noteSize = ((int)noteSizeSlider.getValue());
 		JfugueTest.tempo = tempBox.getText();
 		JfugueForDrum.tempo = tempBox.getText();
 		
@@ -146,6 +154,17 @@ public class SheetMusicStyleController {
 	void handleTempoBox(ActionEvent event) {
 		sliderTempo.setValue( Double.parseDouble(tempBox.getText()) );
 	}
+	
+	
+	@FXML
+    void handleDragSize(MouseEvent event) {
+		noteSizeBox.setText((int)noteSizeSlider.getValue()+"");
+    }
+	
+    @FXML
+    void handlenoteSizeBox(ActionEvent event) {
+    	noteSizeSlider.setValue(Double.parseDouble(noteSizeBox.getText()));
+    }
 
 
 }
