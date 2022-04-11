@@ -47,7 +47,6 @@ public class DrumParser {
 		boolean HasDirection = false;
 		
 		// Factor for SLUR and DOT
-		
 		NodeList barlines =  doc.getElementsByTagName("barline");
 		NodeList barStyles =  doc.getElementsByTagName("bar-style");
 		NodeList repeats =  doc.getElementsByTagName("repeat");
@@ -324,8 +323,13 @@ public class DrumParser {
 
 				Element duration = (Element) durations.item(j);    
 				String  durationValue = duration.getTextContent();
+
 				details.add("Duration: " +  durationValue);
 				
+
+				
+	
+
 				if (hasDuration) {
 				noteLengthList.add(Integer.parseInt(durationValue));
 				}
@@ -386,6 +390,7 @@ public class DrumParser {
 			details.add("--------------------");		
 		}
 
+
 		details.add("");
 		details.add("Notes: " + notesList);
 		details.add("Chords: " + chordList);
@@ -395,6 +400,16 @@ public class DrumParser {
 		details.add("Note Instrument ID: " + noteInstrumentIDList);
 		details.add("");
 		
+
+		System.out.println("");
+		System.out.println("Notes: " + notesList);
+		System.out.println("Chords: " + chordList);
+		System.out.println("Note Heads: " + noteHeadList);
+		System.out.println("Notes Length: " + noteLengthList);
+		System.out.println("Stems: " + stemList);
+		System.out.println("Note Instrument ID: " + noteInstrumentIDList);
+		System.out.println("");
+
 
 		for(int i = 0; i< nNPM.size(); i++) {
 			if(i != 0) {

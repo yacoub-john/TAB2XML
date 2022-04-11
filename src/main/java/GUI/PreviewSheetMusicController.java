@@ -145,6 +145,7 @@ public class PreviewSheetMusicController extends Application{
 							Sequence s = player.getSequence(Parser.GuitarParser.jfugueTester.total);
 							try {
 								seqMang.setSequence(s);
+								canvasNote.currentMeasure = 0;
 							} catch (InvalidMidiDataException e) {
 								e.printStackTrace();
 							}
@@ -168,6 +169,7 @@ public class PreviewSheetMusicController extends Application{
 							e.printStackTrace();
 						}
 						seqMang.setTickPosition(0);
+						canvasNote.currentMeasure = 0;
 						playing=false;
 					}
 
@@ -235,7 +237,7 @@ public class PreviewSheetMusicController extends Application{
 		}
 
 	}
-	
+
 	@FXML 
 	void  editInput() {
 		seqMang.stop();
@@ -280,23 +282,30 @@ public class PreviewSheetMusicController extends Application{
 
 	@FXML
 	void handleGotoMeasure(ActionEvent event) {
-
-		Parser.GuitarParser.jfugueTester.playNotes();
-		String playn= Parser.GuitarParser.jfugueTester.total;
-		String instr=playn.substring(0,18);
-
-		String measures =playn.substring(18,playn.length()-1);
-
-
+		
 		String measureValueText=gotoMeasureField.getText();
 		int count= Integer.parseInt(measureValueText);
+		
+		if(count < 1 || count > canvasNote.totalMeasures) {
+			System.out.println("Measure number not vaid");
+		}
+		
+		else {
+			Parser.GuitarParser.jfugueTester.playNotes();
+			String playn= Parser.GuitarParser.jfugueTester.total;
+			String instr=playn.substring(0,18);
 
-		int index = nthOccurrence(measures, "|", count);
-		String complete = instr + measures.substring(index,measures.length()-1);
-		System.out.println("a"+complete);
+			String measures =playn.substring(18,playn.length()-1);
 
-		musicgoto=complete;
+			int index = nthOccurrence(measures, "|", count);
+			String complete = instr + measures.substring(index,measures.length()-1);
+			System.out.println("a"+complete);
 
+			musicgoto=complete;
+			canvasNote.goToMeasure(count);
+		}
+
+	
 
 	}
 
@@ -318,12 +327,12 @@ public class PreviewSheetMusicController extends Application{
 		}
 		return --finalIndex;
 	}
-	
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		System.out.println("Hello");
 	}
 
-	
+
 }
 
