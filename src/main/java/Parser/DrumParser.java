@@ -383,8 +383,6 @@ public class DrumParser {
 
 			}
 			
-			
-
 			details.add("Note: " + note);
 			notesList.add(note);
 			details.add("--------------------");		
