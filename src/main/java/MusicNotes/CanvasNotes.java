@@ -123,13 +123,13 @@ public class CanvasNotes {
 	}
 
 	public void printNotes() {
-		
+
 		//Clear Arrays
 		xPlacementsG = new ArrayList<>();
 		yPlacementsG = new ArrayList<>();
 		xPlacementsD = new ArrayList<>();
 		yPlacementsD = new ArrayList<>();
-		
+
 		currentX = 100;
 
 		if(instrumentName.equals("Guitar")) {
@@ -156,7 +156,7 @@ public class CanvasNotes {
 
 		// Sheet Music Type
 		printType(graphics_context);
-		
+
 		//Measure
 		Font font = new Font(fontRecieved, 10);
 		graphics_context.setFont(font);
@@ -182,7 +182,7 @@ public class CanvasNotes {
 		}
 		else if (instrumentName.equals("Drumset")) {
 			printNotesDrums(graphics_context);
-
+			
 		}
 
 		// Border
@@ -283,13 +283,14 @@ public class CanvasNotes {
 	// Prints Guitar Notes
 	public void printNotesGuitar(GraphicsContext graphics_context) {
 		nNPMCounter = 0;
-		Font fontsize = new Font(fontRecieved, noteSize);
-		graphics_context.setFont(fontsize);
 
 		for(int i = 0; i < fretList.size(); i++) {
+			
+			Font fontsize = new Font(fontRecieved, noteSize);
+			graphics_context.setFont(fontsize);
 
 			if(notesPerMeasure.size()-1 >= nNPMCounter && notesPerMeasure.get(nNPMCounter) == i) {
-				
+
 				printVertical(graphics_context);
 				nNPMCounter ++;
 				currentX += noteSpacing-10;
@@ -331,6 +332,13 @@ public class CanvasNotes {
 					yPlacementsG.add(currentY);
 				}
 
+				double bendValue = Double.parseDouble(bends.get(i));
+				fontsize = new Font(fontRecieved, 30);
+				graphics_context.setFont(fontsize);
+				if( bendValue != 0) {
+					graphics_context.fillText("\u293B",currentX+4, currentY+5);
+
+				}
 			}
 
 			else if(stringList.get(i).equals("2")) {
@@ -351,6 +359,13 @@ public class CanvasNotes {
 					yPlacementsG.add(currentY);
 				}
 
+				double bendValue = Double.parseDouble(bends.get(i));
+				fontsize = new Font(fontRecieved, 30);
+				graphics_context.setFont(fontsize);
+				if( bendValue != 0) {
+					graphics_context.fillText("\u293B",currentX+4, (currentY+1*lineSpacing)+5);
+
+				}
 			}
 
 			else if(stringList.get(i).equals("3")) {
@@ -367,9 +382,17 @@ public class CanvasNotes {
 				else {
 					graphics_context.strokeLine(currentX-2, (currentY+2*lineSpacing), currentX+11,(currentY+2*lineSpacing));
 					graphics_context.setFill(Color.BLACK);
-					graphics_context.fillText(fretList.get(i), currentX-2, (currentY+4*lineSpacing)+5);
+					graphics_context.fillText(fretList.get(i), currentX-2, (currentY+2*lineSpacing)+5);
 					xPlacementsG.add(currentX-2);
 					yPlacementsG.add(currentY);
+				}
+
+				double bendValue = Double.parseDouble(bends.get(i));
+				fontsize = new Font(fontRecieved, 30);
+				graphics_context.setFont(fontsize);
+				if( bendValue != 0) {
+					graphics_context.fillText("\u293B",currentX+2, (currentY+2*lineSpacing)+5);
+
 				}
 			}
 			else if(stringList.get(i).equals("4")) {
@@ -388,7 +411,16 @@ public class CanvasNotes {
 					graphics_context.setFill(Color.BLACK);
 					graphics_context.fillText(fretList.get(i), currentX-2, (currentY+3*lineSpacing)+5);
 					xPlacementsG.add(currentX-2);
-					yPlacementsG.add(currentY);				}
+					yPlacementsG.add(currentY);				
+				}
+				
+				double bendValue = Double.parseDouble(bends.get(i));
+				fontsize = new Font(fontRecieved, 30);
+				graphics_context.setFont(fontsize);
+				if( bendValue != 0) {
+					graphics_context.fillText("\u293B",currentX+4, (currentY+3*lineSpacing)+5);
+					
+				}
 			}
 			else if(stringList.get(i).equals("5")) {
 				graphics_context.setStroke(Color.WHITE);
@@ -407,6 +439,14 @@ public class CanvasNotes {
 					graphics_context.fillText(fretList.get(i), currentX-2, (currentY+4*lineSpacing)+5);
 					xPlacementsG.add(currentX-2);
 					yPlacementsG.add(currentY);
+				}
+				
+				double bendValue = Double.parseDouble(bends.get(i));
+				fontsize = new Font(fontRecieved, 30);
+				graphics_context.setFont(fontsize);
+				if( bendValue != 0) {
+					graphics_context.fillText("\u293B",currentX+4, (currentY+4*lineSpacing)+5);
+					
 				}
 			}
 			else if(stringList.get(i).equals("6")) {
@@ -427,8 +467,18 @@ public class CanvasNotes {
 					xPlacementsG.add(currentX-2);
 					yPlacementsG.add(currentY);
 				}
-
+				
+				
+				double bendValue = Double.parseDouble(bends.get(i));
+				fontsize = new Font(fontRecieved, 30);
+				graphics_context.setFont(fontsize);
+				if( bendValue != 0) {
+					graphics_context.fillText("\u293B",currentX+4, (currentY+5*lineSpacing)+5);
+					
+				}
 			}
+
+
 
 			if(noteLenghtList.get(i).equals("half")) {
 				// Vertical Line under the note
@@ -861,7 +911,7 @@ public class CanvasNotes {
 				currentX=50;
 				counter=0;
 			}
-	
+
 		}
 
 		currentX = (int) (canvasWidth-50);    
@@ -876,7 +926,7 @@ public class CanvasNotes {
 		nNPMCounter ++;
 
 	}
-	
+
 	public void goToMeasure(int index) {
 		int total = 0;
 		System.out.println("nNPM: " + notesPerMeasure);
@@ -887,11 +937,11 @@ public class CanvasNotes {
 			else {
 				total+=notesPerMeasure.get(i)-notesPerMeasure.get(i-1);
 			}
-			
+
 		}
-		
+
 		System.out.println("Current Location: " + total);
-		
+
 		if(instrumentName == "Drumset") {
 			graphics_context.clearRect(xPlacementsD.get(currentMeasure), yPlacementsD.get(currentMeasure)-8, 50, 20);
 
@@ -901,7 +951,7 @@ public class CanvasNotes {
 
 		}
 		currentMeasure=total-2;
-		
+
 		if(instrumentName == "Drumset") {
 			Font font = new Font("Arial Bold", 20);
 			graphics_context.setFill(Color.RED);
@@ -915,31 +965,31 @@ public class CanvasNotes {
 			graphics_context.fillText("\u2304", xPlacementsG.get(currentMeasure)-3,  yPlacementsG.get(currentMeasure)-20); //
 
 		}
-		
+
 
 	}
-	
+
 	public void highlight() {
 
 		Font font = new Font("Arial Bold", 20);
 		graphics_context.setFill(Color.RED);
 		graphics_context.setFont(font);
-		
-		
-		 t1 = new Thread(new Runnable() {
+
+
+		t1 = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				
+
 				if(instrumentName == "Drumset") {
 					Integer[][] clearArray= new Integer[1][2];
 					for(int i=currentMeasure; i<xPlacementsD.size();i++) {
 
-					
+
 						graphics_context.fillText("\u2304", xPlacementsD.get(i)+5,  yPlacementsD.get(i)-60); //
 						//System.out.println("Current Drum: "+i);
 						if(i < xPlacementsD.size()) {
 							if(clearArray[0][0]!=null && clearArray[0][1]!=null) {
-										graphics_context.clearRect(clearArray[0][0], clearArray[0][1]-8, 50, 20);
+								graphics_context.clearRect(clearArray[0][0], clearArray[0][1]-8, 50, 20);
 
 							}
 
@@ -953,10 +1003,10 @@ public class CanvasNotes {
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						
+
 						currentMeasure++;
 					}
-					
+
 					Font font = new Font("Arial Bold", 20);
 					graphics_context.setFill(Color.RED);
 					graphics_context.setFont(font);
@@ -966,13 +1016,13 @@ public class CanvasNotes {
 					Integer[][] clearArray= new Integer[1][2];
 					for(int i=currentMeasure; i<xPlacementsG.size();i++) {
 
-						
+
 						graphics_context.setFill(Color.RED);
 						graphics_context.fillText("\u2304", xPlacementsG.get(i)-3,  yPlacementsG.get(i)-20); //
 						//System.out.println("Current Guitar:"+i);
 						if(i < xPlacementsG.size()) {
 							if(clearArray[0][0]!=null && clearArray[0][1]!=null) {
-										graphics_context.clearRect(clearArray[0][0], clearArray[0][1]-35, 20, 20);
+								graphics_context.clearRect(clearArray[0][0], clearArray[0][1]-35, 20, 20);
 
 							}
 
@@ -987,18 +1037,18 @@ public class CanvasNotes {
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						
+
 						currentMeasure++;
 					}
-					
+
 					Font font = new Font("Arial Bold", 20);
 					graphics_context.setFill(Color.RED);
 					graphics_context.setFont(font);
 					graphics_context.fillText("\u2304", xPlacementsG.get(0)-3,  yPlacementsG.get(0)-20); //
-					
+
 				}
-				
-				
+
+
 			}}); 
 		t1.setDaemon(true);
 		t1.start();
