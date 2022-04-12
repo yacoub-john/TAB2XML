@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import Parser.GuitarParser;
 import Parser.XMLParser;
-import PlayNotes.JfugueTest;
+import PlayNotes.JfugueForGuitar;
 
 class TestguitarPlaying {
 	

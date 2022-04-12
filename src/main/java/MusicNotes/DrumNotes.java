@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 
-public class MusicNotes2 {
+public class DrumNotes {
 	 public static int x=80;
 	 public static int y=268;
 	 public static ArrayList<String> notes;
@@ -77,7 +77,7 @@ public class MusicNotes2 {
 	 }
 	 
 	public static void main(String[] args) {
-	MusicNotes2 mn=new MusicNotes2();
+	DrumNotes mn=new DrumNotes();
 		
 	JFrame f = new JFrame() {
 
@@ -99,10 +99,10 @@ public class MusicNotes2 {
 //	    
 //	    g2.drawString("\uD834\uDD22", 40, 370);// Fclef
 	    //g2.drawString("\u266A", 40, 470);
-	    MusicNotes2.SimpleBlackNote(g);
-	    MusicNotes2.SimpleBlackNote(g);
-	    MusicNotes2.Gclef(g);
-	    MusicNotes2.Fclef(g);
+	    DrumNotes.SimpleBlackNote(g);
+	    DrumNotes.SimpleBlackNote(g);
+	    DrumNotes.Gclef(g);
+	    DrumNotes.Fclef(g);
 	    
 	    // Vertical lines
 		g2.drawLine(0,268,960,268);

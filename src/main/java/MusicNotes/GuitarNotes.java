@@ -5,8 +5,8 @@ import java.awt.Graphics;
 //import java.awt.color.*;
 import javax.swing.JFrame;
 
-public class MusicNotes extends JFrame {
-	public MusicNotes() {
+public class GuitarNotes extends JFrame {
+	public GuitarNotes() {
 
 setTitle("Shape");
 setSize(960, 960);
@@ -70,7 +70,7 @@ setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 	}
 	public static void main(String args[]) {
-		MusicNotes s= new MusicNotes();
+		GuitarNotes s= new GuitarNotes();
 		s.paint(null);
 	}
 }

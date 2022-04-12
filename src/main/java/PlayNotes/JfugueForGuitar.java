@@ -11,7 +11,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 @SuppressWarnings("unused")
-public class JfugueTest {
+public class JfugueForGuitar {
 
 	private  ArrayList<String> notes = new ArrayList<>();
 	private ArrayList<String> stringList;

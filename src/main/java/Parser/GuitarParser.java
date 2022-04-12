@@ -8,7 +8,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import GUI.PreviewSheetMusicController;
-import PlayNotes.JfugueTest;
+import PlayNotes.JfugueForGuitar;
 
 public class GuitarParser {
 
@@ -44,7 +44,7 @@ public class GuitarParser {
 
 
 
-	public static JfugueTest jfugueTester = new JfugueTest();
+	public static JfugueForGuitar jfugueTester = new JfugueForGuitar();
 	int counter =0;
 	int count2 = 0;
 	int count3=0;
