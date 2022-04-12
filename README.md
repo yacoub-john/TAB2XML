@@ -12,7 +12,7 @@ TAB2MUSIC is a tool designed to convert musical tablature into XML and sheet mus
  <img width="537" alt="Screen Shot 2022-04-11 at 10 11 46 PM" src="https://user-images.githubusercontent.com/90650822/162865580-54b84ad3-f2b7-4525-97f2-bb4b0be91fd6.png">
  </p>
 
-The diagram represents our project's structure. It shows all the major classes that we implemented and how they interact with each other.
+The diagram represents our project's structure. It shows all the major classes, along with their respective packages, that we implemented and how they interact with each other.
 
 
 # Importing the project
