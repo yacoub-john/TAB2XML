@@ -713,32 +713,32 @@ public class GuitarParser {
 
 		}
 
-						details.add(numOfSlur + "" );
-						details.add(slurNumber + "" );
-						details.add(slurType + "" );
-						details.add(slurPlacement + "" );
+						details.add("Number of slur for notes: " + numOfSlur + "" );
+						details.add("Slur value: " + slurNumber + "" );
+						details.add("Slur type: " + slurType + "" );
+						details.add("Slur placement: " + slurPlacement + "" );
 						
 				
-						details.add("--------------------");
+						details.add("*********************");
 				
-						details.add(pullOffNumber + "" );
-						details.add(pullOffType + "" );
+						details.add("pull-off value: " + pullOffNumber + "" );
+						details.add("pull-off type: " + pullOffType + "" );
 				
 					
 						
-						details.add("--------------------");
+						details.add("*********************");
 		
 						
-						details.add(actualNotesL + "" );
-						details.add(normalNotesL + "" );
+						details.add("Actual Notes are: " + actualNotesL + "" );
+						details.add("Normal notes are: " + normalNotesL + "" );
 
 
-				details.add(bendExist + "" );
-				details.add(bendsL + "" );
+			
+				details.add( "bends are: " + bendsL + "" );
 
 
-		details.add(NumOfTiesL + "" );
-		details.add(tiesL + "" );
+		details.add( "Number of ties for note: " + NumOfTiesL + "" );
+		details.add("Tie value" + tiesL + "" );
 
 		for(int i = 0; i< nNPM.size(); i++) {
 			if(i != 0) {
