@@ -890,6 +890,7 @@ public String getDrumXML() {
 		assertEquals(8,xmlParser.nNPM.get(0),0.2);
 		assertEquals(14,xmlParser.nNPM.get(1),0.2);
 		
+		System.out.println("test" +  xmlParser.nNPM);
 	}
 	
 	@Test

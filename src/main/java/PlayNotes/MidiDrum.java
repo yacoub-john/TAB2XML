@@ -11,7 +11,7 @@ import javax.sound.midi.Synthesizer;
 
 import models.part_list.MIDIInstrument;
 
-public class MidiTest {
+public class MidiDrum {
 	
 	private ArrayList<String> notesList = new ArrayList<>();
 	private ArrayList<Integer> chordList = new ArrayList<>();
