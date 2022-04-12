@@ -21,7 +21,7 @@ public class XMLParser {
 
 	public NodeList out = null;
 	public Document document = null;
-	
+
 	public static ArrayList<String> details = new ArrayList<String>();
 	public ArrayList<String> repeatNum = new ArrayList<String>();
 	public ArrayList<String> repeatDirection = new ArrayList<String>();
@@ -35,14 +35,13 @@ public class XMLParser {
 
 
 	public void getXml(Document doc) {
-		
+
 		nNPM = new ArrayList<Integer>();
-		
-		 details = new ArrayList<String>();
-		 repeatNum = new ArrayList<String>();
-		 repeatDirection = new ArrayList<String>();
+		details = new ArrayList<String>();
+		repeatNum = new ArrayList<String>();
+		repeatDirection = new ArrayList<String>();
 		repN= new ArrayList<String>();
-		 repD = new ArrayList<String>();
+		repD = new ArrayList<String>();
 		boolean hasRepeat = false;
 
 		details = new ArrayList<>();
@@ -62,11 +61,6 @@ public class XMLParser {
 
 			repN.add(numRep);
 			repD.add(dirRep);
-
-
-
-
-
 		}
 
 		for(int i = 0; i < partNameList.getLength(); i++) {
@@ -91,22 +85,22 @@ public class XMLParser {
 
 
 		for(int i = 0; i < measures.getLength(); i++) {
-			
+
 			int temp2=0;
 
 			hasRepeat = false;
 			numMeasures=0;
 
 			NodeList measure = (NodeList) measures.item(i); 
-			
-			
+
+
 
 			Node mes =  (Node) measures.item(i);
 
 			NodeList measures2 = (NodeList) mes;
 
 			for (int k=0;k<measures2.getLength();k++) {
-				
+
 
 
 				if (measures2.item(k).getNodeName().equals("barline")) {
@@ -114,11 +108,11 @@ public class XMLParser {
 					hasRepeat = true;
 
 				}
-				
-				 if (measures2.item(k).getNodeName().equals("note")) {
-					 
-					 numMeasures++;
-					 
+
+				if (measures2.item(k).getNodeName().equals("note")) {
+
+					numMeasures++;
+
 				}
 			}
 
@@ -131,7 +125,7 @@ public class XMLParser {
 					//					repeatNum.add(repN.get(count+1));
 					//					repeatDirection.add(repD.get(count));
 					//					count++;
-					
+
 					int temp=count;
 					temp2=count;
 
@@ -147,20 +141,20 @@ public class XMLParser {
 					while(repD.get(count).equals("forward")) {
 
 						repeatNum.add(repN.get(temp2+count2));
-					   count++;
-					
+						count++;
+
 
 
 					}
-					
+
 					count=temp2;
-					
+
 					while(repD.get(count).equals("forward")) {
 
-				
+
 						repeatDirection.add(repD.get(count));
 						count++;
-					
+
 
 
 					}
@@ -186,13 +180,13 @@ public class XMLParser {
 			}
 			details.add( "Number of notes in measure " + (i+1) + ": "+ numMeasures);
 			nNPM.add(numMeasures);
-			
-			
+
+
 		}
-		
+
 		details.add("Repeat number is: " +repeatNum + "");
 		details.add("Repeat direction is: " +repeatDirection + "");
-		
+
 
 
 		if(partName.equals("Guitar")) {

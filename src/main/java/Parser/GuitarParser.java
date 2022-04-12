@@ -748,7 +748,7 @@ public class GuitarParser {
 
 
 		jfugueTester.getNotes(notesList, nNPM, stringList, fretList, chordList, alterList);
-		PreviewSheetMusicController.canvasNote.getNotesGuitar("Guitar",stringList, fretList, nNPM, alterList, noteLengthList, chordList);
+		PreviewSheetMusicController.canvasNote.getNotesGuitar("Guitar",bendsL,stringList, fretList, nNPM, alterList, noteLengthList, chordList);
 
 	}
 

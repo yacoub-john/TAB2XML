@@ -17,7 +17,10 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -282,14 +285,24 @@ public class PreviewSheetMusicController extends Application{
 
 	@FXML
 	void handleGotoMeasure(ActionEvent event) {
-		
+		int count = 0;
+
 		String measureValueText=gotoMeasureField.getText();
-		int count= Integer.parseInt(measureValueText);
-		
-		if(count < 1 || count > canvasNote.totalMeasures) {
-			System.out.println("Measure number not vaid");
+		try {
+			count= Integer.parseInt(measureValueText);
 		}
-		
+
+		catch (NumberFormatException e) {
+			count = 0;
+		}
+
+
+		if(count < 1 || count > canvasNote.totalMeasures) {
+			Alert alert = new Alert(AlertType.ERROR, "Invalid Measure Entered", ButtonType.OK);
+			alert.showAndWait();
+			System.out.println("Measure number not vaid: " + measureValueText);
+		}
+
 		else {
 			Parser.GuitarParser.jfugueTester.playNotes();
 			String playn= Parser.GuitarParser.jfugueTester.total;
@@ -304,8 +317,6 @@ public class PreviewSheetMusicController extends Application{
 			musicgoto=complete;
 			canvasNote.goToMeasure(count);
 		}
-
-	
 
 	}
 

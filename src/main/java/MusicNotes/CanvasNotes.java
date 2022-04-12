@@ -52,6 +52,7 @@ public class CanvasNotes {
 	private ArrayList<String> noteHeadList = new ArrayList<>();
 	private ArrayList<Integer> notesLengthList = new ArrayList<>();
 	private ArrayList<String> stemList = new ArrayList<>();
+	private ArrayList<String> bends = new ArrayList<>();
 	private ArrayList<Integer> nNPM = new ArrayList<Integer>();
 	private ArrayList<String> noteInstrumentIDList = new ArrayList<>();
 	private GraphicsContext graphics_context;
@@ -82,11 +83,12 @@ public class CanvasNotes {
 		noteSpacing = noteSpacingRecieved;
 	}
 
-	public void getNotesGuitar(String recievedInstrument, ArrayList<String> recievedString, ArrayList<String> recievedFret, ArrayList<Integer> nNPM, ArrayList<String> recievedAlter, ArrayList<String> noteLengthRecieved, ArrayList<Integer> recievedChord ) {
+	public void getNotesGuitar(String recievedInstrument, ArrayList<String> bendRecieved, ArrayList<String> recievedString, ArrayList<String> recievedFret, ArrayList<Integer> nNPM, ArrayList<String> recievedAlter, ArrayList<String> noteLengthRecieved, ArrayList<Integer> recievedChord ) {
 		currentMeasure = 0;
 		stringList = recievedString;
 		fretList = recievedFret;
 		notesPerMeasure = nNPM;
+		bends = bendRecieved;
 		totalMeasures=notesPerMeasure.size();
 		noteSize = 10;
 		//alterList = recievedAlter;
