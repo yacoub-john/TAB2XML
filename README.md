@@ -24,7 +24,7 @@ To import the project go to file -> Import -> Git -> projects from Git -> Clone 
 ![WhatsApp Image 2022-03-16 at 1 15 21 PM](https://user-images.githubusercontent.com/90650822/158649047-3e2d1d19-457e-4efb-951e-b36d370ade4c.jpeg)
 
 
-Make sure Gradle is installed and you are version is atleast 7.3.3.
+Make sure Gradle is installed and your version is atleast 7.3.3.
 
 For step by step instructions on how how import the project, on github go to project documents -> user manual.
 
