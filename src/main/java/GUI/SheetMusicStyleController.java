@@ -1,7 +1,7 @@
 package GUI;
 
 import PlayNotes.JfugueForDrum;
-import PlayNotes.JfugueTest;
+import PlayNotes.JfugueForGuitar;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -75,7 +75,7 @@ public class SheetMusicStyleController {
 		fontsChoice.setItems(fontsList);
 		fontsChoice.setValue(PreviewSheetMusicController.canvasNote.fontRecieved);
 
-		tempBox.setText(JfugueTest.tempo);
+		tempBox.setText(JfugueForGuitar.tempo);
 		sliderTempo.setValue(Double.parseDouble(JfugueForDrum.tempo));
 
 		NoteSpacingBox.setText(PreviewSheetMusicController.canvasNote.noteSpacing+"");
@@ -94,7 +94,7 @@ public class SheetMusicStyleController {
 		PreviewSheetMusicController.canvasNote.setNoteSpacing((int) NoteSpacing.getValue());
 		PreviewSheetMusicController.canvasNote.fontRecieved = fontsChoice.getValue();
 		PreviewSheetMusicController.canvasNote.noteSize = ((int)noteSizeSlider.getValue());
-		JfugueTest.tempo = tempBox.getText();
+		JfugueForGuitar.tempo = tempBox.getText();
 		JfugueForDrum.tempo = tempBox.getText();
 		
 //		if(XMLParser.instrument.equals("Guitar")) {

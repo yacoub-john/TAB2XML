@@ -8,7 +8,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import PlayNotes.JfugueForDrum;
-import PlayNotes.MidiTest;
+import PlayNotes.MidiDrum;
 
 import GUI.PreviewSheetMusicController;
 
@@ -28,7 +28,7 @@ public class DrumParser {
 	public static ArrayList<Integer> noteLengthList = new ArrayList<>();
 	public static ArrayList<String> stemList = new ArrayList<>();
 	public static  ArrayList<String> noteInstrumentIDList = new ArrayList<>();
-	public static MidiTest midiTester = new MidiTest();
+	public static MidiDrum midiTester = new MidiDrum();
 	public static JfugueForDrum drumTest = new JfugueForDrum();
 	
 	public ArrayList<Integer> barlineList = new ArrayList<Integer>();
